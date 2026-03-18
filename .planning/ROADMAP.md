@@ -35,9 +35,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 01-01-PLAN.md — Solution scaffold, domain model, database context, config system
-- [ ] 01-02-PLAN.md — Dual shells, ViewModels, DI wiring, EF Core migration
-- [ ] 01-03-PLAN.md — Test project, foundation tests, GitHub Actions CI
+- [x] 01-01-PLAN.md — Solution scaffold, domain model, database context, config system
+- [x] 01-02-PLAN.md — Dual shells, ViewModels, DI wiring, EF Core migration
+- [x] 01-03-PLAN.md — Test project, foundation tests, GitHub Actions CI
 
 ### Phase 2: ROM Scanning and Library
 **Goal**: Users can point YARL at their ROM folders and browse their collection organized by platform — the product is no longer inert
@@ -49,7 +49,13 @@ Plans:
   3. Scan progress is visible and the scan can be cancelled mid-run
   4. User can mark a game as a favorite and see their favorites filtered separately
   5. App tracks the last-launched time for each game and shows a "recently played" list
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Data foundation: Game + RomFile entities, EF Core migration, platforms.json aliases, Wave 0 test stubs
+- [ ] 02-02-PLAN.md — ROM scanner engine: PlatformRegistry, FilenameParser, incremental scan, FileHasher
+- [ ] 02-03-PLAN.md — Library ViewModel: DynamicData SourceCache, PlatformViewModel, GameViewModel, favorites + recently played
+- [ ] 02-04-PLAN.md — Library UI views: sidebar, platform grid, game list, carousels, status bar, empty state, dialog
 
 ### Phase 3: Metadata and Cover Art
 **Goal**: The ROM library displays cover art, descriptions, and metadata — transforming a file list into a browsable collection
@@ -117,7 +123,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
-| 2. ROM Scanning and Library | 0/TBD | Not started | - |
+| 2. ROM Scanning and Library | 0/4 | Planning complete | - |
 | 3. Metadata and Cover Art | 0/TBD | Not started | - |
 | 4. Emulator Integration and Launch | 0/TBD | Not started | - |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
@@ -126,4 +132,4 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 
 ---
 *Roadmap created: 2026-03-18*
-*Last updated: 2026-03-18 after Phase 1 planning complete*
+*Last updated: 2026-03-19 after Phase 2 planning complete*
