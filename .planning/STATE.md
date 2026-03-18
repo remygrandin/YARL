@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-foundation/01-01-PLAN.md
-last_updated: "2026-03-18T20:16:13.068Z"
+stopped_at: Completed 01-foundation/01-02-PLAN.md
+last_updated: "2026-03-18T20:29:25Z"
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 1 of 3
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -46,7 +46,8 @@ Plan: 1 of 3
 - Trend: —
 
 *Updated after each plan completion*
-| Phase 01-foundation P01 | 3 | 2 tasks | 14 files |
+| Phase 01-foundation P01 | 3 min | 2 tasks | 14 files |
+| Phase 01-foundation P02 | 12 min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Program.cs is intentionally a temporary stub — Plan 02 replaces with Generic Host + DI wiring + shell selection
 - [Phase 01-foundation]: platforms.json shipped as Content/CopyToOutputDirectory=PreserveNewest (not EmbeddedResource)
 - [Phase 01-foundation]: SourceType stored as string in SQLite via HasConversion<string>() for human-readable DB rows
+- [Phase 01-foundation P02]: x:DataType=MainViewModel required on shell AXAML files for Avalonia compiled bindings (AvaloniaUseCompiledBindingsByDefault=true)
+- [Phase 01-foundation P02]: YarlDbContextFactory (IDesignTimeDbContextFactory) needed because dotnet-ef times out trying to invoke the Avalonia entry point via HostFactoryResolver
+- [Phase 01-foundation P02]: LibraryViewModel registered in DI before MainViewModel (constructor dependency order)
 
 ### Pending Todos
 
@@ -77,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T20:16:13.065Z
-Stopped at: Completed 01-foundation/01-01-PLAN.md
+Last session: 2026-03-18T20:29:25Z
+Stopped at: Completed 01-foundation/01-02-PLAN.md
 Resume file: None

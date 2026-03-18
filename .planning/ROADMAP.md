@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Both DesktopShell and FullscreenShell stubs exist, share a LibraryViewModel, and are navigable via a debug toggle
   4. A remote path can be tagged as "OS-mounted" and treated through the IRomSourceProvider interface without special-casing
   5. Linux CI pipeline runs and passes on every commit
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [ ] 01-01-PLAN.md — Solution scaffold, domain model, database context, config system
@@ -116,7 +116,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/3 | In Progress|  |
+| 1. Foundation | 2/3 | In Progress|  |
 | 2. ROM Scanning and Library | 0/TBD | Not started | - |
 | 3. Metadata and Cover Art | 0/TBD | Not started | - |
 | 4. Emulator Integration and Launch | 0/TBD | Not started | - |
