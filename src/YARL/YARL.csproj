@@ -35,4 +35,10 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\platforms.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

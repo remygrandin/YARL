@@ -1,0 +1,32 @@
+{
+  "platforms": [
+    { "id": "nes", "name": "Nintendo Entertainment System", "extensions": [".nes", ".unf", ".unif"], "retroarchCoreId": "fceumm" },
+    { "id": "snes", "name": "Super Nintendo", "extensions": [".smc", ".sfc", ".fig"], "retroarchCoreId": "snes9x" },
+    { "id": "n64", "name": "Nintendo 64", "extensions": [".n64", ".z64", ".v64"], "retroarchCoreId": "mupen64plus_next" },
+    { "id": "gb", "name": "Game Boy", "extensions": [".gb"], "retroarchCoreId": "gambatte" },
+    { "id": "gbc", "name": "Game Boy Color", "extensions": [".gbc"], "retroarchCoreId": "gambatte" },
+    { "id": "gba", "name": "Game Boy Advance", "extensions": [".gba"], "retroarchCoreId": "mgba" },
+    { "id": "nds", "name": "Nintendo DS", "extensions": [".nds"], "retroarchCoreId": "melonds" },
+    { "id": "gamecube", "name": "Nintendo GameCube", "extensions": [".iso", ".gcm", ".gcz", ".rvz"], "retroarchCoreId": null },
+    { "id": "wii", "name": "Nintendo Wii", "extensions": [".iso", ".wbfs", ".rvz", ".wad"], "retroarchCoreId": null },
+    { "id": "switch", "name": "Nintendo Switch", "extensions": [".nsp", ".xci"], "retroarchCoreId": null },
+    { "id": "genesis", "name": "Sega Genesis / Mega Drive", "extensions": [".md", ".gen", ".bin", ".smd"], "retroarchCoreId": "genesis_plus_gx" },
+    { "id": "saturn", "name": "Sega Saturn", "extensions": [".iso", ".bin", ".cue"], "retroarchCoreId": "mednafen_saturn" },
+    { "id": "dreamcast", "name": "Sega Dreamcast", "extensions": [".gdi", ".cdi", ".chd"], "retroarchCoreId": "flycast" },
+    { "id": "mastersystem", "name": "Sega Master System", "extensions": [".sms"], "retroarchCoreId": "genesis_plus_gx" },
+    { "id": "gamegear", "name": "Sega Game Gear", "extensions": [".gg"], "retroarchCoreId": "genesis_plus_gx" },
+    { "id": "psx", "name": "PlayStation", "extensions": [".bin", ".cue", ".iso", ".chd", ".pbp"], "retroarchCoreId": "swanstation" },
+    { "id": "ps2", "name": "PlayStation 2", "extensions": [".iso", ".bin", ".chd", ".gz"], "retroarchCoreId": null },
+    { "id": "psp", "name": "PlayStation Portable", "extensions": [".iso", ".cso", ".pbp"], "retroarchCoreId": "ppsspp" },
+    { "id": "3do", "name": "3DO", "extensions": [".iso", ".bin", ".cue", ".chd"], "retroarchCoreId": "opera" },
+    { "id": "atari2600", "name": "Atari 2600", "extensions": [".a26", ".bin"], "retroarchCoreId": "stella" },
+    { "id": "atari7800", "name": "Atari 7800", "extensions": [".a78", ".bin"], "retroarchCoreId": "prosystem" },
+    { "id": "lynx", "name": "Atari Lynx", "extensions": [".lnx"], "retroarchCoreId": "handy" },
+    { "id": "jaguar", "name": "Atari Jaguar", "extensions": [".j64", ".jag"], "retroarchCoreId": "virtualjaguar" },
+    { "id": "pcengine", "name": "PC Engine / TurboGrafx-16", "extensions": [".pce", ".cue", ".chd"], "retroarchCoreId": "mednafen_pce" },
+    { "id": "neogeo", "name": "Neo Geo", "extensions": [".zip"], "retroarchCoreId": "fbneo" },
+    { "id": "mame", "name": "MAME (Arcade)", "extensions": [".zip", ".7z"], "retroarchCoreId": "mame" },
+    { "id": "wonderswan", "name": "WonderSwan / WonderSwan Color", "extensions": [".ws", ".wsc"], "retroarchCoreId": "mednafen_wswan" },
+    { "id": "ngpc", "name": "Neo Geo Pocket / Color", "extensions": [".ngp", ".ngc"], "retroarchCoreId": "mednafen_ngp" }
+  ]
+}
