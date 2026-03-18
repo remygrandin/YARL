@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 2 UI-SPEC approved
-last_updated: "2026-03-18T23:28:41.497Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-18T23:47:45.234Z"
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 7
+  completed_plans: 4
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-18)
 
 **Core value:** Users can browse their ROM collection visually and launch any game on any platform with one click, using the right emulator, on both desktop and Steam Deck.
-**Current focus:** Phase 01 — foundation
+**Current focus:** Phase 02 — rom-scanning-and-library
 
 ## Current Position
 
-Phase: 01 (foundation) — COMPLETE
-Plan: 3 of 3 (all plans complete)
+Phase: 02 (rom-scanning-and-library) — EXECUTING
+Plan: 1 of 4
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Plan: 3 of 3 (all plans complete)
 | Phase 01-foundation P01 | 3 min | 2 tasks | 14 files |
 | Phase 01-foundation P02 | 12 min | 2 tasks | 14 files |
 | Phase 01-foundation P03 | 8 min | 2 tasks | 8 files |
+| Phase 02-rom-scanning-and-library P01 | 2 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation P02]: LibraryViewModel registered in DI before MainViewModel (constructor dependency order)
 - [Phase 01-foundation P03]: In-memory SQLite requires explicit OpenConnection() before EnsureCreated()/MigrateAsync() — connection is per-process lifetime for :memory: databases
 - [Phase 01-foundation P03]: ViewModel tests (LibraryViewModel, MainViewModel) require no Avalonia headless infrastructure — ReactiveObject works in plain .NET context
+- [Phase 02-rom-scanning-and-library]: GameStatus stored as string via HasConversion<string>() matching SourceType convention for human-readable SQLite rows
+- [Phase 02-rom-scanning-and-library]: Unique index on RomFile.FilePath enforces deduplication at DB level; scanner upsert logic relies on this constraint
+- [Phase 02-rom-scanning-and-library]: Platform aliases follow EmulationStation/RetroPie folder naming conventions for broad compatibility with existing ROM library structures
 
 ### Pending Todos
 
@@ -84,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:28:41.494Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: .planning/phases/02-rom-scanning-and-library/02-UI-SPEC.md
+Last session: 2026-03-18T23:47:45.232Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None

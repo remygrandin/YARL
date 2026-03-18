@@ -9,7 +9,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Library
 
-- [ ] **LIB-01**: User can configure ROM folder paths for scanning
+- [x] **LIB-01**: User can configure ROM folder paths for scanning
 - [ ] **LIB-02**: App scans folders in background without blocking browsing
 - [ ] **LIB-03**: User can browse ROMs organized by platform with cover art grid
 - [ ] **LIB-04**: User can search games by name with real-time filtering
@@ -90,7 +90,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LIB-01 | Phase 2 | Pending |
+| LIB-01 | Phase 2 | Complete |
 | LIB-02 | Phase 2 | Pending |
 | LIB-03 | Phase 2 | Pending |
 | LIB-04 | Phase 3 | Pending |
