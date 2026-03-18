@@ -90,39 +90,39 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LIB-01 | — | Pending |
-| LIB-02 | — | Pending |
-| LIB-03 | — | Pending |
-| LIB-04 | — | Pending |
-| LIB-05 | — | Pending |
-| LIB-06 | — | Pending |
-| LIB-07 | — | Pending |
-| LIB-08 | — | Pending |
-| LIB-09 | — | Pending |
-| META-01 | — | Pending |
-| META-02 | — | Pending |
-| META-03 | — | Pending |
-| META-04 | — | Pending |
-| EMU-01 | — | Pending |
-| EMU-02 | — | Pending |
-| EMU-03 | — | Pending |
-| EMU-04 | — | Pending |
-| EMU-05 | — | Pending |
-| UI-01 | — | Pending |
-| UI-02 | — | Pending |
-| UI-03 | — | Pending |
-| UI-04 | — | Pending |
-| CACHE-01 | — | Pending |
-| CACHE-02 | — | Pending |
-| CACHE-03 | — | Pending |
-| CACHE-04 | — | Pending |
-| CACHE-05 | — | Pending |
+| LIB-01 | Phase 2 | Pending |
+| LIB-02 | Phase 2 | Pending |
+| LIB-03 | Phase 2 | Pending |
+| LIB-04 | Phase 3 | Pending |
+| LIB-05 | Phase 3 | Pending |
+| LIB-06 | Phase 2 | Pending |
+| LIB-07 | Phase 2 | Pending |
+| LIB-08 | Phase 1 | Pending |
+| LIB-09 | Phase 5 | Pending |
+| META-01 | Phase 3 | Pending |
+| META-02 | Phase 3 | Pending |
+| META-03 | Phase 3 | Pending |
+| META-04 | Phase 3 | Pending |
+| EMU-01 | Phase 4 | Pending |
+| EMU-02 | Phase 4 | Pending |
+| EMU-03 | Phase 7 | Pending |
+| EMU-04 | Phase 7 | Pending |
+| EMU-05 | Phase 7 | Pending |
+| UI-01 | Phase 5 | Pending |
+| UI-02 | Phase 6 | Pending |
+| UI-03 | Phase 5 | Pending |
+| UI-04 | Phase 5 | Pending |
+| CACHE-01 | Phase 7 | Pending |
+| CACHE-02 | Phase 7 | Pending |
+| CACHE-03 | Phase 7 | Pending |
+| CACHE-04 | Phase 7 | Pending |
+| CACHE-05 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 27 total
-- Mapped to phases: 0
-- Unmapped: 27
+- Mapped to phases: 27
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-18*
-*Last updated: 2026-03-18 after initial definition*
+*Last updated: 2026-03-18 after roadmap creation — all 27 requirements mapped*
