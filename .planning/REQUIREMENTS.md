@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **LIB-05**: User can filter games by genre, year, and developer
 - [ ] **LIB-06**: User can mark games as favorites
 - [ ] **LIB-07**: App tracks recently played games with last-launched time
-- [ ] **LIB-08**: User can tag a path as "remote" (OS-mounted network share)
+- [x] **LIB-08**: User can tag a path as "remote" (OS-mounted network share)
 - [ ] **LIB-09**: User can create custom cross-platform collections
 
 ### Metadata
@@ -97,7 +97,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIB-05 | Phase 3 | Pending |
 | LIB-06 | Phase 2 | Pending |
 | LIB-07 | Phase 2 | Pending |
-| LIB-08 | Phase 1 | Pending |
+| LIB-08 | Phase 1 | Complete |
 | LIB-09 | Phase 5 | Pending |
 | META-01 | Phase 3 | Pending |
 | META-02 | Phase 3 | Pending |
