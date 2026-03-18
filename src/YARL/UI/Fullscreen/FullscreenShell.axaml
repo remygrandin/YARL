@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+        x:Class="YARL.UI.Fullscreen.FullscreenShell"
+        x:DataType="vm:MainViewModel"
+        Title="YARL"
+        WindowState="FullScreen"
+        SystemDecorations="None">
+    <Grid Background="#1a1a2e">
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="20">
+            <TextBlock Text="YARL"
+                       FontSize="64" FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="Fullscreen / Gamepad Mode"
+                       FontSize="24"
+                       Foreground="#8888aa"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding LibraryViewModel.StatusMessage}"
+                       FontSize="18"
+                       Foreground="#ccccdd"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</Window>
