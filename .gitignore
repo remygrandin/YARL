@@ -1,0 +1,40 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+*.DotSettings.user
+
+## JetBrains Rider
+.idea/
+
+## Build
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## YARL app data (never commit user data)
+library.db
+config.json
+*.log
+
+## Test results
+TestResults/
