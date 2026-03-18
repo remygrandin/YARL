@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-18T23:47:45.234Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-18T23:59:22.231Z"
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -50,6 +50,7 @@ Plan: 1 of 4
 | Phase 01-foundation P02 | 12 min | 2 tasks | 14 files |
 | Phase 01-foundation P03 | 8 min | 2 tasks | 8 files |
 | Phase 02-rom-scanning-and-library P01 | 2 | 2 tasks | 15 files |
+| Phase 02-rom-scanning-and-library P02 | 8 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - [Phase 02-rom-scanning-and-library]: GameStatus stored as string via HasConversion<string>() matching SourceType convention for human-readable SQLite rows
 - [Phase 02-rom-scanning-and-library]: Unique index on RomFile.FilePath enforces deduplication at DB level; scanner upsert logic relies on this constraint
 - [Phase 02-rom-scanning-and-library]: Platform aliases follow EmulationStation/RetroPie folder naming conventions for broad compatibility with existing ROM library structures
+- [Phase 02-rom-scanning-and-library]: M3u disc files pre-collected before scan loop to prevent UNIQUE constraint violations on RomFile.FilePath when disc files are both enumerated as standalone ROMs and referenced in playlists
+- [Phase 02-rom-scanning-and-library]: ChangeTracker.Clear() required after ExecuteUpdateAsync in RomScannerService — EF Core change tracker retains in-memory state after bulk updates causing stale Active status on subsequent reads
+- [Phase 02-rom-scanning-and-library]: CRC32 formatted via GetCurrentHashAsUInt32().ToString(X8) — Convert.ToHexString(GetCurrentHash()) produces wrong endianness with System.IO.Hashing
 
 ### Pending Todos
 
@@ -88,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T23:47:45.232Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-18T23:59:22.228Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
