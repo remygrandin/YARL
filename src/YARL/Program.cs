@@ -8,6 +8,7 @@ using YARL.Domain.Interfaces;
 using YARL.Infrastructure.Config;
 using YARL.Infrastructure.Persistence;
 using YARL.Infrastructure.Providers;
+using YARL.Infrastructure.Scanning;
 using YARL.UI.ViewModels;
 
 namespace YARL;
@@ -63,5 +64,14 @@ internal static class Program
                 // ROM Source Providers (LIB-08)
                 services.AddSingleton<IRomSourceProvider, LocalRomSourceProvider>();
                 services.AddSingleton<IRomSourceProvider, OsMountedRomSourceProvider>();
+
+                // Scanning
+                services.AddSingleton<PlatformRegistry>(sp =>
+                {
+                    var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "platforms.json");
+                    return PlatformRegistry.LoadFromJson(jsonPath);
+                });
+                services.AddScoped<RomScannerService>();
+                services.AddHostedService<RomScanHostedService>();
             });
 }

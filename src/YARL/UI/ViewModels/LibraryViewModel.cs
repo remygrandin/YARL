@@ -4,7 +4,6 @@ namespace YARL.UI.ViewModels;
 
 /// <summary>
 /// Shared ViewModel consumed by both DesktopShell and FullscreenShell.
-/// Phase 2 will add ROM collection, scanning state, and filtering.
 /// </summary>
 public class LibraryViewModel : ReactiveObject
 {
@@ -13,5 +12,19 @@ public class LibraryViewModel : ReactiveObject
     {
         get => _statusMessage;
         set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
+    }
+
+    private bool _isScanning;
+    public bool IsScanning
+    {
+        get => _isScanning;
+        set => this.RaiseAndSetIfChanged(ref _isScanning, value);
+    }
+
+    private string _scanProgressText = "";
+    public string ScanProgressText
+    {
+        get => _scanProgressText;
+        set => this.RaiseAndSetIfChanged(ref _scanProgressText, value);
     }
 }
