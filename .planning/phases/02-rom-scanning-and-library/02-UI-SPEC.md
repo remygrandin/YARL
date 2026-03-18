@@ -56,12 +56,12 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Display | 24px | 700 (Bold) | 1.2 | Shell header "YARL", empty state heading, dialog title |
+| Display | 24px | 600 (SemiBold) | 1.2 | Shell header "YARL", empty state heading, dialog title |
 | Heading | 20px | 600 (SemiBold) | 1.2 | Section labels ("Continue Playing", "Favorites", platform name in grid tile), sidebar section headers |
 | Body | 16px | 400 (Regular) | 1.5 | Game titles in list view, status bar text, dialog body copy, scan progress text |
 | Caption | 12px | 400 (Regular) | 1.4 | ROM count badge on platform tile, platform badge on game tile, region tag, file size, carousel item subtitle |
 
-Font weight scale is exactly two weights: 400 (Regular) and the Bold/SemiBold pair treated as one display weight group (600 for section heads, 700 for shell-level display only). Executor must not introduce intermediate weights (500, 300).
+Font weight scale is exactly two weights: 400 (Regular) and 600 (SemiBold). Executor must not introduce intermediate weights (500, 300, 700).
 
 Font family declaration for AXAML:
 ```
@@ -119,7 +119,7 @@ Eight UI surfaces for this phase. Each surface section specifies exact dimension
 │                      │
 │   [Platform Logo]    │  ← Image, 140×100, centered, top padding 20px
 │   or [Color+Name     │    Fallback: Rectangle filled with platform color,
-│        text block]   │    platform name centered in white 14px Bold
+│        text block]   │    platform name centered in white 12px SemiBold
 │                      │
 │  Platform Name       │  ← TextBlock, 16px SemiBold, #FFFFFF, center-aligned
 │                      │    Margin: 8px top from logo
@@ -184,7 +184,7 @@ Eight UI surfaces for this phase. Each surface section specifies exact dimension
 **Platform filter bar:**
 - Horizontal ScrollViewer + StackPanel(Horizontal) above the game list
 - Filter chips: each platform that has ≥1 game renders a chip
-- Chip anatomy: platform name text 12px + game count badge 10px, height 28px, horizontal padding 12px, radius 14px (pill shape)
+- Chip anatomy: platform name text 12px + game count badge 12px (Caption), height 28px, horizontal padding 12px, radius 14px (pill shape)
 - Chip default: background `#16213e`, text `#ccccdd`
 - Chip selected: background `#7C6FF7`, text `#FFFFFF`
 - "All" chip always first
@@ -215,7 +215,7 @@ Show section only when `RecentlyPlayed.Count > 0`. When empty (no games launched
 │  [Art/Logo]    │  ← Image or platform-color Rectangle, fills 120×120
 │                │
 │  Game Title    │  ← TextBlock, 12px Regular, #FFFFFF, MaxLines=2, TextTrimming=CharacterEllipsis
-│  [PlatBadge]   │  ← TextBlock, 10px Regular, #8888aa
+│  [PlatBadge]   │  ← TextBlock, 12px Regular, #8888aa
 └────────────────┘
 ```
 
@@ -278,7 +278,7 @@ Show section only when `Favorites.Count > 0`. When no games are favorited, secti
 
 **Layout (vertical stack, padding 24px all sides):**
 
-1. **Title row:** "Add ROM Source" — 24px Bold, `#FFFFFF`. Close button (Material.Icons.Avalonia: `Close`, 20px, `#8888aa`) right-aligned in same row.
+1. **Title row:** "Add ROM Source" — 24px SemiBold, `#FFFFFF`. Close button (Material.Icons.Avalonia: `Close`, 20px, `#8888aa`) right-aligned in same row.
 
 2. **Divider:** 1px `#0f3460`, margin 16px top/bottom.
 
@@ -300,8 +300,8 @@ Show section only when `Favorites.Count > 0`. When no games are favorited, secti
 6. **Divider:** 1px `#0f3460`, margin 16px top/bottom.
 
 7. **Action row:** right-aligned, gap 8px.
-   - Cancel button: height 36px, min-width 80px, background `#16213e`, border 1px `#0f3460`, radius 6px, label "Cancel" 14px Regular `#ccccdd`.
-   - Add Source button: height 36px, min-width 120px, background `#7C6FF7`, no border, radius 6px, label "Add Source" 14px SemiBold `#FFFFFF`. Disabled state: background `#7C6FF780` (50% opacity), cursor default.
+   - Cancel button: height 36px, min-width 80px, background `#16213e`, border 1px `#0f3460`, radius 6px, label "Cancel" 12px Regular `#ccccdd`.
+   - Add Source button: height 36px, min-width 120px, background `#7C6FF7`, no border, radius 6px, label "Add Source" 12px SemiBold `#FFFFFF`. Disabled state: background `#7C6FF780` (50% opacity), cursor default.
 
 **Dismiss behavior:** Cancel button, Close button, and Escape key all close without saving. Clicking outside the dialog does NOT dismiss (modal).
 
@@ -320,7 +320,7 @@ Show section only when `Favorites.Count > 0`. When no games are favorited, secti
 ```
         [Folder icon, 64px, #8888aa]       ← Material.Icons.Avalonia: FolderOpen
 
-        Your library is empty              ← 24px Bold, #FFFFFF
+        Your library is empty              ← 24px SemiBold, #FFFFFF
 
         Add your ROM folders to start      ← 16px Regular, #ccccdd
         browsing your collection.
@@ -354,7 +354,7 @@ Show section only when `Favorites.Count > 0`. When no games are favorited, secti
 
 **App logo area (top):**
 - Height: 56px
-- "YARL" text: 20px Bold, `#FFFFFF`, centered vertically
+- "YARL" text: 20px SemiBold, `#FFFFFF`, centered vertically
 - Bottom border: 1px `#0f3460`
 
 **Nav items:** Each nav item is 44px tall (controller minimum tap target), full width.
