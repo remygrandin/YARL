@@ -33,6 +33,7 @@
     </PackageReference>
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="System.IO.Hashing" Version="10.0.4" />
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
 
