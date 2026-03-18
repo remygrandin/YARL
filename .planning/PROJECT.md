@@ -12,12 +12,11 @@ Users can browse their ROM collection visually and launch any game on any platfo
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Local and remote (OS-mounted) path support — `IRomSourceProvider` + `OsMountedRomSourceProvider` (LIB-08) — *Validated in Phase 1: Foundation*
 
 ### Active
 
 - [ ] Scan ROM folders (background, non-blocking)
-- [ ] Local and remote (OS-mounted) path support
 - [ ] Local ROM cache for remote paths with disk usage management
 - [ ] Cache cleanup by last-launched time (1mo, 3mo, 6mo, 1yr)
 - [ ] Max disk usage setting for cache
@@ -67,10 +66,10 @@ Users can browse their ROM collection visually and launch any game on any platfo
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Avalonia UI over MAUI | Better Linux/Steam Deck support, better controller input handling | — Pending |
-| OS-mounted paths for remote in v1 | Simpler to implement, covers most use cases (SMB mounts), extensible later | — Pending |
-| Platform-agnostic from day 1 | User wants all platforms, not a curated subset — design emulator config to be generic | — Pending |
-| Background scanning | ROM scanning must not block browsing — essential for large collections | — Pending |
+| Avalonia UI over MAUI | Better Linux/Steam Deck support, better controller input handling | ✓ Implemented (Phase 1) |
+| OS-mounted paths for remote in v1 | Simpler to implement, covers most use cases (SMB mounts), extensible later | ✓ Implemented via `IRomSourceProvider` (Phase 1) |
+| Platform-agnostic from day 1 | User wants all platforms, not a curated subset — design emulator config to be generic | ✓ Foundation set (Phase 1) |
+| Background scanning | ROM scanning must not block browsing — essential for large collections | — Pending (Phase 2) |
 
 ---
-*Last updated: 2026-03-18 after initialization*
+*Last updated: 2026-03-18 after Phase 1 (Foundation) complete — app builds, 11 tests pass, CI configured*
