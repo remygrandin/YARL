@@ -1,0 +1,280 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="YARL.UI.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             Background="#1a1a2e">
+
+    <DockPanel Margin="24">
+
+        <!-- Header -->
+        <Grid DockPanel.Dock="Top"
+              ColumnDefinitions="*,Auto"
+              Margin="0,0,0,24">
+            <TextBlock Grid.Column="0"
+                       Text="Settings"
+                       FontSize="28"
+                       FontWeight="SemiBold"
+                       Foreground="#FFFFFF"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="1"
+                    Height="36"
+                    Padding="0"
+                    MinWidth="160"
+                    Background="#7C6FF7"
+                    BorderThickness="0"
+                    CornerRadius="6"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    Click="OnAddSourceClicked">
+                <Grid Height="36" MinWidth="160">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="6">
+                        <mi:MaterialIcon Kind="Plus"
+                                         Width="16" Height="16"
+                                         Foreground="#FFFFFF" />
+                        <TextBlock Text="Add ROM Source"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="#FFFFFF" />
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </Grid>
+
+        <!-- Section heading -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="ROM LIBRARIES"
+                   FontSize="11"
+                   FontWeight="SemiBold"
+                   Foreground="#555577"
+                   Margin="0,0,0,8" />
+
+        <!-- Source list -->
+        <Border DockPanel.Dock="Top"
+                Background="#16213e"
+                CornerRadius="8"
+                BorderBrush="#0f3460"
+                BorderThickness="1"
+                IsVisible="{Binding HasSources}">
+            <ItemsControl ItemsSource="{Binding RomSources}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:RomSourceViewModel">
+                        <Border BorderBrush="#0f3460"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,12">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+
+                                <!-- Path and type badge -->
+                                <StackPanel Grid.Column="0"
+                                            Spacing="4"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Path}"
+                                               FontSize="14"
+                                               Foreground="#FFFFFF"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Border Background="#0f3460"
+                                                CornerRadius="4"
+                                                Padding="6,2">
+                                            <TextBlock Text="{Binding SourceTypeLabel}"
+                                                       FontSize="11"
+                                                       Foreground="#8888aa" />
+                                        </Border>
+                                        <TextBlock Text="Disabled"
+                                                   FontSize="11"
+                                                   Foreground="#E05A5A"
+                                                   VerticalAlignment="Center"
+                                                   IsVisible="{Binding !IsEnabled}" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Toggle enable/disable button -->
+                                <Button Grid.Column="1"
+                                        Height="32"
+                                        MinWidth="80"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderBrush="#0f3460"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        Margin="0,0,8,0"
+                                        HorizontalContentAlignment="Stretch"
+                                        VerticalContentAlignment="Stretch"
+                                        Tag="{Binding}"
+                                        Click="OnToggleSourceClicked">
+                                    <Grid Height="32" MinWidth="80">
+                                        <TextBlock IsVisible="{Binding IsEnabled}"
+                                                   Text="Disable"
+                                                   FontSize="12"
+                                                   Foreground="#8888aa"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock IsVisible="{Binding !IsEnabled}"
+                                                   Text="Enable"
+                                                   FontSize="12"
+                                                   Foreground="#7C6FF7"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </Button>
+
+                                <!-- Remove button -->
+                                <Button Grid.Column="2"
+                                        Height="32"
+                                        Width="32"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderBrush="#0f3460"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        HorizontalContentAlignment="Stretch"
+                                        VerticalContentAlignment="Stretch"
+                                        Tag="{Binding}"
+                                        Click="OnRemoveSourceClicked">
+                                    <Grid Height="32" Width="32">
+                                        <mi:MaterialIcon Kind="TrashCanOutline"
+                                                         Width="16" Height="16"
+                                                         Foreground="#E05A5A"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center" />
+                                    </Grid>
+                                </Button>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <!-- Danger zone -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="DANGER ZONE"
+                   FontSize="11"
+                   FontWeight="SemiBold"
+                   Foreground="#E05A5A"
+                   Margin="0,24,0,8" />
+
+        <Border DockPanel.Dock="Top"
+                Background="#16213e"
+                CornerRadius="8"
+                BorderBrush="#E05A5A"
+                BorderThickness="1"
+                Padding="16,14">
+            <Grid ColumnDefinitions="*,Auto">
+
+                <!-- Description -->
+                <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="Purge Missing Games"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#FFFFFF" />
+                    <TextBlock Text="Permanently removes all games whose ROM files could not be found on disk. This cannot be undone."
+                               FontSize="12"
+                               Foreground="#8888aa"
+                               TextWrapping="Wrap" />
+
+                    <!-- Confirmation panel (shown after first click) -->
+                    <Border IsVisible="{Binding IsPurgeConfirmVisible}"
+                            Background="#2a1a1a"
+                            CornerRadius="4"
+                            Padding="10,8"
+                            Margin="0,8,0,0">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="AlertCircleOutline"
+                                                 Width="16" Height="16"
+                                                 Foreground="#E05A5A"
+                                                 VerticalAlignment="Center" />
+                                <TextBlock FontSize="13"
+                                           Foreground="#E05A5A"
+                                           VerticalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="This will permanently delete {0} missing game(s). Are you sure?">
+                                            <Binding Path="MissingGamesCount" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Height="30"
+                                        Padding="12,0"
+                                        Background="#E05A5A"
+                                        BorderThickness="0"
+                                        CornerRadius="4"
+                                        Command="{Binding PurgeMissingCommand}">
+                                    <TextBlock Text="Yes, purge"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="#FFFFFF"
+                                               VerticalAlignment="Center" />
+                                </Button>
+                                <Button Height="30"
+                                        Padding="12,0"
+                                        Background="Transparent"
+                                        BorderBrush="#555577"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        Command="{Binding CancelPurgeCommand}">
+                                    <TextBlock Text="Cancel"
+                                               FontSize="12"
+                                               Foreground="#8888aa"
+                                               VerticalAlignment="Center" />
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Purge trigger button -->
+                <Button Grid.Column="1"
+                        Height="36"
+                        Padding="12,0"
+                        Background="Transparent"
+                        BorderBrush="#E05A5A"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        VerticalAlignment="Top"
+                        Margin="16,0,0,0"
+                        IsVisible="{Binding !IsPurgeConfirmVisible}"
+                        Command="{Binding ShowPurgeConfirmCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <mi:MaterialIcon Kind="DeleteSweepOutline"
+                                         Width="16" Height="16"
+                                         Foreground="#E05A5A" />
+                        <TextBlock Text="Purge Missing..."
+                                   FontSize="13"
+                                   Foreground="#E05A5A"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+        </Border>
+
+        <!-- Empty state -->
+        <StackPanel DockPanel.Dock="Top"
+                    HorizontalAlignment="Center"
+                    Spacing="12"
+                    Margin="0,64,0,0"
+                    IsVisible="{Binding !HasSources}">
+            <mi:MaterialIcon Kind="FolderOpenOutline"
+                             Width="48" Height="48"
+                             Foreground="#8888aa"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="No ROM libraries configured"
+                       FontSize="16"
+                       Foreground="#8888aa"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="Click 'Add ROM Source' above to add a folder"
+                       FontSize="13"
+                       Foreground="#555577"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+
+    </DockPanel>
+</UserControl>
