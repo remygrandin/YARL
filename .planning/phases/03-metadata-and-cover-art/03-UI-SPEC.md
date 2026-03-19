@@ -54,12 +54,12 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Caption | 12px | 400 (regular) | 1.4 | Platform badge, game count, secondary metadata, filter chip labels, search result sub-text |
+| Caption | 12px | 400 (regular) | 1.4 | Platform badge, game count, secondary metadata, filter chip labels, search result sub-text, "No art" badge, scraping section heading |
 | Body | 14px | 400 (regular) | 1.5 | List row primary text, drawer description text, metadata field values, search result count status line |
 | Label | 16px | 600 (semibold) | 1.4 | Platform tile name, game list title text, list row game title, drawer section headings |
 | Heading | 20px | 600 (semibold) | 1.2 | GameListView header platform name, drawer game title |
 
-**Excluded from Phase 3:** 28px display size (Settings page heading only — not needed in this phase's new surfaces). 11px section labels (existing pattern for "ROM LIBRARIES" / "DANGER ZONE" caps labels — preserved as-is, not a new Phase 3 element).
+**Excluded from Phase 3:** 28px display size (Settings page heading only — not needed in this phase's new surfaces). Existing SettingsView caps labels ("ROM LIBRARIES", "DANGER ZONE") use 11px — that is a pre-existing pattern preserved as-is; Phase 3 new surfaces do not introduce any additional 11px usage.
 
 **Source:** Font sizes confirmed from DesktopShell.axaml (20/12), GameListView.axaml (20/12/16), SettingsView.axaml (28/14/13/12/11), PlatformGridView.axaml (16/12).
 
@@ -100,7 +100,7 @@ Extends existing 120×160 tile. New elements layered onto existing StackPanel+Gr
 
 - **Cover art Image control** (120×100): replaces `#0f3460` placeholder Border. `Stretch="UniformToFill"`, loaded async via `PathToImageConverter`. While loading: show `#0f3460` placeholder. On confirmed unmatched: show placeholder + "No art" badge.
 - **Platform-themed border**: 2px solid border on the cover art area (the 120×100 region), color = platform theme color. Not on the outer tile card.
-- **"No art" badge** (conditional): small pill overlay bottom-left of art area. Background `#0f3460`, text `#8888aa`, font 11px, text "No art". Visible only when `IsUnmatched = true` and `CoverArtPath = null`.
+- **"No art" badge** (conditional): small pill overlay bottom-left of art area. Background `#0f3460`, text `#8888aa`, font 12px Caption, text "No art". Visible only when `IsUnmatched = true` and `CoverArtPath = null`.
 - **Play button overlay** (bottom-right of art area): circular button, 44×44px, semi-transparent dark background (`rgba(0,0,0,0.6)` approximated as `#99000000`), white MaterialIcon `Play` 24×24. Visible on pointer-over and keyboard focus. Not visible at rest. Clicking dispatches launch command (emulator not wired until Phase 4 — button is present but no-ops with tooltip "Launch — emulator not configured yet").
 - **Favorite heart** (top-left overlay): unchanged from Phase 2 — 28×28px button, Heart icon, `BoolToHeartColorConverter`.
 - **Missing warning** (top-right overlay): unchanged from Phase 2 — 16×16 Warning icon `#E05A5A`.
@@ -178,7 +178,7 @@ Horizontal WrapPanel, Padding 8px horizontal, 4px vertical.
 
 Follows existing ScanStatusBar visual language.
 
-- Section heading: "METADATA SCRAPING" — 11px SemiBold `#555577` caps label.
+- Section heading: "METADATA SCRAPING" — 12px SemiBold `#555577` caps label.
 - Progress row: ProgressBar (accent `#7C6FF7` fill), below it: "Scraping X / Y games" Caption 12px `#8888aa`.
 - Rate-limit pause state: "Rate limit reached — resuming in Xs" Caption 12px `#8888aa` with pause icon.
 - Unmatched count badge: "X games unmatched" Caption 12px `#E05A5A` — links to a filtered unmatched list.
@@ -199,7 +199,7 @@ Follows existing ScanStatusBar visual language.
 | Error state — scrape failed (network) | "Could not reach ScreenScraper. Check your connection and try again." |
 | Error state — scrape failed (rate limit) | "Rate limit reached — scraping will resume automatically in a few minutes." |
 | Error state — image load failed | No copy — show `#0f3460` placeholder silently (image errors are non-critical) |
-| "No art" badge | "No art" (11px, low-prominence — not alarming) |
+| "No art" badge | "No art" (12px Caption, low-prominence — not alarming) |
 | Destructive — re-scrape library | "Re-scrape will overwrite auto-detected metadata. Manual overrides are preserved. Continue?" / Confirm: "Yes, re-scrape" / Cancel: "Cancel" |
 | Destructive — remove metadata override | "This will revert your manual changes for [Game Title] to the scraped version. This cannot be undone." / Confirm: "Yes, revert" / Cancel: "Keep my changes" |
 | Play button tooltip (no emulator) | "Launch — emulator not configured yet" |
@@ -207,7 +207,7 @@ Follows existing ScanStatusBar visual language.
 | Search result status | "[X] matches in [Platform Name] / [Y] total globally" |
 | "Search globally" inline link | "search globally" (lowercase, accent color) |
 | "Load more" button | "Load 50 more results" |
-| Drawer "Also known as" collapsed | "Also known as \u25b6" (right-pointing triangle, toggles to \u25bc expanded) |
+| Drawer "Also known as" collapsed | "Also known as ▶" (right-pointing triangle, toggles to ▼ expanded) |
 | Drawer region override label | "Preferred region for this game" |
 | Edit mode cancel | "Cancel" |
 | Interactive search dialog title | "Find correct match for: [filename]" |
