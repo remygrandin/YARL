@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-03-19T00:10:58.818Z"
+stopped_at: "Checkpoint 02-04-02: awaiting visual inspection of Library UI"
+last_updated: "2026-03-19T08:14:44.306Z"
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -52,6 +52,7 @@ Plan: 4 of 4
 | Phase 02-rom-scanning-and-library P01 | 2 | 2 tasks | 15 files |
 | Phase 02-rom-scanning-and-library P02 | 8 | 2 tasks | 15 files |
 | Phase 02-rom-scanning-and-library P03 | 8 | 2 tasks | 7 files |
+| Phase 02-rom-scanning-and-library P04 | 30 | 2 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,9 @@ Recent decisions affecting current work:
 - [Phase 02-rom-scanning-and-library]: ReactiveUI v23 removed RxApp static class — IScheduler injected as constructor param instead of RxApp.MainThreadScheduler
 - [Phase 02-rom-scanning-and-library]: DynamicData Group() used for cache-based grouping (vs GroupOn which operates on list changesets only)
 - [Phase 02-rom-scanning-and-library]: RxAppBuilder.CreateReactiveUIBuilder().WithCoreServices().BuildApp() via ModuleInitializer for unit test ReactiveUI bootstrap (ReactiveUI v23 breaking change)
+- [Phase 02-rom-scanning-and-library]: ItemsControl+WrapPanel used for grid layouts: ItemsRepeater and UniformGridLayout do not exist in Avalonia 11.3.12
+- [Phase 02-rom-scanning-and-library]: MaterialIconKind.GridView does not exist in Material.Icons 3.0.0; ViewGrid is the correct enum value
+- [Phase 02-rom-scanning-and-library]: AddRomSourceDialog requires explicit parameterless constructor for AVLN3001 compliance even when instantiated from code-behind
 
 ### Pending Todos
 
@@ -96,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T00:10:58.816Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-03-19T08:14:44.303Z
+Stopped at: Checkpoint 02-04-02: awaiting visual inspection of Library UI
 Resume file: None

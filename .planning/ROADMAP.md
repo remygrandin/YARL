@@ -13,7 +13,7 @@ YARL is built in seven phases that follow the natural dependency order of its fe
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project scaffolding, architecture decisions, dual view shells, CI, database migration framework (completed 2026-03-18)
-- [ ] **Phase 2: ROM Scanning and Library** - Background ROM scanner, library browsing by platform, favorites and recently played
+- [x] **Phase 2: ROM Scanning and Library** - Background ROM scanner, library browsing by platform, favorites and recently played (completed 2026-03-19)
 - [ ] **Phase 3: Metadata and Cover Art** - Rate-limited metadata scraping, cover art, search and filters
 - [ ] **Phase 4: Emulator Integration and Launch** - Emulator configuration, ROM launch with Flatpak abstraction
 - [ ] **Phase 5: Desktop UI Completion** - Full desktop mode, custom collections, controller-navigable settings
@@ -49,7 +49,7 @@ Plans:
   3. Scan progress is visible and the scan can be cancelled mid-run
   4. User can mark a game as a favorite and see their favorites filtered separately
   5. App tracks the last-launched time for each game and shows a "recently played" list
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 02-01-PLAN.md — Data foundation: Game + RomFile entities, EF Core migration, platforms.json aliases, Wave 0 test stubs
@@ -123,7 +123,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
-| 2. ROM Scanning and Library | 3/4 | In Progress|  |
+| 2. ROM Scanning and Library | 4/4 | Complete   | 2026-03-19 |
 | 3. Metadata and Cover Art | 0/TBD | Not started | - |
 | 4. Emulator Integration and Launch | 0/TBD | Not started | - |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
