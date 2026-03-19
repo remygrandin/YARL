@@ -47,8 +47,9 @@ public partial class App : Application
     {
         try
         {
-            var serviceProvider = Locator.Current.GetService<IServiceProvider>()!;
-            using var scope = serviceProvider.CreateScope();
+            var scopeFactory = Locator.Current.GetService<IServiceScopeFactory>()
+                ?? throw new InvalidOperationException("IServiceScopeFactory not registered in Splat.");
+            using var scope = scopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
             db.Database.Migrate();
             Log.Information("Database migration complete");

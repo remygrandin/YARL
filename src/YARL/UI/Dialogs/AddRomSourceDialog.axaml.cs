@@ -81,20 +81,33 @@ public partial class AddRomSourceDialog : Window
             return;
         }
 
+        if (_scopeFactory is null)
+        {
+            ShowValidation("Cannot save: DI services unavailable. Restart the app.");
+            return;
+        }
+
         var sourceType = (OsMountedRadio?.IsChecked == true)
             ? SourceType.OsMounted
             : SourceType.Local;
 
-        await SaveRomSourceAsync(path, sourceType);
+        try
+        {
+            await SaveRomSourceAsync(path, sourceType);
+        }
+        catch (Exception ex)
+        {
+            ShowValidation($"Failed to save: {ex.Message}");
+            return;
+        }
+
         OnSourceAdded?.Invoke();
         Close();
     }
 
     private async Task SaveRomSourceAsync(string path, SourceType sourceType)
     {
-        if (_scopeFactory is null) return;
-
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = _scopeFactory!.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
         db.RomSources.Add(new RomSource
         {

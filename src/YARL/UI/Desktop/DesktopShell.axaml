@@ -41,12 +41,13 @@
                         Height="44"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding LibraryViewModel.RescanCommand}"
                         IsEnabled="{Binding !LibraryViewModel.IsScanning}"
                         Margin="0,0,0,16">
-                    <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
                         <mi:MaterialIcon Kind="Sync"
                                          Width="20" Height="20"
                                          Foreground="#8888aa"
@@ -66,11 +67,12 @@
                             Height="44"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
                             Background="#0f3460"
                             BorderThickness="3,0,0,0"
                             BorderBrush="#7C6FF7"
                             Click="OnNavLibraryClicked">
-                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
                             <mi:MaterialIcon Kind="ViewGrid"
                                              Width="20" Height="20"
                                              Foreground="#FFFFFF"
@@ -87,11 +89,12 @@
                             Height="44"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
                             Background="Transparent"
                             BorderThickness="3,0,0,0"
                             BorderBrush="Transparent"
                             Click="OnNavAllGamesClicked">
-                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
                             <mi:MaterialIcon Kind="FormatListBulleted"
                                              Width="20" Height="20"
                                              Foreground="#8888aa"
@@ -108,11 +111,12 @@
                             Height="44"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
                             Background="Transparent"
                             BorderThickness="3,0,0,0"
                             BorderBrush="Transparent"
                             Click="OnNavFavoritesClicked">
-                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
                             <mi:MaterialIcon Kind="Heart"
                                              Width="20" Height="20"
                                              Foreground="#8888aa"
@@ -129,11 +133,12 @@
                             Height="44"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
                             Background="Transparent"
                             BorderThickness="3,0,0,0"
                             BorderBrush="Transparent"
                             Click="OnNavRecentlyPlayedClicked">
-                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
                             <mi:MaterialIcon Kind="History"
                                              Width="20" Height="20"
                                              Foreground="#8888aa"

@@ -52,7 +52,7 @@
                      CornerRadius="6"
                      Foreground="#FFFFFF"
                      FontSize="16"
-                     Padding="8,0"
+                     Padding="8,9"
                      Watermark="Enter folder path..."
                      TextChanged="OnPathChanged" />
             <Button Content="Browse..."
@@ -108,6 +108,8 @@
                         CornerRadius="6"
                         Foreground="#ccccdd"
                         FontSize="12"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         Click="OnCancelClicked" />
                 <Button x:Name="AddSourceButton"
                         Content="Add Source"
@@ -119,6 +121,8 @@
                         Foreground="#FFFFFF"
                         FontSize="12"
                         FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         IsEnabled="False"
                         Click="OnAddSourceClicked" />
             </StackPanel>
