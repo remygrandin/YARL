@@ -112,6 +112,12 @@ None — plan executed exactly as written. The only adjustment was the debounce 
 - AvailableGenres and AvailableDevelopers collections ready for filter dropdown binding
 - ScrapeStatus and IsMetadataOverridden flow from DB through ViewModel to UI
 
+## Self-Check: PASSED
+
+- All 5 key files exist on disk
+- All 4 task commits verified in git log (2abd6ce, 825529f, 1ee0fe1, a3b3068)
+- 58/58 tests pass (full suite green)
+
 ---
 *Phase: 03-metadata-and-cover-art*
 *Completed: 2026-03-19*
