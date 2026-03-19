@@ -67,7 +67,15 @@ Plans:
   3. User can search games by name and see results filter in real time
   4. User can filter the game list by genre, year, and developer
   5. Cover art grid loads at 60fps with 500+ items (no stutter from image decoding)
-**Plans**: TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Data foundation: Game metadata fields, GameVersion entity, ScrapeStatus enum, EF Core migration, platforms.json enrichment, Wave 0 test stubs
+- [ ] 03-02-PLAN.md — Scraping infrastructure: ScreenScraperClient, IgdbClient, ScraperPipeline, ArtCacheService, NuGet packages
+- [ ] 03-03-PLAN.md — Search/filter ViewModel: GameViewModel metadata, DynamicData search + multi-filter pipeline, GameDetailViewModel
+- [ ] 03-04-PLAN.md — Scraper integration: ScraperHostedService, DI wiring, ScrapingStatusViewModel, auto-scrape after scan
+- [ ] 03-05-PLAN.md — Game list UI: ItemsRepeater virtualized grid, cover art tiles, search bar, filter chips
+- [ ] 03-06-PLAN.md — Detail drawer + Settings: GameDetailDrawer, InteractiveSearchDialog, scraping progress panel
 
 ### Phase 4: Emulator Integration and Launch
 **Goal**: Users can launch any game in the correct emulator on both Windows and Linux, including via Flatpak on Steam Deck
@@ -124,7 +132,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. ROM Scanning and Library | 4/4 | Complete   | 2026-03-19 |
-| 3. Metadata and Cover Art | 0/TBD | Not started | - |
+| 3. Metadata and Cover Art | 0/6 | Planning complete | - |
 | 4. Emulator Integration and Launch | 0/TBD | Not started | - |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
 | 6. Fullscreen and Gamepad Mode | 0/TBD | Not started | - |
@@ -132,4 +140,4 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 
 ---
 *Roadmap created: 2026-03-18*
-*Last updated: 2026-03-19 after Phase 2 planning complete*
+*Last updated: 2026-03-19 after Phase 3 planning complete*
