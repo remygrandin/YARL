@@ -126,8 +126,9 @@ public class LibraryViewModelPhase3Tests
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(200).Ticks);
         Assert.Equal(4, vm.FilteredGames.Count);
 
-        // Advance 50 more ms (total 250ms) — filter should now apply
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
+        // Advance 100 more ms (total 300ms > 250ms debounce) — filter should now apply
+        // Extra advance flushes ObserveOn scheduled work items on the TestScheduler
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(100).Ticks);
         Assert.Single(vm.FilteredGames);
 
         vm.Dispose();

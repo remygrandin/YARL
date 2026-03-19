@@ -71,6 +71,27 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     // View mode: true = grid, false = list
     [Reactive] private bool _isGridView = true;
 
+    // Search (LIB-04)
+    [Reactive] private string? _searchText;
+    [Reactive] private int _searchMatchCount;
+    [Reactive] private int _searchGlobalMatchCount;
+
+    // Filters (LIB-05)
+    [Reactive] private string? _activeGenreFilter;
+    [Reactive] private string? _activeDeveloperFilter;
+    [Reactive] private int? _yearFilterMin;
+    [Reactive] private int? _yearFilterMax;
+
+    // Detail drawer
+    [Reactive] private GameViewModel? _selectedGame;
+    [Reactive] private bool _isDrawerOpen;
+
+    // Available filter values (populated from SourceCache)
+    private ReadOnlyObservableCollection<string> _availableGenres = new([]);
+    public ReadOnlyObservableCollection<string> AvailableGenres => _availableGenres;
+    private ReadOnlyObservableCollection<string> _availableDevelopers = new([]);
+    public ReadOnlyObservableCollection<string> AvailableDevelopers => _availableDevelopers;
+
     // Filtered games for the currently selected platform (GameListView binding)
     private ReadOnlyObservableCollection<GameViewModel> _filteredGames = new([]);
     public ReadOnlyObservableCollection<GameViewModel> FilteredGames => _filteredGames;
@@ -79,6 +100,8 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> RescanCommand { get; }
     public ReactiveCommand<GameViewModel, Unit> ToggleFavoriteCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelScanCommand { get; }
+    public ReactiveCommand<Unit, Unit> ClearFiltersCommand { get; }
+    public ReactiveCommand<GameViewModel, Unit> SelectGameCommand { get; }
 
     // Dependencies for rescan
     private readonly IServiceScopeFactory? _scopeFactory;
@@ -153,18 +176,102 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
                 .Bind(out _favorites)
                 .Subscribe());
 
-        // FilteredGames pipeline: games for selected platform, optionally filtered by favorites
-        var platformFilter = this.WhenAnyValue(x => x.SelectedPlatform, x => x.ShowFavoritesOnly, x => x.ShowAllGames)
+        // FilteredGames pipeline: combined platform + search + genre + developer + year predicates
+
+        // Platform predicate (existing logic)
+        var platformPredicate = this.WhenAnyValue(x => x.SelectedPlatform, x => x.ShowFavoritesOnly, x => x.ShowAllGames)
             .Select(t => BuildPlatformFilter(t.Item1, t.Item2, t.Item3));
+
+        // Search predicate (250ms debounce)
+        var searchPredicate = this.WhenAnyValue(x => x.SearchText)
+            .Throttle(TimeSpan.FromMilliseconds(250), _mainThreadScheduler)
+            .DistinctUntilChanged()
+            .Select<string?, Func<GameViewModel, bool>>(term =>
+                string.IsNullOrWhiteSpace(term)
+                    ? _ => true
+                    : g => g.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                           || g.Aliases.Any(a => a.Contains(term, StringComparison.OrdinalIgnoreCase)));
+
+        // Genre predicate
+        var genrePredicate = this.WhenAnyValue(x => x.ActiveGenreFilter)
+            .Select<string?, Func<GameViewModel, bool>>(genre =>
+                genre == null ? _ => true : g => g.Genre == genre);
+
+        // Developer predicate
+        var developerPredicate = this.WhenAnyValue(x => x.ActiveDeveloperFilter)
+            .Select<string?, Func<GameViewModel, bool>>(dev =>
+                dev == null ? _ => true : g => g.Developer == dev);
+
+        // Year range predicate
+        var yearPredicate = this.WhenAnyValue(x => x.YearFilterMin, x => x.YearFilterMax)
+            .Select<(int?, int?), Func<GameViewModel, bool>>(t =>
+            {
+                var (min, max) = t;
+                if (min == null && max == null) return _ => true;
+                return g =>
+                {
+                    if (g.ReleaseYear == null) return false;
+                    if (min != null && g.ReleaseYear < min) return false;
+                    if (max != null && g.ReleaseYear > max) return false;
+                    return true;
+                };
+            });
+
+        // Combine all predicates (AND logic)
+        var combinedFilter = Observable.CombineLatest(
+            platformPredicate, searchPredicate, genrePredicate, developerPredicate, yearPredicate,
+            (pf, sf, gf, df, yf) => (Func<GameViewModel, bool>)(g => pf(g) && sf(g) && gf(g) && df(g) && yf(g)));
 
         _disposables.Add(
             _gamesSource.Connect()
                 .AutoRefresh(g => g.IsFavorite)
-                .Filter(platformFilter)
+                .Filter(combinedFilter)
                 .SortBy(g => g.Title)
                 .ObserveOn(_mainThreadScheduler)
                 .Bind(out _filteredGames)
                 .Subscribe());
+
+        // Available genres derived collection
+        _disposables.Add(
+            _gamesSource.Connect()
+                .AutoRefresh(g => g.Genre)
+                .Filter(g => !string.IsNullOrEmpty(g.Genre))
+                .DistinctValues(g => g.Genre!)
+                .Sort(Comparer<string>.Default)
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _availableGenres)
+                .Subscribe());
+
+        // Available developers derived collection
+        _disposables.Add(
+            _gamesSource.Connect()
+                .AutoRefresh(g => g.Developer)
+                .Filter(g => !string.IsNullOrEmpty(g.Developer))
+                .DistinctValues(g => g.Developer!)
+                .Sort(Comparer<string>.Default)
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _availableDevelopers)
+                .Subscribe());
+
+        // Search match count
+        _disposables.Add(
+            this.WhenAnyValue(x => x.SearchText)
+                .Throttle(TimeSpan.FromMilliseconds(250), _mainThreadScheduler)
+                .Subscribe(term =>
+                {
+                    if (string.IsNullOrWhiteSpace(term))
+                    {
+                        SearchMatchCount = 0;
+                        SearchGlobalMatchCount = 0;
+                    }
+                    else
+                    {
+                        SearchMatchCount = _filteredGames.Count;
+                        SearchGlobalMatchCount = _gamesSource.Items
+                            .Count(g => g.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                                || g.Aliases.Any(a => a.Contains(term, StringComparison.OrdinalIgnoreCase)));
+                    }
+                }));
 
         // Wire GameListTitle from platform selection and all-games mode
         _disposables.Add(
@@ -205,6 +312,21 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
         CancelScanCommand = ReactiveCommand.Create(() => _scanCts?.Cancel(), canCancel);
         _disposables.Add(CancelScanCommand.ThrownExceptions
             .Subscribe(ex => Log.Error(ex, "[LibraryViewModel] CancelScanCommand threw")));
+
+        ClearFiltersCommand = ReactiveCommand.Create(() =>
+        {
+            ActiveGenreFilter = null;
+            ActiveDeveloperFilter = null;
+            YearFilterMin = null;
+            YearFilterMax = null;
+            SearchText = null;
+        });
+
+        SelectGameCommand = ReactiveCommand.Create<GameViewModel>(game =>
+        {
+            SelectedGame = game;
+            IsDrawerOpen = game != null;
+        });
 
         // Wire visibility computed properties from collection count changes + scanning state
         _disposables.Add(
