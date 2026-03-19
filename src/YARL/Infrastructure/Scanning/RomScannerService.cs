@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using YARL.Domain.Enums;
 using YARL.Domain.Interfaces;
 using YARL.Domain.Models;
@@ -26,12 +27,17 @@ public class RomScannerService
         IProgress<ScanUpdate>? progress = null,
         CancellationToken ct = default)
     {
+        Log.Debug("[ScanAllAsync] START");
         if (ct.IsCancellationRequested)
             return new ScanReport { CompletedAt = DateTime.UtcNow };
 
         var sources = await _db.RomSources
             .Where(s => s.IsEnabled)
             .ToListAsync(ct);
+
+        Log.Information("[ScanAllAsync] Found {Count} enabled ROM source(s)", sources.Count);
+        foreach (var s in sources)
+            Log.Debug("[ScanAllAsync]   source id={Id} path={Path} type={Type}", s.Id, s.Path, s.SourceType);
 
         int totalGamesAdded = 0;
         int totalGamesRemoved = 0;
@@ -44,13 +50,18 @@ public class RomScannerService
                 break;
 
             var provider = _providers.FirstOrDefault(p => p.CanHandle(source));
+            Log.Debug("[ScanAllAsync] source={Path} provider={Provider}", source.Path, provider?.GetType().Name ?? "NONE");
             if (provider is null)
+            {
+                Log.Warning("[ScanAllAsync] No provider can handle source id={Id} type={Type}", source.Id, source.SourceType);
                 continue;
+            }
 
             // Collect all files from the source
             var allFiles = new List<string>();
             await foreach (var file in provider.EnumerateRomsAsync(source, ct))
                 allFiles.Add(file);
+            Log.Information("[ScanAllAsync] Enumerated {Count} files from source path={Path}", allFiles.Count, source.Path);
 
             if (ct.IsCancellationRequested)
                 break;
@@ -76,6 +87,7 @@ public class RomScannerService
                     break;
 
                 var platform = _registry.Resolve(folderName);
+                Log.Debug("[ScanAllAsync] folder={Folder} → platform={Platform}", folderName, platform?.Name ?? "NO MATCH");
                 if (platform is null)
                 {
                     unmatchedFolders.Add(folderName);

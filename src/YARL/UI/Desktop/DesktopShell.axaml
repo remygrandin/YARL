@@ -36,28 +36,32 @@
                                VerticalAlignment="Center" />
                 </Border>
 
-                <!-- Rescan button at bottom -->
+                <!-- Rescan button at bottom.
+                     Content is wrapped in an explicit Grid so centering doesn't depend
+                     on ContentPresenter/theme behavior (which varies across Avalonia themes). -->
                 <Button DockPanel.Dock="Bottom"
                         Height="44"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
                         Padding="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding LibraryViewModel.RescanCommand}"
                         IsEnabled="{Binding !LibraryViewModel.IsScanning}"
                         Margin="0,0,0,16">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
-                        <mi:MaterialIcon Kind="Sync"
-                                         Width="20" Height="20"
-                                         Foreground="#8888aa"
-                                         HorizontalAlignment="Center" />
-                        <TextBlock Text="Rescan"
-                                   FontSize="12"
-                                   Foreground="#8888aa"
-                                   HorizontalAlignment="Center" />
-                    </StackPanel>
+                    <Grid Width="120" Height="44">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+                            <mi:MaterialIcon Kind="Sync"
+                                             Width="20" Height="20"
+                                             Foreground="#8888aa"
+                                             HorizontalAlignment="Center" />
+                            <TextBlock Text="Rescan"
+                                       FontSize="12"
+                                       Foreground="#8888aa"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
                 </Button>
 
                 <!-- Nav items -->
@@ -66,93 +70,101 @@
                     <!-- Library nav item -->
                     <Button x:Name="NavLibrary"
                             Height="44"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
                             Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
                             Background="#0f3460"
                             BorderThickness="3,0,0,0"
                             BorderBrush="#7C6FF7"
                             Click="OnNavLibraryClicked">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
-                            <mi:MaterialIcon Kind="ViewGrid"
-                                             Width="20" Height="20"
-                                             Foreground="#FFFFFF"
-                                             HorizontalAlignment="Center" />
-                            <TextBlock Text="Library"
-                                       FontSize="12"
-                                       Foreground="#FFFFFF"
-                                       HorizontalAlignment="Center" />
-                        </StackPanel>
+                        <Grid Width="120" Height="44">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+                                <mi:MaterialIcon Kind="ViewGrid"
+                                                 Width="20" Height="20"
+                                                 Foreground="#FFFFFF"
+                                                 HorizontalAlignment="Center" />
+                                <TextBlock Text="Library"
+                                           FontSize="12"
+                                           Foreground="#FFFFFF"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
                     </Button>
 
                     <!-- All Games nav item -->
                     <Button x:Name="NavAllGames"
                             Height="44"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
                             Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="3,0,0,0"
                             BorderBrush="Transparent"
                             Click="OnNavAllGamesClicked">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
-                            <mi:MaterialIcon Kind="FormatListBulleted"
-                                             Width="20" Height="20"
-                                             Foreground="#8888aa"
-                                             HorizontalAlignment="Center" />
-                            <TextBlock Text="All Games"
-                                       FontSize="12"
-                                       Foreground="#8888aa"
-                                       HorizontalAlignment="Center" />
-                        </StackPanel>
+                        <Grid Width="120" Height="44">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+                                <mi:MaterialIcon Kind="FormatListBulleted"
+                                                 Width="20" Height="20"
+                                                 Foreground="#8888aa"
+                                                 HorizontalAlignment="Center" />
+                                <TextBlock Text="All Games"
+                                           FontSize="12"
+                                           Foreground="#8888aa"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
                     </Button>
 
                     <!-- Favorites nav item -->
                     <Button x:Name="NavFavorites"
                             Height="44"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
                             Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="3,0,0,0"
                             BorderBrush="Transparent"
                             Click="OnNavFavoritesClicked">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
-                            <mi:MaterialIcon Kind="Heart"
-                                             Width="20" Height="20"
-                                             Foreground="#8888aa"
-                                             HorizontalAlignment="Center" />
-                            <TextBlock Text="Favorites"
-                                       FontSize="12"
-                                       Foreground="#8888aa"
-                                       HorizontalAlignment="Center" />
-                        </StackPanel>
+                        <Grid Width="120" Height="44">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+                                <mi:MaterialIcon Kind="Heart"
+                                                 Width="20" Height="20"
+                                                 Foreground="#8888aa"
+                                                 HorizontalAlignment="Center" />
+                                <TextBlock Text="Favorites"
+                                           FontSize="12"
+                                           Foreground="#8888aa"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
                     </Button>
 
                     <!-- Recently Played nav item -->
                     <Button x:Name="NavRecentlyPlayed"
                             Height="44"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
                             Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="3,0,0,0"
                             BorderBrush="Transparent"
                             Click="OnNavRecentlyPlayedClicked">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
-                            <mi:MaterialIcon Kind="History"
-                                             Width="20" Height="20"
-                                             Foreground="#8888aa"
-                                             HorizontalAlignment="Center" />
-                            <TextBlock Text="Recent"
-                                       FontSize="12"
-                                       Foreground="#8888aa"
-                                       HorizontalAlignment="Center" />
-                        </StackPanel>
+                        <Grid Width="120" Height="44">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+                                <mi:MaterialIcon Kind="History"
+                                                 Width="20" Height="20"
+                                                 Foreground="#8888aa"
+                                                 HorizontalAlignment="Center" />
+                                <TextBlock Text="Recent"
+                                           FontSize="12"
+                                           Foreground="#8888aa"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
                     </Button>
 
                 </StackPanel>

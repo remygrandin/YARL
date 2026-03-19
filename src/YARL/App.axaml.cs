@@ -23,39 +23,41 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var mainVm = Locator.Current.GetService<MainViewModel>()!;
+            var libraryVm = mainVm.LibraryViewModel;
 
-            // Run database migration
-            RunMigrations();
+            // Run database migration via LibraryViewModel (IServiceScopeFactory not resolvable from Splat)
+            RunMigrations(libraryVm);
 
             // Determine startup mode
             var uiMode = DetermineStartupMode();
             Log.Information("Starting in {UIMode} mode", uiMode);
 
-            // Create the appropriate shell
+            // Create the appropriate shell first so UI is ready before scan fires
             desktop.MainWindow = uiMode == UIMode.Fullscreen
                 ? new FullscreenShell { DataContext = mainVm }
                 : new DesktopShell { DataContext = mainVm };
+
+            // Kick off initial scan (RomScanHostedService won't auto-start without IHost)
+            Log.Information("[App] Firing startup RescanCommand");
+            _ = libraryVm.RescanCommand.Execute()
+                .Subscribe(
+                    _ => Log.Information("[App] Startup scan completed"),
+                    ex => Log.Error(ex, "[App] Startup scan threw"));
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static void RunMigrations()
+    private static void RunMigrations(LibraryViewModel libraryVm)
     {
         try
         {
-            // IServiceScopeFactory is a framework-internal MS DI service — Splat's adapter
-            // does not expose it. We route through LibraryViewModel which receives it via
-            // proper DI constructor injection in Program.cs.
-            var libraryVm = Locator.Current.GetService<LibraryViewModel>()
-                ?? throw new InvalidOperationException("LibraryViewModel not registered in Splat.");
             libraryVm.RunMigration();
-            Log.Information("Database migration complete");
+            Log.Information("[App] Database migration complete");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Database migration failed");
-            // Don't crash on migration failure — log and continue
+            Log.Error(ex, "[App] Database migration failed");
         }
     }
 

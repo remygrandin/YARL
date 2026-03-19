@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using Serilog;
 using YARL.Domain.Enums;
 using YARL.Domain.Models;
 using YARL.Infrastructure.Persistence;
@@ -79,7 +80,13 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     {
         _platformRegistry = platformRegistry;
         _scopeFactory = scopeFactory;
-        _mainThreadScheduler = mainThreadScheduler ?? CurrentThreadScheduler.Instance;
+        // Capture the Avalonia UI SynchronizationContext so ObserveOn() dispatches to the UI thread.
+        // LibraryViewModel is constructed in OnFrameworkInitializationCompleted where Avalonia's
+        // DispatcherSynchronizationContext is already installed on the current thread.
+        // RxApp.MainThreadScheduler was removed in ReactiveUI v23; AvaloniaScheduler isn't in scope —
+        // SynchronizationContextScheduler is the standard Rx.NET way to wrap any sync context.
+        var uiSyncContext = SynchronizationContext.Current ?? new SynchronizationContext();
+        _mainThreadScheduler = mainThreadScheduler ?? new SynchronizationContextScheduler(uiSyncContext);
 
         // AllGames pipeline
         _disposables.Add(
@@ -150,14 +157,20 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
         // Commands
         var canRescan = this.WhenAnyValue(x => x.IsScanning).Select(s => !s);
         RescanCommand = ReactiveCommand.CreateFromTask(RescanAsync, canRescan);
+        _disposables.Add(RescanCommand.ThrownExceptions
+            .Subscribe(ex => Log.Error(ex, "[LibraryViewModel] RescanCommand threw an unhandled exception")));
 
         ToggleFavoriteCommand = ReactiveCommand.Create<GameViewModel>(gvm =>
         {
             gvm.IsFavorite = !gvm.IsFavorite;
         });
+        _disposables.Add(ToggleFavoriteCommand.ThrownExceptions
+            .Subscribe(ex => Log.Error(ex, "[LibraryViewModel] ToggleFavoriteCommand threw")));
 
         var canCancel = this.WhenAnyValue(x => x.IsScanning);
         CancelScanCommand = ReactiveCommand.Create(() => _scanCts?.Cancel(), canCancel);
+        _disposables.Add(CancelScanCommand.ThrownExceptions
+            .Subscribe(ex => Log.Error(ex, "[LibraryViewModel] CancelScanCommand threw")));
 
         // Wire visibility computed properties from collection count changes + scanning state
         _disposables.Add(
@@ -187,43 +200,65 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
 
     private async Task RescanAsync()
     {
+        Log.Information("[RescanAsync] START — _scopeFactory={HasFactory}", _scopeFactory is not null);
         if (_scopeFactory is null)
+        {
+            Log.Warning("[RescanAsync] Aborting: _scopeFactory is null (DI not wired)");
             return;
+        }
 
         _scanCts = new CancellationTokenSource();
         IsScanning = true;
         ScanProgressText = "Scanning ROM library...";
+        Log.Debug("[RescanAsync] IsScanning=true, starting scan scope");
 
         try
         {
             using var scope = _scopeFactory.CreateScope();
             var scanner = scope.ServiceProvider.GetRequiredService<RomScannerService>();
             var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+            Log.Debug("[RescanAsync] Scanner and DbContext resolved from scope");
 
             var progress = new Progress<ScanUpdate>(update =>
             {
                 if (update.IsComplete)
+                {
                     ScanProgressText = $"Scan complete: {update.GamesFound} games found.";
+                    Log.Information("[RescanAsync] Progress: COMPLETE — {GamesFound} games", update.GamesFound);
+                }
                 else
+                {
                     ScanProgressText = $"Scanning {update.PlatformName}: {update.TotalProcessed} files processed...";
+                    Log.Debug("[RescanAsync] Progress: platform={Platform} processed={Count}", update.PlatformName, update.TotalProcessed);
+                }
             });
 
             var report = await scanner.ScanAllAsync(progress, _scanCts.Token);
+            Log.Information("[RescanAsync] ScanAllAsync finished — added={Added} removed={Removed} unmatched={Unmatched}",
+                report.GamesAdded, report.GamesRemoved, report.UnmatchedFolders?.Count ?? 0);
 
             await LoadGamesFromDbAsync(db);
+            Log.Information("[RescanAsync] LoadGamesFromDbAsync complete — {Count} games in SourceCache", _gamesSource.Count);
 
             StatusMessage = $"Library ready. {report.GamesAdded} games discovered.";
             ScanProgressText = $"Scan complete. {report.GamesAdded} games added, {report.GamesRemoved} removed.";
         }
         catch (OperationCanceledException)
         {
+            Log.Information("[RescanAsync] Scan was cancelled by user");
             ScanProgressText = "Scan cancelled.";
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "[RescanAsync] Unhandled exception during scan");
+            ScanProgressText = $"Scan error: {ex.Message}";
         }
         finally
         {
             IsScanning = false;
             _scanCts?.Dispose();
             _scanCts = null;
+            Log.Debug("[RescanAsync] END — IsScanning=false");
         }
     }
 
@@ -277,11 +312,18 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     /// </summary>
     public async Task<bool> AddRomSourceAsync(string path, SourceType sourceType)
     {
-        if (_scopeFactory is null) return false;
+        Log.Information("[AddRomSourceAsync] path={Path} type={Type} _scopeFactory={HasFactory}",
+            path, sourceType, _scopeFactory is not null);
+        if (_scopeFactory is null)
+        {
+            Log.Warning("[AddRomSourceAsync] Aborting: _scopeFactory is null");
+            return false;
+        }
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
         db.RomSources.Add(new RomSource { Path = path, SourceType = sourceType, IsEnabled = true });
         await db.SaveChangesAsync();
+        Log.Information("[AddRomSourceAsync] ROM source saved to DB");
         return true;
     }
 

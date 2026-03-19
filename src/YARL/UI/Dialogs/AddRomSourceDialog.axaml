@@ -16,7 +16,7 @@
         <StackPanel Margin="24">
 
             <!-- Title row -->
-            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,0">
+            <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Grid.Column="0"
                            Text="Add ROM Source"
                            FontSize="24"
@@ -24,10 +24,13 @@
                            Foreground="#FFFFFF"
                            VerticalAlignment="Center" />
                 <Button Grid.Column="1"
+                        Padding="8,4"
                         Background="Transparent"
                         BorderThickness="0"
                         Foreground="#8888aa"
                         FontSize="16"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
                         Click="OnCancelClicked"
                         VerticalAlignment="Top">
                     ✕
@@ -44,6 +47,7 @@
                        FontSize="12"
                        Foreground="#8888aa"
                        Margin="0,0,0,4" />
+            <!-- Padding="8,9" centers a 16px font vertically inside a 40px TextBox -->
             <TextBox x:Name="PathTextBox"
                      Height="40"
                      Background="#16213e"
@@ -55,14 +59,16 @@
                      Padding="8,9"
                      Watermark="Enter folder path..."
                      TextChanged="OnPathChanged" />
-            <Button Content="Browse..."
+            <Button Padding="0"
                     Background="Transparent"
                     BorderThickness="0"
-                    Foreground="#8888aa"
-                    FontSize="12"
                     HorizontalAlignment="Right"
                     Margin="0,4,0,0"
-                    Click="OnBrowseClicked" />
+                    Click="OnBrowseClicked">
+                <TextBlock Text="Browse..."
+                           FontSize="12"
+                           Foreground="#8888aa" />
+            </Button>
 
             <!-- Source type field -->
             <TextBlock Text="Source Type"
@@ -86,45 +92,58 @@
             <TextBlock x:Name="ValidationMessage"
                        FontSize="12"
                        Foreground="#E05A5A"
-                       Height="20"
+                       MinHeight="20"
                        Margin="0,8,0,0"
-                       IsVisible="False" />
+                       IsVisible="False"
+                       TextWrapping="Wrap" />
 
             <!-- Divider -->
             <Border Height="1"
                     Background="#0f3460"
                     Margin="0,16,0,16" />
 
-            <!-- Action row -->
+            <!-- Action row — Grid inside each button bypasses ContentPresenter theme issues -->
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Spacing="8">
-                <Button Content="Cancel"
-                        Height="36"
+                <Button Height="36"
                         MinWidth="80"
+                        Padding="0"
                         Background="#16213e"
                         BorderBrush="#0f3460"
                         BorderThickness="1"
                         CornerRadius="6"
-                        Foreground="#ccccdd"
-                        FontSize="12"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Click="OnCancelClicked" />
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        Click="OnCancelClicked">
+                    <Grid Height="36" MinWidth="80">
+                        <TextBlock Text="Cancel"
+                                   FontSize="12"
+                                   Foreground="#ccccdd"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                </Button>
                 <Button x:Name="AddSourceButton"
-                        Content="Add Source"
                         Height="36"
                         MinWidth="120"
+                        Padding="0"
                         Background="#7C6FF7"
                         BorderThickness="0"
                         CornerRadius="6"
-                        Foreground="#FFFFFF"
-                        FontSize="12"
-                        FontWeight="SemiBold"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
                         IsEnabled="False"
-                        Click="OnAddSourceClicked" />
+                        Click="OnAddSourceClicked">
+                    <Grid Height="36" MinWidth="120">
+                        <TextBlock Text="Add Source"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="#FFFFFF"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                </Button>
             </StackPanel>
 
         </StackPanel>

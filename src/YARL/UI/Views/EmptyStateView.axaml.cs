@@ -15,24 +15,34 @@ public partial class EmptyStateView : UserControl
 
     private async void OnAddRomSourceClicked(object? sender, RoutedEventArgs e)
     {
+        Log.Debug("[EmptyStateView] Add ROM Source clicked");
         var window = TopLevel.GetTopLevel(this) as Window;
-        if (window is null) return;
+        if (window is null)
+        {
+            Log.Warning("[EmptyStateView] TopLevel is null — cannot open dialog");
+            return;
+        }
 
-        if (DataContext is not LibraryViewModel libraryVm) return;
+        if (DataContext is not LibraryViewModel libraryVm)
+        {
+            Log.Warning("[EmptyStateView] DataContext is not LibraryViewModel (was: {Type})", DataContext?.GetType().Name ?? "null");
+            return;
+        }
 
+        Log.Debug("[EmptyStateView] Opening AddRomSourceDialog");
         var dialog = new AddRomSourceDialog
         {
-            // Route persistence through the ViewModel — avoids Splat resolving
-            // framework-internal IServiceScopeFactory which returns null in this app.
             SaveSource = libraryVm.AddRomSourceAsync,
             OnSourceAdded = () =>
             {
+                Log.Information("[EmptyStateView] Source saved — firing RescanCommand");
                 libraryVm.RescanCommand.Execute().Subscribe(
-                    _ => { },
-                    ex => Log.Error(ex, "Rescan failed after adding ROM source"));
+                    _ => Log.Debug("[EmptyStateView] RescanCommand completed"),
+                    ex => Log.Error(ex, "[EmptyStateView] RescanCommand threw after add"));
             }
         };
 
         await dialog.ShowDialog(window);
+        Log.Debug("[EmptyStateView] Dialog closed");
     }
 }
