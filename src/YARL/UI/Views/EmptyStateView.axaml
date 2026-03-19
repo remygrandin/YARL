@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="YARL.UI.Views.EmptyStateView"
+             x:DataType="vm:LibraryViewModel">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <!-- Folder icon -->
+            <mi:MaterialIcon Kind="FolderOpen"
+                             Width="64" Height="64"
+                             Foreground="#8888aa"
+                             HorizontalAlignment="Center" />
+
+            <!-- Heading -->
+            <TextBlock Text="Your library is empty"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="#FFFFFF"
+                       HorizontalAlignment="Center"
+                       Margin="0,24,0,0" />
+
+            <!-- Body -->
+            <TextBlock Text="Add your ROM folders to start browsing your collection."
+                       FontSize="16"
+                       Foreground="#ccccdd"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       Margin="0,8,0,0" />
+
+            <!-- CTA Button -->
+            <Button HorizontalAlignment="Center"
+                    MinWidth="200"
+                    Height="44"
+                    CornerRadius="8"
+                    Background="#7C6FF7"
+                    Foreground="#FFFFFF"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Margin="0,32,0,0"
+                    Click="OnAddRomSourceClicked">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="FolderPlus"
+                                     Width="20" Height="20"
+                                     Foreground="#FFFFFF"
+                                     VerticalAlignment="Center" />
+                    <TextBlock Text="Add ROM Source"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

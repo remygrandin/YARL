@@ -1,20 +1,156 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:views="clr-namespace:YARL.UI.Views"
         x:Class="YARL.UI.Desktop.DesktopShell"
         x:DataType="vm:MainViewModel"
         Title="YARL - Yet Another Retro Launcher"
         Width="1280" Height="720"
-        MinWidth="800" MinHeight="600">
+        MinWidth="800" MinHeight="600"
+        Background="#1a1a2e"
+        FontFamily="Segoe UI, Inter, system-ui, -apple-system, sans-serif">
+
     <DockPanel>
-        <TextBlock DockPanel.Dock="Top"
-                   Text="YARL — Desktop Mode"
-                   FontSize="24" FontWeight="Bold"
-                   Margin="20,15"
-                   Foreground="{DynamicResource SystemAccentColor}" />
-        <TextBlock Text="{Binding LibraryViewModel.StatusMessage}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   FontSize="16" />
+        <!-- Status bar docked to bottom -->
+        <views:ScanStatusBar DockPanel.Dock="Bottom"
+                             DataContext="{Binding LibraryViewModel}" />
+
+        <!-- Left sidebar -->
+        <Border DockPanel.Dock="Left"
+                Width="120"
+                Background="#1a1a2e"
+                BorderBrush="#0f3460"
+                BorderThickness="0,0,1,0">
+            <DockPanel>
+                <!-- App logo area -->
+                <Border DockPanel.Dock="Top"
+                        Height="56"
+                        BorderBrush="#0f3460"
+                        BorderThickness="0,0,0,1">
+                    <TextBlock Text="YARL"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="#FFFFFF"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <!-- Rescan button at bottom -->
+                <Button DockPanel.Dock="Bottom"
+                        Height="44"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding LibraryViewModel.RescanCommand}"
+                        IsEnabled="{Binding !LibraryViewModel.IsScanning}"
+                        Margin="0,0,0,16">
+                    <StackPanel HorizontalAlignment="Center" Spacing="2">
+                        <mi:MaterialIcon Kind="Sync"
+                                         Width="20" Height="20"
+                                         Foreground="#8888aa"
+                                         HorizontalAlignment="Center" />
+                        <TextBlock Text="Rescan"
+                                   FontSize="12"
+                                   Foreground="#8888aa"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Nav items -->
+                <StackPanel DockPanel.Dock="Top" Spacing="0">
+
+                    <!-- Library nav item -->
+                    <Button x:Name="NavLibrary"
+                            Height="44"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Background="#0f3460"
+                            BorderThickness="3,0,0,0"
+                            BorderBrush="#7C6FF7"
+                            Click="OnNavLibraryClicked">
+                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                            <mi:MaterialIcon Kind="ViewGrid"
+                                             Width="20" Height="20"
+                                             Foreground="#FFFFFF"
+                                             HorizontalAlignment="Center" />
+                            <TextBlock Text="Library"
+                                       FontSize="12"
+                                       Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- All Games nav item -->
+                    <Button x:Name="NavAllGames"
+                            Height="44"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="3,0,0,0"
+                            BorderBrush="Transparent"
+                            Click="OnNavAllGamesClicked">
+                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                            <mi:MaterialIcon Kind="FormatListBulleted"
+                                             Width="20" Height="20"
+                                             Foreground="#8888aa"
+                                             HorizontalAlignment="Center" />
+                            <TextBlock Text="All Games"
+                                       FontSize="12"
+                                       Foreground="#8888aa"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Favorites nav item -->
+                    <Button x:Name="NavFavorites"
+                            Height="44"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="3,0,0,0"
+                            BorderBrush="Transparent"
+                            Click="OnNavFavoritesClicked">
+                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                            <mi:MaterialIcon Kind="Heart"
+                                             Width="20" Height="20"
+                                             Foreground="#8888aa"
+                                             HorizontalAlignment="Center" />
+                            <TextBlock Text="Favorites"
+                                       FontSize="12"
+                                       Foreground="#8888aa"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Recently Played nav item -->
+                    <Button x:Name="NavRecentlyPlayed"
+                            Height="44"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="3,0,0,0"
+                            BorderBrush="Transparent"
+                            Click="OnNavRecentlyPlayedClicked">
+                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                            <mi:MaterialIcon Kind="History"
+                                             Width="20" Height="20"
+                                             Foreground="#8888aa"
+                                             HorizontalAlignment="Center" />
+                            <TextBlock Text="Recent"
+                                       FontSize="12"
+                                       Foreground="#8888aa"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Main content area -->
+        <ContentControl x:Name="ContentArea"
+                        Background="#1a1a2e" />
     </DockPanel>
 </Window>

@@ -1,0 +1,207 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:conv="clr-namespace:YARL.UI.Converters"
+             x:Class="YARL.UI.Views.GameListView"
+             x:DataType="vm:LibraryViewModel">
+
+    <UserControl.Resources>
+        <conv:BoolToOpacityConverter x:Key="BoolToOpacity" />
+        <conv:GameStatusToVisibilityConverter x:Key="StatusToVisibility" />
+        <conv:BoolToHeartColorConverter x:Key="HeartColor" />
+    </UserControl.Resources>
+
+    <DockPanel>
+        <!-- Header bar -->
+        <Border DockPanel.Dock="Top"
+                Background="#1a1a2e"
+                Padding="16,8">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+
+                <!-- Back button -->
+                <Button Grid.Column="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="#FFFFFF"
+                        Click="OnBackClicked"
+                        ToolTip.Tip="Back to platforms">
+                    <mi:MaterialIcon Kind="ChevronLeft"
+                                     Width="20" Height="20"
+                                     Foreground="#FFFFFF" />
+                </Button>
+
+                <!-- Platform name -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding SelectedPlatform.Name}"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF"
+                           VerticalAlignment="Center"
+                           Margin="8,0,0,0" />
+
+                <!-- Game count -->
+                <TextBlock Grid.Column="2"
+                           Text="{Binding SelectedPlatform.GameCount, StringFormat=' — {0} games'}"
+                           FontSize="12"
+                           Foreground="#8888aa"
+                           VerticalAlignment="Center"
+                           Margin="4,0,0,0" />
+
+                <!-- Favorites filter toggle -->
+                <ToggleButton Grid.Column="3"
+                              x:Name="FavoritesToggle"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              IsCheckedChanged="OnFavoritesToggleChanged"
+                              ToolTip.Tip="Show favorites only">
+                    <mi:MaterialIcon Kind="Heart"
+                                     Width="20" Height="20"
+                                     Foreground="#8888aa" />
+                </ToggleButton>
+
+                <!-- Grid view toggle -->
+                <ToggleButton Grid.Column="4"
+                              x:Name="GridToggle"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              IsChecked="True"
+                              IsCheckedChanged="OnGridToggleChanged"
+                              ToolTip.Tip="Grid view">
+                    <mi:MaterialIcon Kind="ViewGrid"
+                                     Width="20" Height="20"
+                                     Foreground="#FFFFFF" />
+                </ToggleButton>
+
+                <!-- List view toggle -->
+                <ToggleButton Grid.Column="5"
+                              x:Name="ListToggle"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              IsCheckedChanged="OnListToggleChanged"
+                              ToolTip.Tip="List view">
+                    <mi:MaterialIcon Kind="FormatListBulleted"
+                                     Width="20" Height="20"
+                                     Foreground="#8888aa" />
+                </ToggleButton>
+            </Grid>
+        </Border>
+
+        <!-- Content area -->
+        <ScrollViewer>
+            <Grid>
+                <!-- Grid mode -->
+                <ItemsControl x:Name="GridRepeater"
+                              ItemsSource="{Binding FilteredGames}"
+                              Margin="16,16,16,16"
+                              IsVisible="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"
+                                       ItemWidth="136"
+                                       ItemHeight="176" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:GameViewModel">
+                            <Border Width="120" Height="160"
+                                    CornerRadius="6"
+                                    Background="#16213e"
+                                    ClipToBounds="True">
+                                <Grid>
+                                    <StackPanel>
+                                        <!-- Art placeholder -->
+                                        <Border Width="120" Height="100"
+                                                Background="#0f3460" />
+
+                                        <!-- Title -->
+                                        <TextBlock Text="{Binding Title}"
+                                                   FontSize="12"
+                                                   Foreground="#FFFFFF"
+                                                   TextWrapping="Wrap"
+                                                   MaxLines="2"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Margin="6,4,6,2" />
+
+                                        <!-- Platform badge -->
+                                        <TextBlock Text="{Binding PlatformId}"
+                                                   FontSize="12"
+                                                   Foreground="#8888aa"
+                                                   Margin="6,0,6,4" />
+                                    </StackPanel>
+
+                                    <!-- Missing warning icon -->
+                                    <mi:MaterialIcon Kind="Warning"
+                                                     Width="16" Height="16"
+                                                     Foreground="#E05A5A"
+                                                     HorizontalAlignment="Right"
+                                                     VerticalAlignment="Top"
+                                                     Margin="0,4,4,0"
+                                                     IsVisible="{Binding Status, Converter={StaticResource StatusToVisibility}}"
+                                                     ToolTip.Tip="File not found — reconnect your ROM source to restore" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- List mode -->
+                <ItemsControl x:Name="ListRepeater"
+                              ItemsSource="{Binding FilteredGames}"
+                              Margin="0"
+                              IsVisible="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:GameViewModel">
+                            <Border Height="56"
+                                    Background="Transparent"
+                                    Padding="16,8">
+                                <Border.Styles>
+                                    <Style Selector="Border:pointerover">
+                                        <Setter Property="Background" Value="#0f3460" />
+                                    </Style>
+                                </Border.Styles>
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                    <!-- Thumbnail placeholder -->
+                                    <Border Grid.Column="0"
+                                            Width="40" Height="40"
+                                            CornerRadius="4"
+                                            Background="#0f3460"
+                                            VerticalAlignment="Center" />
+
+                                    <!-- Game title -->
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Title}"
+                                               FontSize="16"
+                                               Foreground="#FFFFFF"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="12,0,8,0" />
+
+                                    <!-- Platform badge -->
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding PlatformId}"
+                                               FontSize="12"
+                                               Foreground="#8888aa"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0" />
+
+                                    <!-- Favorite heart indicator -->
+                                    <mi:MaterialIcon Grid.Column="3"
+                                                     Kind="Heart"
+                                                     Width="20" Height="20"
+                                                     Foreground="{Binding IsFavorite, Converter={StaticResource HeartColor}}"
+                                                     VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

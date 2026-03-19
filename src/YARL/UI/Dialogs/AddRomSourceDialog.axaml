@@ -1,0 +1,128 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="YARL.UI.Dialogs.AddRomSourceDialog"
+        Title="Add ROM Source"
+        Width="480"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="#1a1a2e"
+        ShowInTaskbar="False"
+        SystemDecorations="BorderOnly"
+        KeyDown="OnKeyDown">
+
+    <Border BorderBrush="#0f3460"
+            BorderThickness="1">
+        <StackPanel Margin="24">
+
+            <!-- Title row -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,0">
+                <TextBlock Grid.Column="0"
+                           Text="Add ROM Source"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF"
+                           VerticalAlignment="Center" />
+                <Button Grid.Column="1"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="#8888aa"
+                        FontSize="16"
+                        Click="OnCancelClicked"
+                        VerticalAlignment="Top">
+                    ✕
+                </Button>
+            </Grid>
+
+            <!-- Divider -->
+            <Border Height="1"
+                    Background="#0f3460"
+                    Margin="0,16,0,16" />
+
+            <!-- Path field -->
+            <TextBlock Text="Folder Path"
+                       FontSize="12"
+                       Foreground="#8888aa"
+                       Margin="0,0,0,4" />
+            <TextBox x:Name="PathTextBox"
+                     Height="40"
+                     Background="#16213e"
+                     BorderBrush="#0f3460"
+                     BorderThickness="1"
+                     CornerRadius="6"
+                     Foreground="#FFFFFF"
+                     FontSize="16"
+                     Padding="8,0"
+                     Watermark="Enter folder path..."
+                     TextChanged="OnPathChanged" />
+            <Button Content="Browse..."
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="#8888aa"
+                    FontSize="12"
+                    HorizontalAlignment="Right"
+                    Margin="0,4,0,0"
+                    Click="OnBrowseClicked" />
+
+            <!-- Source type field -->
+            <TextBlock Text="Source Type"
+                       FontSize="12"
+                       Foreground="#8888aa"
+                       Margin="0,16,0,4" />
+            <RadioButton x:Name="LocalFolderRadio"
+                         Content="Local Folder"
+                         FontSize="16"
+                         Foreground="#FFFFFF"
+                         IsChecked="True"
+                         GroupName="SourceType" />
+            <RadioButton x:Name="OsMountedRadio"
+                         Content="OS-Mounted (network share)"
+                         FontSize="16"
+                         Foreground="#FFFFFF"
+                         GroupName="SourceType"
+                         Margin="0,8,0,0" />
+
+            <!-- Validation message -->
+            <TextBlock x:Name="ValidationMessage"
+                       FontSize="12"
+                       Foreground="#E05A5A"
+                       Height="20"
+                       Margin="0,8,0,0"
+                       IsVisible="False" />
+
+            <!-- Divider -->
+            <Border Height="1"
+                    Background="#0f3460"
+                    Margin="0,16,0,16" />
+
+            <!-- Action row -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Content="Cancel"
+                        Height="36"
+                        MinWidth="80"
+                        Background="#16213e"
+                        BorderBrush="#0f3460"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Foreground="#ccccdd"
+                        FontSize="12"
+                        Click="OnCancelClicked" />
+                <Button x:Name="AddSourceButton"
+                        Content="Add Source"
+                        Height="36"
+                        MinWidth="120"
+                        Background="#7C6FF7"
+                        BorderThickness="0"
+                        CornerRadius="6"
+                        Foreground="#FFFFFF"
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        IsEnabled="False"
+                        Click="OnAddSourceClicked" />
+            </StackPanel>
+
+        </StackPanel>
+    </Border>
+</Window>

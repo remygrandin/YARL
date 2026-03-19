@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+             x:Class="YARL.UI.Views.PlatformGridView"
+             x:DataType="vm:LibraryViewModel">
+
+    <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Platforms}"
+                      Margin="32,24,32,24">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"
+                               ItemWidth="196"
+                               ItemHeight="216" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:PlatformViewModel">
+                    <Button Width="180" Height="200"
+                            Padding="0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="8"
+                            Click="OnPlatformTileClicked">
+                        <Border Width="180" Height="200"
+                                CornerRadius="8"
+                                Background="#16213e"
+                                ClipToBounds="True">
+                            <Border.Styles>
+                                <Style Selector="Border:pointerover">
+                                    <Setter Property="Background" Value="#0f3460" />
+                                </Style>
+                            </Border.Styles>
+
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="0">
+
+                                <!-- Platform art placeholder -->
+                                <Border Width="140" Height="100"
+                                        CornerRadius="4"
+                                        Background="#0f3460"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,20,0,0">
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="#FFFFFF"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Margin="8" />
+                                </Border>
+
+                                <!-- Platform name -->
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Foreground="#FFFFFF"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="160"
+                                           Margin="0,8,0,0" />
+
+                                <!-- Game count -->
+                                <TextBlock FontSize="12"
+                                           Foreground="#8888aa"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,4,0,20">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} games">
+                                            <Binding Path="GameCount" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>
