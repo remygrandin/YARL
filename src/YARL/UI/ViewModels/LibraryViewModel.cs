@@ -376,8 +376,11 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     {
         return g =>
         {
-            if (!showAll && platform is null) return false;
-            if (!showAll && g.PlatformId != platform!.Id) return false;
+            // No active scope at all — nothing to show
+            if (!showAll && platform is null && !favoritesOnly) return false;
+            // If inside a specific platform, restrict to it
+            if (platform is not null && g.PlatformId != platform.Id) return false;
+            // Favorites filter (applies both in platform view and sidebar favorites)
             if (favoritesOnly && !g.IsFavorite) return false;
             return true;
         };
