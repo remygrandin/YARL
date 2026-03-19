@@ -51,6 +51,10 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
 
     // Game list filter state
     [Reactive] private bool _showFavoritesOnly;
+    [Reactive] private bool _showAllGames;
+
+    // GameListView header
+    [Reactive] private string _gameListTitle = "";
 
     // Computed visibility helpers for LibraryView (reactive backing fields)
     [Reactive] private bool _isEmptyState = true;
@@ -58,6 +62,12 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     [Reactive] private bool _hasPlatforms;
     [Reactive] private bool _hasRecentlyPlayed;
     [Reactive] private bool _hasFavorites;
+
+    // Filtered empty state for GameListView
+    [Reactive] private bool _favoritesFilterEmptyVisible;
+
+    // Status bar visibility: true while scanning, stays true 3s after scan ends
+    [Reactive] private bool _isStatusBarVisible;
 
     // Filtered games for the currently selected platform (GameListView binding)
     private ReadOnlyObservableCollection<GameViewModel> _filteredGames = new([]);
@@ -142,8 +152,8 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
                 .Subscribe());
 
         // FilteredGames pipeline: games for selected platform, optionally filtered by favorites
-        var platformFilter = this.WhenAnyValue(x => x.SelectedPlatform, x => x.ShowFavoritesOnly)
-            .Select(t => BuildPlatformFilter(t.Item1, t.Item2));
+        var platformFilter = this.WhenAnyValue(x => x.SelectedPlatform, x => x.ShowFavoritesOnly, x => x.ShowAllGames)
+            .Select(t => BuildPlatformFilter(t.Item1, t.Item2, t.Item3));
 
         _disposables.Add(
             _gamesSource.Connect()
@@ -153,6 +163,20 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
                 .ObserveOn(_mainThreadScheduler)
                 .Bind(out _filteredGames)
                 .Subscribe());
+
+        // Wire GameListTitle from platform selection and all-games mode
+        _disposables.Add(
+            this.WhenAnyValue(x => x.SelectedPlatform, x => x.ShowAllGames)
+                .ObserveOn(_mainThreadScheduler)
+                .Subscribe(t => GameListTitle = t.Item2 ? "All Games" : (t.Item1?.Name ?? "")));
+
+        // Wire FavoritesFilterEmptyVisible
+        ((System.Collections.Specialized.INotifyCollectionChanged)_filteredGames).CollectionChanged += (_, _) =>
+            FavoritesFilterEmptyVisible = _filteredGames.Count == 0 && ShowFavoritesOnly;
+        _disposables.Add(
+            this.WhenAnyValue(x => x.ShowFavoritesOnly)
+                .ObserveOn(_mainThreadScheduler)
+                .Subscribe(_ => FavoritesFilterEmptyVisible = _filteredGames.Count == 0 && ShowFavoritesOnly));
 
         // Commands
         var canRescan = this.WhenAnyValue(x => x.IsScanning).Select(s => !s);
@@ -196,6 +220,16 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
                     IsEmptyState = pc == 0 && !scanning;
                     IsScanningEmpty = pc == 0 && scanning;
                 }));
+
+        // Status bar lingers 3s after scan ends so the user can read the completion message
+        _disposables.Add(
+            this.WhenAnyValue(x => x.IsScanning)
+                .Select(scanning => scanning
+                    ? Observable.Return(true)
+                    : Observable.Return(false).Delay(TimeSpan.FromSeconds(3), _mainThreadScheduler))
+                .Switch()
+                .ObserveOn(_mainThreadScheduler)
+                .Subscribe(visible => IsStatusBarVisible = visible));
     }
 
     private async Task RescanAsync()
@@ -327,12 +361,12 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
         return true;
     }
 
-    private static Func<GameViewModel, bool> BuildPlatformFilter(PlatformViewModel? platform, bool favoritesOnly)
+    private static Func<GameViewModel, bool> BuildPlatformFilter(PlatformViewModel? platform, bool favoritesOnly, bool showAll)
     {
         return g =>
         {
-            if (platform is null) return false;
-            if (g.PlatformId != platform.Id) return false;
+            if (!showAll && platform is null) return false;
+            if (!showAll && g.PlatformId != platform!.Id) return false;
             if (favoritesOnly && !g.IsFavorite) return false;
             return true;
         };

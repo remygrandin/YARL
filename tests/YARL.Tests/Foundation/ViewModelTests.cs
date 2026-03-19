@@ -8,7 +8,7 @@ public class ViewModelTests
     public void MainViewModel_ExposesLibraryViewModel()
     {
         var libraryVm = new LibraryViewModel();
-        var mainVm = new MainViewModel(libraryVm);
+        var mainVm = new MainViewModel(libraryVm, new SettingsViewModel());
 
         Assert.Same(libraryVm, mainVm.LibraryViewModel);
     }
@@ -16,7 +16,7 @@ public class ViewModelTests
     [Fact]
     public void MainViewModel_ImplementsIScreen()
     {
-        var mainVm = new MainViewModel(new LibraryViewModel());
+        var mainVm = new MainViewModel(new LibraryViewModel(), new SettingsViewModel());
 
         Assert.NotNull(mainVm.Router);
     }
@@ -48,7 +48,7 @@ public class ViewModelTests
     {
         // Simulates DI: both shells get the same MainViewModel which holds the shared LibraryViewModel
         var libraryVm = new LibraryViewModel();
-        var mainVm = new MainViewModel(libraryVm);
+        var mainVm = new MainViewModel(libraryVm, new SettingsViewModel());
 
         // Both shells would receive mainVm as DataContext
         // Their bindings access mainVm.LibraryViewModel — same instance

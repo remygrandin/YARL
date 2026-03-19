@@ -13,7 +13,7 @@
     </UserControl.Styles>
 
     <Border Classes="status-bar"
-            IsVisible="{Binding IsScanning}">
+            IsVisible="{Binding IsStatusBarVisible}">
         <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="8,0">
 
             <!-- Spinning sync icon (visible when scanning) -->
