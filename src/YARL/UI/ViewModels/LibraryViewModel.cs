@@ -257,7 +257,7 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
             {
                 if (update.IsComplete)
                 {
-                    ScanProgressText = $"Scan complete: {update.GamesFound} games found.";
+                    ScanProgressText = "Finishing scan...";
                     Log.Information("[RescanAsync] Progress: COMPLETE — {GamesFound} games", update.GamesFound);
                 }
                 else
@@ -274,8 +274,9 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
             await LoadGamesFromDbAsync(db);
             Log.Information("[RescanAsync] LoadGamesFromDbAsync complete — {Count} games in SourceCache", _gamesSource.Count);
 
-            StatusMessage = $"Library ready. {report.GamesAdded} games discovered.";
-            ScanProgressText = $"Scan complete. {report.GamesAdded} games added, {report.GamesRemoved} removed.";
+            var total = _gamesSource.Count;
+            ScanProgressText = $"{report.GamesAdded} new games found  |  {report.GamesRemoved} disabled  |  {total} total";
+            StatusMessage = $"Library ready — {total} games across {report.PlatformsFound} platforms.";
         }
         catch (OperationCanceledException)
         {

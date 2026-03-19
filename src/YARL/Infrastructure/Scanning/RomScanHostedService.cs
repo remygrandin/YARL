@@ -34,7 +34,7 @@ public class RomScanHostedService : BackgroundService
             var progress = new Progress<ScanUpdate>(update =>
             {
                 if (update.IsComplete)
-                    _libraryVm.ScanProgressText = $"Scan complete: {update.GamesFound} games found.";
+                    _libraryVm.ScanProgressText = "Finishing scan...";
                 else
                     _libraryVm.ScanProgressText = $"Scanning {update.PlatformName}: {update.TotalProcessed} files processed...";
             });
@@ -45,8 +45,9 @@ public class RomScanHostedService : BackgroundService
             await _libraryVm.LoadGamesFromDbAsync(db);
 
             _libraryVm.IsScanning = false;
-            _libraryVm.ScanProgressText = $"Scan complete. {report.GamesAdded} games added, {report.GamesRemoved} removed.";
-            _libraryVm.StatusMessage = $"Library ready. {report.GamesAdded} games discovered.";
+            var total = _libraryVm.AllGames.Count;
+            _libraryVm.ScanProgressText = $"{report.GamesAdded} new games found  |  {report.GamesRemoved} disabled  |  {total} total";
+            _libraryVm.StatusMessage = $"Library ready — {total} games across {report.PlatformsFound} platforms.";
         }
         catch (OperationCanceledException)
         {
