@@ -12,8 +12,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LIB-01**: User can configure ROM folder paths for scanning
 - [x] **LIB-02**: App scans folders in background without blocking browsing
 - [x] **LIB-03**: User can browse ROMs organized by platform with cover art grid
-- [ ] **LIB-04**: User can search games by name with real-time filtering
-- [ ] **LIB-05**: User can filter games by genre, year, and developer
+- [x] **LIB-04**: User can search games by name with real-time filtering
+- [x] **LIB-05**: User can filter games by genre, year, and developer
 - [x] **LIB-06**: User can mark games as favorites
 - [x] **LIB-07**: App tracks recently played games with last-launched time
 - [x] **LIB-08**: User can tag a path as "remote" (OS-mounted network share)
@@ -21,10 +21,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Metadata
 
-- [ ] **META-01**: App scrapes metadata from ScreenScraper using ROM hash matching
-- [ ] **META-02**: App falls back to IGDB for games not found on ScreenScraper
-- [ ] **META-03**: Scraping fetches cover art, description, genre, year, developer, publisher
-- [ ] **META-04**: User can manually override any metadata field per game
+- [x] **META-01**: App scrapes metadata from ScreenScraper using ROM hash matching
+- [x] **META-02**: App falls back to IGDB for games not found on ScreenScraper
+- [x] **META-03**: Scraping fetches cover art, description, genre, year, developer, publisher
+- [x] **META-04**: User can manually override any metadata field per game
 
 ### Emulator
 
@@ -93,16 +93,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIB-01 | Phase 2 | Complete |
 | LIB-02 | Phase 2 | Complete |
 | LIB-03 | Phase 2 | Complete |
-| LIB-04 | Phase 3 | Pending |
-| LIB-05 | Phase 3 | Pending |
+| LIB-04 | Phase 3 | Complete |
+| LIB-05 | Phase 3 | Complete |
 | LIB-06 | Phase 2 | Complete |
 | LIB-07 | Phase 2 | Complete |
 | LIB-08 | Phase 1 | Complete |
 | LIB-09 | Phase 5 | Pending |
-| META-01 | Phase 3 | Pending |
-| META-02 | Phase 3 | Pending |
-| META-03 | Phase 3 | Pending |
-| META-04 | Phase 3 | Pending |
+| META-01 | Phase 3 | Complete |
+| META-02 | Phase 3 | Complete |
+| META-03 | Phase 3 | Complete |
+| META-04 | Phase 3 | Complete |
 | EMU-01 | Phase 4 | Pending |
 | EMU-02 | Phase 4 | Pending |
 | EMU-03 | Phase 7 | Pending |
