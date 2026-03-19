@@ -17,7 +17,7 @@
         <Border DockPanel.Dock="Top"
                 Background="#1a1a2e"
                 Padding="16,8">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
 
                 <!-- Back button -->
                 <Button Grid.Column="0"
@@ -60,29 +60,22 @@
                                      Foreground="#8888aa" />
                 </ToggleButton>
 
-                <!-- Grid view toggle -->
+                <!-- Grid / list view toggle (single button cycles between modes) -->
                 <ToggleButton Grid.Column="4"
-                              x:Name="GridToggle"
                               Background="Transparent"
                               BorderThickness="0"
-                              IsChecked="True"
-                              IsCheckedChanged="OnGridToggleChanged"
-                              ToolTip.Tip="Grid view">
-                    <mi:MaterialIcon Kind="ViewGrid"
-                                     Width="20" Height="20"
-                                     Foreground="#FFFFFF" />
-                </ToggleButton>
-
-                <!-- List view toggle -->
-                <ToggleButton Grid.Column="5"
-                              x:Name="ListToggle"
-                              Background="Transparent"
-                              BorderThickness="0"
-                              IsCheckedChanged="OnListToggleChanged"
-                              ToolTip.Tip="List view">
-                    <mi:MaterialIcon Kind="FormatListBulleted"
-                                     Width="20" Height="20"
-                                     Foreground="#8888aa" />
+                              IsChecked="{Binding IsGridView, Mode=TwoWay}"
+                              ToolTip.Tip="{Binding IsGridView, StringFormat={}{0:Switch to list;Switch to grid}}">
+                    <Panel>
+                        <mi:MaterialIcon Kind="ViewGrid"
+                                         Width="20" Height="20"
+                                         Foreground="#FFFFFF"
+                                         IsVisible="{Binding IsGridView}" />
+                        <mi:MaterialIcon Kind="FormatListBulleted"
+                                         Width="20" Height="20"
+                                         Foreground="#FFFFFF"
+                                         IsVisible="{Binding !IsGridView}" />
+                    </Panel>
                 </ToggleButton>
             </Grid>
         </Border>
@@ -94,7 +87,7 @@
                 <ItemsControl x:Name="GridRepeater"
                               ItemsSource="{Binding FilteredGames}"
                               Margin="16,16,16,16"
-                              IsVisible="True">
+                              IsVisible="{Binding IsGridView}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"
@@ -169,7 +162,7 @@
                 <ItemsControl x:Name="ListRepeater"
                               ItemsSource="{Binding FilteredGames}"
                               Margin="0"
-                              IsVisible="False">
+                              IsVisible="{Binding !IsGridView}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical" />

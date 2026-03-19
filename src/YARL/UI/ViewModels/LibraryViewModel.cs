@@ -68,6 +68,8 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
 
     // Status bar visibility: true while scanning, stays true 3s after scan ends
     [Reactive] private bool _isStatusBarVisible;
+    // View mode: true = grid, false = list
+    [Reactive] private bool _isGridView = true;
 
     // Filtered games for the currently selected platform (GameListView binding)
     private ReadOnlyObservableCollection<GameViewModel> _filteredGames = new([]);
