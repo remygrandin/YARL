@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-19T20:18:13.472Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-19T20:30:27.880Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 13
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 03 (metadata-and-cover-art) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Plan: 2 of 6
 | Phase 02-rom-scanning-and-library P03 | 8 | 2 tasks | 7 files |
 | Phase 02-rom-scanning-and-library P04 | 30 | 2 tasks | 20 files |
 | Phase 03-metadata-and-cover-art P01 | 4 | 2 tasks | 10 files |
+| Phase 03-metadata-and-cover-art P02 | 9 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ Recent decisions affecting current work:
 - [Phase 03-metadata-and-cover-art]: ScrapeStatus stored as string via HasConversion<string>() for human-readable SQLite rows, matching GameStatus/SourceType convention
 - [Phase 03-metadata-and-cover-art]: GameVersion composite index on (GameId, Region) enables efficient regional variant lookups per game
 - [Phase 03-metadata-and-cover-art]: MAME and NGPC have null screenscraperSystemId - no standard ScreenScraper mapping exists for these platforms
+- [Phase 03-metadata-and-cover-art]: ScraperPipeline accepts two IMetadataScraper params (not concrete types) to enable NSubstitute mocking in tests
+- [Phase 03-metadata-and-cover-art]: FakeMessageHandler sealed inner class pattern used for HttpClient mocking — NSubstitute cannot mock HttpMessageHandler.SendAsync (protected)
+- [Phase 03-metadata-and-cover-art]: IGDB FirstReleaseDate is DateTimeOffset? not Unix timestamp — SDK deserializes internally, no manual conversion needed
 
 ### Pending Todos
 
@@ -104,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T20:18:13.468Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-19T20:30:27.876Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
