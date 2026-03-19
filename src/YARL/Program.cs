@@ -57,7 +57,10 @@ internal static class Program
                     opts.UseSqlite($"Data Source={AppPaths.DatabasePath}"));
 
                 // ViewModels
-                services.AddSingleton<LibraryViewModel>();
+                services.AddSingleton<LibraryViewModel>(sp => new LibraryViewModel(
+                    sp.GetRequiredService<PlatformRegistry>(),
+                    sp.GetRequiredService<IServiceScopeFactory>()
+                ));
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<IScreen>(sp => sp.GetRequiredService<MainViewModel>());
 

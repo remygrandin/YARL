@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using YARL.Infrastructure.Persistence;
 using YARL.UI.ViewModels;
 
 namespace YARL.Infrastructure.Scanning;
@@ -25,6 +26,7 @@ public class RomScanHostedService : BackgroundService
         {
             using var scope = _scopeFactory.CreateScope();
             var scanner = scope.ServiceProvider.GetRequiredService<RomScannerService>();
+            var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
 
             _libraryVm.IsScanning = true;
             _libraryVm.ScanProgressText = "Scanning ROM library...";
@@ -38,6 +40,9 @@ public class RomScanHostedService : BackgroundService
             });
 
             var report = await scanner.ScanAllAsync(progress, stoppingToken);
+
+            // Populate SourceCache from DB after scan completes
+            await _libraryVm.LoadGamesFromDbAsync(db);
 
             _libraryVm.IsScanning = false;
             _libraryVm.ScanProgressText = $"Scan complete. {report.GamesAdded} games added, {report.GamesRemoved} removed.";

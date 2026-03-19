@@ -1,30 +1,213 @@
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+using YARL.Domain.Enums;
+using YARL.Infrastructure.Persistence;
+using YARL.Infrastructure.Scanning;
 
 namespace YARL.UI.ViewModels;
 
 /// <summary>
 /// Shared ViewModel consumed by both DesktopShell and FullscreenShell.
+/// Acts as the live data hub: SourceCache receives scanner results,
+/// derived collections update reactively.
 /// </summary>
-public class LibraryViewModel : ReactiveObject
+public partial class LibraryViewModel : ReactiveObject, IDisposable
 {
-    private string _statusMessage = "YARL is ready. Add ROM folders to get started.";
-    public string StatusMessage
+    private readonly CompositeDisposable _disposables = new();
+    private readonly SourceCache<GameViewModel, int> _gamesSource = new(g => g.Id);
+    private readonly IScheduler _mainThreadScheduler;
+
+    // Bound to UI
+    private ReadOnlyObservableCollection<GameViewModel> _allGames = new([]);
+    public ReadOnlyObservableCollection<GameViewModel> AllGames => _allGames;
+
+    private ReadOnlyObservableCollection<PlatformViewModel> _platforms = new([]);
+    public ReadOnlyObservableCollection<PlatformViewModel> Platforms => _platforms;
+
+    private ReadOnlyObservableCollection<GameViewModel> _recentlyPlayed = new([]);
+    public ReadOnlyObservableCollection<GameViewModel> RecentlyPlayed => _recentlyPlayed;
+
+    private ReadOnlyObservableCollection<GameViewModel> _favorites = new([]);
+    public ReadOnlyObservableCollection<GameViewModel> Favorites => _favorites;
+
+    // Scan state
+    [Reactive] private string _statusMessage = "YARL is ready. Add ROM folders to get started.";
+    [Reactive] private bool _isScanning;
+    [Reactive] private string _scanProgressText = "";
+
+    // Selected state
+    [Reactive] private PlatformViewModel? _selectedPlatform;
+
+    // Commands
+    public ReactiveCommand<Unit, Unit> RescanCommand { get; }
+    public ReactiveCommand<GameViewModel, Unit> ToggleFavoriteCommand { get; }
+    public ReactiveCommand<Unit, Unit> CancelScanCommand { get; }
+
+    // Dependencies for rescan
+    private readonly IServiceScopeFactory? _scopeFactory;
+    private readonly PlatformRegistry? _platformRegistry;
+    private CancellationTokenSource? _scanCts;
+
+    public LibraryViewModel(
+        PlatformRegistry? platformRegistry = null,
+        IServiceScopeFactory? scopeFactory = null,
+        IScheduler? mainThreadScheduler = null)
     {
-        get => _statusMessage;
-        set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
+        _platformRegistry = platformRegistry;
+        _scopeFactory = scopeFactory;
+        _mainThreadScheduler = mainThreadScheduler ?? CurrentThreadScheduler.Instance;
+
+        // AllGames pipeline
+        _disposables.Add(
+            _gamesSource.Connect()
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _allGames)
+                .Subscribe());
+
+        // Platforms pipeline: group by PlatformId.
+        // DynamicData removes empty groups automatically when all items leave a group.
+        // Transform passes (group, groupKey) so we can access the platformId.
+        _disposables.Add(
+            _gamesSource.Connect()
+                .Group<GameViewModel, int, string>(g => g.PlatformId)
+                .Transform<PlatformViewModel, IGroup<GameViewModel, int, string>, string>((group, groupKey) =>
+                {
+                    var platformName = _platformRegistry?.Resolve(groupKey)?.Name ?? groupKey;
+                    var vm = new PlatformViewModel(groupKey, platformName);
+
+                    // Track game count reactively from the group's inner cache
+                    _disposables.Add(
+                        group.Cache.CountChanged
+                            .ObserveOn(_mainThreadScheduler)
+                            .Subscribe(count => vm.GameCount = count));
+
+                    return vm;
+                })
+                .SortBy(vm => vm.Name)
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _platforms)
+                .Subscribe());
+
+        // RecentlyPlayed pipeline: top 15 by LastPlayedAt descending, excluding nulls
+        var lastPlayedComparer = SortExpressionComparer<GameViewModel>
+            .Descending(g => g.LastPlayedAt ?? DateTime.MinValue);
+
+        _disposables.Add(
+            _gamesSource.Connect()
+                .AutoRefresh(g => g.LastPlayedAt)
+                .Filter(g => g.LastPlayedAt != null)
+                .Top(lastPlayedComparer, 15)
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _recentlyPlayed)
+                .Subscribe());
+
+        // Favorites pipeline
+        _disposables.Add(
+            _gamesSource.Connect()
+                .AutoRefresh(g => g.IsFavorite)
+                .Filter(g => g.IsFavorite)
+                .ObserveOn(_mainThreadScheduler)
+                .Bind(out _favorites)
+                .Subscribe());
+
+        // Commands
+        var canRescan = this.WhenAnyValue(x => x.IsScanning).Select(s => !s);
+        RescanCommand = ReactiveCommand.CreateFromTask(RescanAsync, canRescan);
+
+        ToggleFavoriteCommand = ReactiveCommand.Create<GameViewModel>(gvm =>
+        {
+            gvm.IsFavorite = !gvm.IsFavorite;
+        });
+
+        var canCancel = this.WhenAnyValue(x => x.IsScanning);
+        CancelScanCommand = ReactiveCommand.Create(() => _scanCts?.Cancel(), canCancel);
     }
 
-    private bool _isScanning;
-    public bool IsScanning
+    private async Task RescanAsync()
     {
-        get => _isScanning;
-        set => this.RaiseAndSetIfChanged(ref _isScanning, value);
+        if (_scopeFactory is null)
+            return;
+
+        _scanCts = new CancellationTokenSource();
+        IsScanning = true;
+        ScanProgressText = "Scanning ROM library...";
+
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var scanner = scope.ServiceProvider.GetRequiredService<RomScannerService>();
+            var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+
+            var progress = new Progress<ScanUpdate>(update =>
+            {
+                if (update.IsComplete)
+                    ScanProgressText = $"Scan complete: {update.GamesFound} games found.";
+                else
+                    ScanProgressText = $"Scanning {update.PlatformName}: {update.TotalProcessed} files processed...";
+            });
+
+            var report = await scanner.ScanAllAsync(progress, _scanCts.Token);
+
+            await LoadGamesFromDbAsync(db);
+
+            StatusMessage = $"Library ready. {report.GamesAdded} games discovered.";
+            ScanProgressText = $"Scan complete. {report.GamesAdded} games added, {report.GamesRemoved} removed.";
+        }
+        catch (OperationCanceledException)
+        {
+            ScanProgressText = "Scan cancelled.";
+        }
+        finally
+        {
+            IsScanning = false;
+            _scanCts?.Dispose();
+            _scanCts = null;
+        }
     }
 
-    private string _scanProgressText = "";
-    public string ScanProgressText
+    /// <summary>
+    /// Load all Active games from DB into the SourceCache.
+    /// Called by RomScanHostedService after initial scan completes.
+    /// </summary>
+    public async Task LoadGamesFromDbAsync(YarlDbContext db)
     {
-        get => _scanProgressText;
-        set => this.RaiseAndSetIfChanged(ref _scanProgressText, value);
+        var games = await db.Games
+            .Where(g => g.Status == GameStatus.Active)
+            .ToListAsync();
+
+        var viewModels = games.Select(g => new GameViewModel(g)).ToList();
+        _gamesSource.AddOrUpdate(viewModels);
+    }
+
+    /// <summary>
+    /// Public accessor for SourceCache AddOrUpdate — used by scanner to push live updates.
+    /// </summary>
+    public void AddOrUpdateGame(GameViewModel gvm)
+    {
+        _gamesSource.AddOrUpdate(gvm);
+    }
+
+    /// <summary>
+    /// Remove a game from the SourceCache (e.g., when marked Missing/Hidden).
+    /// </summary>
+    public void RemoveGame(int gameId)
+    {
+        _gamesSource.Remove(gameId);
+    }
+
+    public void Dispose()
+    {
+        _disposables.Dispose();
+        _scanCts?.Dispose();
+        _gamesSource.Dispose();
     }
 }
