@@ -184,9 +184,17 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
         _disposables.Add(RescanCommand.ThrownExceptions
             .Subscribe(ex => Log.Error(ex, "[LibraryViewModel] RescanCommand threw an unhandled exception")));
 
-        ToggleFavoriteCommand = ReactiveCommand.Create<GameViewModel>(gvm =>
+        ToggleFavoriteCommand = ReactiveCommand.CreateFromTask<GameViewModel>(async gvm =>
         {
             gvm.IsFavorite = !gvm.IsFavorite;
+
+            if (_scopeFactory is null) return;
+            using var scope = _scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+            await db.Games
+                .Where(g => g.Id == gvm.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(g => g.IsFavorite, gvm.IsFavorite));
+            Log.Debug("[LibraryViewModel] Persisted IsFavorite={Value} for game id={Id}", gvm.IsFavorite, gvm.Id);
         });
         _disposables.Add(ToggleFavoriteCommand.ThrownExceptions
             .Subscribe(ex => Log.Error(ex, "[LibraryViewModel] ToggleFavoriteCommand threw")));
