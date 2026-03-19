@@ -31,9 +31,9 @@
                                      Foreground="#FFFFFF" />
                 </Button>
 
-                <!-- Platform name -->
+                <!-- Platform / mode name -->
                 <TextBlock Grid.Column="1"
-                           Text="{Binding SelectedPlatform.Name}"
+                           Text="{Binding GameListTitle}"
                            FontSize="20"
                            FontWeight="SemiBold"
                            Foreground="#FFFFFF"
@@ -42,18 +42,18 @@
 
                 <!-- Game count -->
                 <TextBlock Grid.Column="2"
-                           Text="{Binding SelectedPlatform.GameCount, StringFormat=' — {0} games'}"
+                           Text="{Binding FilteredGames.Count, StringFormat=' — {0} games'}"
                            FontSize="12"
                            Foreground="#8888aa"
                            VerticalAlignment="Center"
                            Margin="4,0,0,0" />
 
-                <!-- Favorites filter toggle -->
+                <!-- Favorites filter toggle (two-way bound so it reflects VM state) -->
                 <ToggleButton Grid.Column="3"
                               x:Name="FavoritesToggle"
                               Background="Transparent"
                               BorderThickness="0"
-                              IsCheckedChanged="OnFavoritesToggleChanged"
+                              IsChecked="{Binding ShowFavoritesOnly, Mode=TwoWay}"
                               ToolTip.Tip="Show favorites only">
                     <mi:MaterialIcon Kind="Heart"
                                      Width="20" Height="20"
@@ -145,6 +145,26 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
+                <!-- Favorites filter empty state -->
+                <StackPanel IsVisible="{Binding FavoritesFilterEmptyVisible}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="8"
+                            Margin="0,64,0,0">
+                    <mi:MaterialIcon Kind="HeartOff"
+                                     Width="48" Height="48"
+                                     Foreground="#8888aa"
+                                     HorizontalAlignment="Center" />
+                    <TextBlock Text="No favorites here yet."
+                               FontSize="16"
+                               Foreground="#8888aa"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="Click ♥ to show all games"
+                               FontSize="13"
+                               Foreground="#555577"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+
                 <!-- List mode -->
                 <ItemsControl x:Name="ListRepeater"
                               ItemsSource="{Binding FilteredGames}"
@@ -190,12 +210,21 @@
                                                VerticalAlignment="Center"
                                                Margin="0,0,8,0" />
 
-                                    <!-- Favorite heart indicator -->
-                                    <mi:MaterialIcon Grid.Column="3"
-                                                     Kind="Heart"
-                                                     Width="20" Height="20"
-                                                     Foreground="{Binding IsFavorite, Converter={StaticResource HeartColor}}"
-                                                     VerticalAlignment="Center" />
+                                    <!-- Favorite heart button -->
+                                    <Button Grid.Column="3"
+                                            Width="32" Height="32"
+                                            Padding="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            VerticalAlignment="Center"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
+                                            Tag="{Binding}"
+                                            Click="OnFavoriteClicked">
+                                        <mi:MaterialIcon Kind="Heart"
+                                                         Width="20" Height="20"
+                                                         Foreground="{Binding IsFavorite, Converter={StaticResource HeartColor}}" />
+                                    </Button>
                                 </Grid>
                             </Border>
                         </DataTemplate>

@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -17,19 +18,22 @@ public partial class GameListView : UserControl
     private ToggleButton? GetGridToggle() => this.FindControl<ToggleButton>("GridToggle");
     private ToggleButton? GetListToggle() => this.FindControl<ToggleButton>("ListToggle");
 
+    private void OnFavoriteClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: GameViewModel gvm }) return;
+        if (DataContext is not LibraryViewModel vm) return;
+        e.Handled = true; // prevent row click from also firing
+        vm.ToggleFavoriteCommand.Execute(gvm).Subscribe();
+    }
+
     private void OnBackClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is LibraryViewModel vm)
         {
-            vm.SelectedPlatform = null;
             vm.ShowFavoritesOnly = false;
+            vm.ShowAllGames = false;
+            vm.SelectedPlatform = null;
         }
-    }
-
-    private void OnFavoritesToggleChanged(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is LibraryViewModel vm && sender is ToggleButton tb)
-            vm.ShowFavoritesOnly = tb.IsChecked == true;
     }
 
     private void OnGridToggleChanged(object? sender, RoutedEventArgs e)
