@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using YARL.Domain.Enums;
@@ -30,11 +31,15 @@ public class MetadataOverrideTests
         return (db, scopeFactory);
     }
 
-    private static Game CreateTestGame(int id = 1, bool isOverridden = false)
+    private static async Task<(RomSource source, Game game)> SeedGameAsync(
+        YarlDbContext db, bool isOverridden = false)
     {
-        return new Game
+        var source = new RomSource { Path = "/roms", SourceType = SourceType.Local, IsEnabled = true };
+        db.RomSources.Add(source);
+        await db.SaveChangesAsync();
+
+        var game = new Game
         {
-            Id = id,
             Title = "Test Game",
             RawTitle = "Test Game",
             PlatformId = "snes",
@@ -45,37 +50,29 @@ public class MetadataOverrideTests
             Genre = "RPG",
             Developer = "Original Dev",
             CreatedAt = DateTime.UtcNow,
-            SourceId = 1,
+            SourceId = source.Id,
         };
+        db.Games.Add(game);
+        await db.SaveChangesAsync();
+
+        return (source, game);
     }
 
     [Fact]
     public async Task Rescrape_SkipsOverriddenGame()
     {
-        // META-04: Game with IsMetadataOverridden=true should not be updated by a scraper
-        // We simulate this by verifying the flag is respected: if IsMetadataOverridden=true,
-        // calling SaveOverrideAsync on a different game should not affect it.
-        // More directly: verify the DB game with IsMetadataOverridden=true retains its data
-        // after a simulated re-scrape that checks the flag.
+        // META-04: Game with IsMetadataOverridden=true should not be updated by a scraper.
+        // We verify the flag contract: a scraper checks IsMetadataOverridden before writing,
+        // so an overridden game retains its data.
         var (db, scopeFactory) = CreateTestDb();
+        var (_, game) = await SeedGameAsync(db, isOverridden: true);
 
-        // Seed a ROM source
-        var source = new RomSource { Path = "/roms", SourceType = SourceType.Local, IsEnabled = true };
-        db.RomSources.Add(source);
-        await db.SaveChangesAsync();
-
-        var game = CreateTestGame(isOverridden: true);
-        game.SourceId = source.Id;
-        db.Games.Add(game);
-        await db.SaveChangesAsync();
-
-        // Simulate what a scraper pipeline would do: check IsMetadataOverridden before updating
+        // Simulate scraper pipeline logic: check flag, skip if overridden
         using var scope = scopeFactory.CreateScope();
         var scopedDb = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
         var entity = await scopedDb.Games.FindAsync(game.Id);
         Assert.NotNull(entity);
 
-        // A well-implemented scraper should skip overridden games
         if (!entity.IsMetadataOverridden)
         {
             // This block should NOT execute for overridden games
@@ -98,16 +95,7 @@ public class MetadataOverrideTests
     {
         // META-04: After user edits a field via GameDetailViewModel, IsMetadataOverridden is set to true
         var (db, scopeFactory) = CreateTestDb();
-
-        // Seed
-        var source = new RomSource { Path = "/roms", SourceType = SourceType.Local, IsEnabled = true };
-        db.RomSources.Add(source);
-        await db.SaveChangesAsync();
-
-        var game = CreateTestGame(isOverridden: false);
-        game.SourceId = source.Id;
-        db.Games.Add(game);
-        await db.SaveChangesAsync();
+        var (_, game) = await SeedGameAsync(db, isOverridden: false);
 
         var gameVm = new GameViewModel(game);
         var detailVm = new GameDetailViewModel(scopeFactory);
@@ -133,16 +121,7 @@ public class MetadataOverrideTests
     {
         // META-04: Edited fields are saved to DB and survive re-read
         var (db, scopeFactory) = CreateTestDb();
-
-        // Seed
-        var source = new RomSource { Path = "/roms", SourceType = SourceType.Local, IsEnabled = true };
-        db.RomSources.Add(source);
-        await db.SaveChangesAsync();
-
-        var game = CreateTestGame(isOverridden: false);
-        game.SourceId = source.Id;
-        db.Games.Add(game);
-        await db.SaveChangesAsync();
+        var (_, game) = await SeedGameAsync(db, isOverridden: false);
 
         var gameVm = new GameViewModel(game);
         var detailVm = new GameDetailViewModel(scopeFactory);
@@ -174,16 +153,7 @@ public class MetadataOverrideTests
     {
         // META-04: Setting IsMetadataOverridden=false allows scraper to update fields again
         var (db, scopeFactory) = CreateTestDb();
-
-        // Seed with an overridden game
-        var source = new RomSource { Path = "/roms", SourceType = SourceType.Local, IsEnabled = true };
-        db.RomSources.Add(source);
-        await db.SaveChangesAsync();
-
-        var game = CreateTestGame(isOverridden: true);
-        game.SourceId = source.Id;
-        db.Games.Add(game);
-        await db.SaveChangesAsync();
+        var (_, game) = await SeedGameAsync(db, isOverridden: true);
 
         var gameVm = new GameViewModel(game);
         var detailVm = new GameDetailViewModel(scopeFactory);
@@ -199,7 +169,7 @@ public class MetadataOverrideTests
         Assert.False(reverted.IsMetadataOverridden);
         Assert.Equal(ScrapeStatus.Pending, reverted.ScrapeStatus);
 
-        // Verify the GameViewModel was also updated
+        // Verify the GameViewModel was also updated in-place
         Assert.False(gameVm.IsMetadataOverridden);
         Assert.Equal(ScrapeStatus.Pending, gameVm.ScrapeStatus);
 
