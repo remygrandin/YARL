@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-19T20:30:27.880Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-19T20:31:14.031Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 13
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 03 (metadata-and-cover-art) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Plan: 3 of 6
 | Phase 02-rom-scanning-and-library P04 | 30 | 2 tasks | 20 files |
 | Phase 03-metadata-and-cover-art P01 | 4 | 2 tasks | 10 files |
 | Phase 03-metadata-and-cover-art P02 | 9 | 2 tasks | 10 files |
+| Phase 03-metadata-and-cover-art P03 | 10 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,9 @@ Recent decisions affecting current work:
 - [Phase 03-metadata-and-cover-art]: ScraperPipeline accepts two IMetadataScraper params (not concrete types) to enable NSubstitute mocking in tests
 - [Phase 03-metadata-and-cover-art]: FakeMessageHandler sealed inner class pattern used for HttpClient mocking — NSubstitute cannot mock HttpMessageHandler.SendAsync (protected)
 - [Phase 03-metadata-and-cover-art]: IGDB FirstReleaseDate is DateTimeOffset? not Unix timestamp — SDK deserializes internally, no manual conversion needed
+- [Phase 03-03]: TestScheduler debounce flush margin: advance beyond 250ms to drain ObserveOn queue after Throttle fires
+- [Phase 03-03]: IServiceScopeFactory in GameDetailViewModel for scoped DB lifetime — matches existing LibraryViewModel pattern
+- [Phase 03-03]: CombineLatest 5-predicate filter: platform + search + genre + developer + year with AND logic via Func<GameViewModel,bool> composition
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T20:30:27.876Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-19T20:31:14.027Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None

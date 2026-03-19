@@ -67,7 +67,7 @@ Plans:
   3. User can search games by name and see results filter in real time
   4. User can filter the game list by genre, year, and developer
   5. Cover art grid loads at 60fps with 500+ items (no stutter from image decoding)
-**Plans:** 2/6 plans executed
+**Plans:** 3/6 plans executed
 
 Plans:
 - [ ] 03-01-PLAN.md — Data foundation: Game metadata fields, GameVersion entity, ScrapeStatus enum, EF Core migration, platforms.json enrichment, Wave 0 test stubs
@@ -132,7 +132,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. ROM Scanning and Library | 4/4 | Complete   | 2026-03-19 |
-| 3. Metadata and Cover Art | 2/6 | In Progress|  |
+| 3. Metadata and Cover Art | 3/6 | In Progress|  |
 | 4. Emulator Integration and Launch | 0/TBD | Not started | - |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
 | 6. Fullscreen and Gamepad Mode | 0/TBD | Not started | - |
