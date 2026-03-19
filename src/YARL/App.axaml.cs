@@ -1,13 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Splat;
 using YARL.Domain.Enums;
 using YARL.Infrastructure.Config;
-using YARL.Infrastructure.Persistence;
 using YARL.UI.Desktop;
 using YARL.UI.Fullscreen;
 using YARL.UI.ViewModels;
@@ -47,18 +44,18 @@ public partial class App : Application
     {
         try
         {
-            var scopeFactory = Locator.Current.GetService<IServiceScopeFactory>()
-                ?? throw new InvalidOperationException("IServiceScopeFactory not registered in Splat.");
-            using var scope = scopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
-            db.Database.Migrate();
+            // IServiceScopeFactory is a framework-internal MS DI service — Splat's adapter
+            // does not expose it. We route through LibraryViewModel which receives it via
+            // proper DI constructor injection in Program.cs.
+            var libraryVm = Locator.Current.GetService<LibraryViewModel>()
+                ?? throw new InvalidOperationException("LibraryViewModel not registered in Splat.");
+            libraryVm.RunMigration();
             Log.Information("Database migration complete");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Database migration failed");
             // Don't crash on migration failure — log and continue
-            // The app will work but DB features may be limited
         }
     }
 

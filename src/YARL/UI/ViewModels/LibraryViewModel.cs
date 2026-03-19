@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using YARL.Domain.Enums;
+using YARL.Domain.Models;
 using YARL.Infrastructure.Persistence;
 using YARL.Infrastructure.Scanning;
 
@@ -254,6 +255,34 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     public void RemoveGame(int gameId)
     {
         _gamesSource.Remove(gameId);
+    }
+
+    /// <summary>
+    /// Run EF Core migrations using the injected scope factory.
+    /// Called once at app startup from App.axaml.cs.
+    /// Avoids relying on Splat to resolve framework-internal IServiceScopeFactory.
+    /// </summary>
+    internal void RunMigration()
+    {
+        if (_scopeFactory is null) return;
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+        db.Database.Migrate();
+    }
+
+    /// <summary>
+    /// Persist a new ROM source to the database.
+    /// Returns false if the scope factory is unavailable.
+    /// Called by AddRomSourceDialog via delegate — avoids Splat resolving IServiceScopeFactory.
+    /// </summary>
+    public async Task<bool> AddRomSourceAsync(string path, SourceType sourceType)
+    {
+        if (_scopeFactory is null) return false;
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+        db.RomSources.Add(new RomSource { Path = path, SourceType = sourceType, IsEnabled = true });
+        await db.SaveChangesAsync();
+        return true;
     }
 
     private static Func<GameViewModel, bool> BuildPlatformFilter(PlatformViewModel? platform, bool favoritesOnly)

@@ -1,9 +1,6 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Splat;
 using YARL.UI.Dialogs;
 using YARL.UI.ViewModels;
 
@@ -21,19 +18,20 @@ public partial class EmptyStateView : UserControl
         var window = TopLevel.GetTopLevel(this) as Window;
         if (window is null) return;
 
-        var scopeFactory = Locator.Current.GetService<IServiceScopeFactory>();
-        var dialog = new AddRomSourceDialog(scopeFactory);
+        if (DataContext is not LibraryViewModel libraryVm) return;
 
-        // Wire up rescan trigger — subscribe with error handler to prevent crash
-        if (DataContext is LibraryViewModel libraryVm)
+        var dialog = new AddRomSourceDialog
         {
-            dialog.OnSourceAdded = () =>
+            // Route persistence through the ViewModel — avoids Splat resolving
+            // framework-internal IServiceScopeFactory which returns null in this app.
+            SaveSource = libraryVm.AddRomSourceAsync,
+            OnSourceAdded = () =>
             {
                 libraryVm.RescanCommand.Execute().Subscribe(
                     _ => { },
                     ex => Log.Error(ex, "Rescan failed after adding ROM source"));
-            };
-        }
+            }
+        };
 
         await dialog.ShowDialog(window);
     }

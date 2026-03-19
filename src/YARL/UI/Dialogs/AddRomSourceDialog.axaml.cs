@@ -5,27 +5,25 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Microsoft.Extensions.DependencyInjection;
 using YARL.Domain.Enums;
-using YARL.Domain.Models;
-using YARL.Infrastructure.Persistence;
 
 namespace YARL.UI.Dialogs;
 
 public partial class AddRomSourceDialog : Window
 {
-    private readonly IServiceScopeFactory? _scopeFactory;
+    /// <summary>
+    /// Delegate that persists the ROM source. Set by the caller.
+    /// Returns true on success, false if the scope factory is unavailable.
+    /// </summary>
+    public Func<string, SourceType, Task<bool>>? SaveSource { get; set; }
 
     /// <summary>
-    /// Action invoked after a source is successfully added (for triggering a rescan).
+    /// Invoked after a source is successfully saved (for triggering a rescan).
     /// </summary>
     public Action? OnSourceAdded { get; set; }
 
-    public AddRomSourceDialog() : this(null) { }
-
-    public AddRomSourceDialog(IServiceScopeFactory? scopeFactory)
+    public AddRomSourceDialog()
     {
-        _scopeFactory = scopeFactory;
         InitializeComponent();
     }
 
@@ -50,17 +48,14 @@ public partial class AddRomSourceDialog : Window
 
     private async void OnBrowseClicked(object? sender, RoutedEventArgs e)
     {
-        var options = new FolderPickerOpenOptions
+        var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = "Select ROM folder",
             AllowMultiple = false
-        };
+        });
 
-        var result = await StorageProvider.OpenFolderPickerAsync(options);
         if (result is { Count: > 0 } && PathTextBox is not null)
-        {
             PathTextBox.Text = result[0].TryGetLocalPath() ?? result[0].Path.LocalPath;
-        }
     }
 
     private async void OnAddSourceClicked(object? sender, RoutedEventArgs e)
@@ -81,9 +76,9 @@ public partial class AddRomSourceDialog : Window
             return;
         }
 
-        if (_scopeFactory is null)
+        if (SaveSource is null)
         {
-            ShowValidation("Cannot save: DI services unavailable. Restart the app.");
+            ShowValidation("Cannot save: no save handler configured.");
             return;
         }
 
@@ -93,7 +88,12 @@ public partial class AddRomSourceDialog : Window
 
         try
         {
-            await SaveRomSourceAsync(path, sourceType);
+            var saved = await SaveSource(path, sourceType);
+            if (!saved)
+            {
+                ShowValidation("Cannot save: database unavailable. Restart the app.");
+                return;
+            }
         }
         catch (Exception ex)
         {
@@ -103,19 +103,6 @@ public partial class AddRomSourceDialog : Window
 
         OnSourceAdded?.Invoke();
         Close();
-    }
-
-    private async Task SaveRomSourceAsync(string path, SourceType sourceType)
-    {
-        using var scope = _scopeFactory!.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
-        db.RomSources.Add(new RomSource
-        {
-            Path = path,
-            SourceType = sourceType,
-            IsEnabled = true
-        });
-        await db.SaveChangesAsync();
     }
 
     private void ShowValidation(string message)
