@@ -5,196 +5,252 @@
       "name": "Nintendo Entertainment System",
       "extensions": [".nes", ".unf", ".unif"],
       "aliases": ["NES", "Famicom", "FC"],
-      "retroarchCoreId": "fceumm"
+      "retroarchCoreId": "fceumm",
+      "screenscraperSystemId": 3,
+      "themeColor": "#E60012"
     },
     {
       "id": "snes",
       "name": "Super Nintendo",
       "extensions": [".smc", ".sfc", ".fig"],
       "aliases": ["SNES", "Super Famicom", "SFC", "Super Nintendo Entertainment System"],
-      "retroarchCoreId": "snes9x"
+      "retroarchCoreId": "snes9x",
+      "screenscraperSystemId": 4,
+      "themeColor": "#7B5EA7"
     },
     {
       "id": "n64",
       "name": "Nintendo 64",
       "extensions": [".n64", ".z64", ".v64"],
       "aliases": ["N64"],
-      "retroarchCoreId": "mupen64plus_next"
+      "retroarchCoreId": "mupen64plus_next",
+      "screenscraperSystemId": 14,
+      "themeColor": "#009900"
     },
     {
       "id": "gb",
       "name": "Game Boy",
-      "extensions": [".gb"],
+      "extensions": [".gb", ".zip"],
       "aliases": ["GB", "Game Boy"],
-      "retroarchCoreId": "gambatte"
+      "retroarchCoreId": "gambatte",
+      "screenscraperSystemId": 9,
+      "themeColor": "#306230"
     },
     {
       "id": "gbc",
       "name": "Game Boy Color",
-      "extensions": [".gbc"],
+      "extensions": [".gbc", ".zip"],
       "aliases": ["GBC"],
-      "retroarchCoreId": "gambatte"
+      "retroarchCoreId": "gambatte",
+      "screenscraperSystemId": 10,
+      "themeColor": "#6A0DAD"
     },
     {
       "id": "gba",
       "name": "Game Boy Advance",
-      "extensions": [".gba"],
+      "extensions": [".gba", ".zip"],
       "aliases": ["GBA"],
-      "retroarchCoreId": "mgba"
+      "retroarchCoreId": "mgba",
+      "screenscraperSystemId": 12,
+      "themeColor": "#3B0DBB"
     },
     {
       "id": "nds",
       "name": "Nintendo DS",
       "extensions": [".nds"],
       "aliases": ["NDS", "Nintendo DS", "DS"],
-      "retroarchCoreId": "melonds"
+      "retroarchCoreId": "melonds",
+      "screenscraperSystemId": 15,
+      "themeColor": "#CCCCCC"
     },
     {
       "id": "gamecube",
       "name": "Nintendo GameCube",
       "extensions": [".iso", ".gcm", ".gcz", ".rvz"],
       "aliases": ["GC", "NGC", "GameCube"],
-      "retroarchCoreId": null
+      "retroarchCoreId": null,
+      "screenscraperSystemId": 13,
+      "themeColor": "#604ABE"
     },
     {
       "id": "wii",
       "name": "Nintendo Wii",
       "extensions": [".iso", ".wbfs", ".rvz", ".wad"],
       "aliases": ["Wii"],
-      "retroarchCoreId": null
+      "retroarchCoreId": null,
+      "screenscraperSystemId": 16,
+      "themeColor": "#5AC5F5"
     },
     {
       "id": "switch",
       "name": "Nintendo Switch",
       "extensions": [".nsp", ".xci"],
       "aliases": ["NSW", "Switch"],
-      "retroarchCoreId": null
+      "retroarchCoreId": null,
+      "screenscraperSystemId": 225,
+      "themeColor": "#E60012"
     },
     {
       "id": "genesis",
       "name": "Sega Genesis / Mega Drive",
       "extensions": [".md", ".gen", ".bin", ".smd"],
       "aliases": ["Genesis", "Mega Drive", "MD", "Megadrive", "Sega Genesis"],
-      "retroarchCoreId": "genesis_plus_gx"
+      "retroarchCoreId": "genesis_plus_gx",
+      "screenscraperSystemId": 1,
+      "themeColor": "#1A1A1A"
     },
     {
       "id": "saturn",
       "name": "Sega Saturn",
       "extensions": [".iso", ".bin", ".cue"],
       "aliases": ["Saturn", "Sega Saturn"],
-      "retroarchCoreId": "mednafen_saturn"
+      "retroarchCoreId": "mednafen_saturn",
+      "screenscraperSystemId": 22,
+      "themeColor": "#2B3CAE"
     },
     {
       "id": "dreamcast",
       "name": "Sega Dreamcast",
       "extensions": [".gdi", ".cdi", ".chd"],
       "aliases": ["DC", "Dreamcast"],
-      "retroarchCoreId": "flycast"
+      "retroarchCoreId": "flycast",
+      "screenscraperSystemId": 23,
+      "themeColor": "#FF6600"
     },
     {
       "id": "mastersystem",
       "name": "Sega Master System",
       "extensions": [".sms"],
       "aliases": ["SMS", "Master System", "Sega Master System"],
-      "retroarchCoreId": "genesis_plus_gx"
+      "retroarchCoreId": "genesis_plus_gx",
+      "screenscraperSystemId": 2,
+      "themeColor": "#0062CC"
     },
     {
       "id": "gamegear",
       "name": "Sega Game Gear",
       "extensions": [".gg"],
       "aliases": ["GG", "Game Gear"],
-      "retroarchCoreId": "genesis_plus_gx"
+      "retroarchCoreId": "genesis_plus_gx",
+      "screenscraperSystemId": 21,
+      "themeColor": "#1A1A1A"
     },
     {
       "id": "psx",
       "name": "PlayStation",
       "extensions": [".bin", ".cue", ".iso", ".chd", ".pbp"],
       "aliases": ["PSX", "PS1", "PlayStation 1", "PlayStation1", "PSone"],
-      "retroarchCoreId": "swanstation"
+      "retroarchCoreId": "swanstation",
+      "screenscraperSystemId": 57,
+      "themeColor": "#003791"
     },
     {
       "id": "ps2",
       "name": "PlayStation 2",
       "extensions": [".iso", ".bin", ".chd", ".gz"],
       "aliases": ["PS2"],
-      "retroarchCoreId": null
+      "retroarchCoreId": null,
+      "screenscraperSystemId": 58,
+      "themeColor": "#003791"
     },
     {
       "id": "psp",
       "name": "PlayStation Portable",
       "extensions": [".iso", ".cso", ".pbp"],
       "aliases": ["PSP"],
-      "retroarchCoreId": "ppsspp"
+      "retroarchCoreId": "ppsspp",
+      "screenscraperSystemId": 61,
+      "themeColor": "#003791"
     },
     {
       "id": "3do",
       "name": "3DO",
       "extensions": [".iso", ".bin", ".cue", ".chd"],
       "aliases": ["3DO"],
-      "retroarchCoreId": "opera"
+      "retroarchCoreId": "opera",
+      "screenscraperSystemId": 29,
+      "themeColor": "#808080"
     },
     {
       "id": "atari2600",
       "name": "Atari 2600",
       "extensions": [".a26", ".bin"],
       "aliases": ["2600", "Atari 2600", "VCS"],
-      "retroarchCoreId": "stella"
+      "retroarchCoreId": "stella",
+      "screenscraperSystemId": 26,
+      "themeColor": "#C83737"
     },
     {
       "id": "atari7800",
       "name": "Atari 7800",
       "extensions": [".a78", ".bin"],
       "aliases": ["7800", "Atari 7800"],
-      "retroarchCoreId": "prosystem"
+      "retroarchCoreId": "prosystem",
+      "screenscraperSystemId": 51,
+      "themeColor": "#C83737"
     },
     {
       "id": "lynx",
       "name": "Atari Lynx",
       "extensions": [".lnx"],
       "aliases": ["Lynx", "Atari Lynx"],
-      "retroarchCoreId": "handy"
+      "retroarchCoreId": "handy",
+      "screenscraperSystemId": 28,
+      "themeColor": "#C83737"
     },
     {
       "id": "jaguar",
       "name": "Atari Jaguar",
       "extensions": [".j64", ".jag"],
       "aliases": ["Jaguar", "Atari Jaguar"],
-      "retroarchCoreId": "virtualjaguar"
+      "retroarchCoreId": "virtualjaguar",
+      "screenscraperSystemId": 27,
+      "themeColor": "#C83737"
     },
     {
       "id": "pcengine",
       "name": "PC Engine / TurboGrafx-16",
       "extensions": [".pce", ".cue", ".chd"],
       "aliases": ["PCE", "PC Engine", "TurboGrafx-16", "TurboGrafx", "TG16"],
-      "retroarchCoreId": "mednafen_pce"
+      "retroarchCoreId": "mednafen_pce",
+      "screenscraperSystemId": 31,
+      "themeColor": "#FF0000"
     },
     {
       "id": "neogeo",
       "name": "Neo Geo",
       "extensions": [".zip"],
       "aliases": ["Neo Geo", "NeoGeo", "Neo-Geo", "AES", "MVS"],
-      "retroarchCoreId": "fbneo"
+      "retroarchCoreId": "fbneo",
+      "screenscraperSystemId": 142,
+      "themeColor": "#FFD700"
     },
     {
       "id": "mame",
       "name": "MAME (Arcade)",
       "extensions": [".zip", ".7z"],
       "aliases": ["MAME", "Arcade"],
-      "retroarchCoreId": "mame"
+      "retroarchCoreId": "mame",
+      "screenscraperSystemId": null,
+      "themeColor": "#CC3300"
     },
     {
       "id": "wonderswan",
       "name": "WonderSwan / WonderSwan Color",
       "extensions": [".ws", ".wsc"],
       "aliases": ["WS", "WSC", "WonderSwan", "WonderSwan Color"],
-      "retroarchCoreId": "mednafen_wswan"
+      "retroarchCoreId": "mednafen_wswan",
+      "screenscraperSystemId": 45,
+      "themeColor": "#999999"
     },
     {
       "id": "ngpc",
       "name": "Neo Geo Pocket / Color",
       "extensions": [".ngp", ".ngc"],
       "aliases": ["NGPC", "NGP", "Neo Geo Pocket", "Neo Geo Pocket Color"],
-      "retroarchCoreId": "mednafen_ngp"
+      "retroarchCoreId": "mednafen_ngp",
+      "screenscraperSystemId": null,
+      "themeColor": "#FFD700"
     }
   ]
 }
