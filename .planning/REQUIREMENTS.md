@@ -11,11 +11,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **LIB-01**: User can configure ROM folder paths for scanning
 - [x] **LIB-02**: App scans folders in background without blocking browsing
-- [ ] **LIB-03**: User can browse ROMs organized by platform with cover art grid
+- [x] **LIB-03**: User can browse ROMs organized by platform with cover art grid
 - [ ] **LIB-04**: User can search games by name with real-time filtering
 - [ ] **LIB-05**: User can filter games by genre, year, and developer
-- [ ] **LIB-06**: User can mark games as favorites
-- [ ] **LIB-07**: App tracks recently played games with last-launched time
+- [x] **LIB-06**: User can mark games as favorites
+- [x] **LIB-07**: App tracks recently played games with last-launched time
 - [x] **LIB-08**: User can tag a path as "remote" (OS-mounted network share)
 - [ ] **LIB-09**: User can create custom cross-platform collections
 
@@ -92,11 +92,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | LIB-01 | Phase 2 | Complete |
 | LIB-02 | Phase 2 | Complete |
-| LIB-03 | Phase 2 | Pending |
+| LIB-03 | Phase 2 | Complete |
 | LIB-04 | Phase 3 | Pending |
 | LIB-05 | Phase 3 | Pending |
-| LIB-06 | Phase 2 | Pending |
-| LIB-07 | Phase 2 | Pending |
+| LIB-06 | Phase 2 | Complete |
+| LIB-07 | Phase 2 | Complete |
 | LIB-08 | Phase 1 | Complete |
 | LIB-09 | Phase 5 | Pending |
 | META-01 | Phase 3 | Pending |
