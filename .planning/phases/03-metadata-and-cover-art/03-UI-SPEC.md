@@ -96,6 +96,8 @@ Accent is NOT used on hover states, game tiles, drawer background, or read-only 
 
 ### 1. Game Tile — Enhanced (GameListView grid mode)
 
+**Primary visual anchor: cover art image in each game tile.**
+
 Extends existing 120×160 tile. New elements layered onto existing StackPanel+Grid:
 
 - **Cover art Image control** (120×100): replaces `#0f3460` placeholder Border. `Stretch="UniformToFill"`, loaded async via `PathToImageConverter`. While loading: show `#0f3460` placeholder. On confirmed unmatched: show placeholder + "No art" badge.
@@ -129,7 +131,7 @@ Extends existing 56px-height row:
   8. Action button row (horizontal, Spacing 8):
      - **Play** (primary, accent): 44px height, Background `#7C6FF7`, CornerRadius 6, text "Play" 14px SemiBold White, Play icon 16×16 white. Full width minus Edit button.
      - **Edit** (secondary, outline): 44px height, Background Transparent, BorderBrush `#555577` 1px, CornerRadius 6, text "Edit" 14px `#8888aa`, Pencil icon 16×16 `#8888aa`. Fixed 80px width.
-- **Edit mode**: triggered by Edit button. Fields become TextBox controls with `#16213e` background, `#0f3460` border. Cover art shows "Pick image..." overlay button. Save button replaces Play button (label "Save changes", accent fill). Cancel button reverts all edits.
+- **Edit mode**: triggered by Edit button. Fields become TextBox controls with `#16213e` background, `#0f3460` border. Cover art shows "Pick image..." overlay button. Save button replaces Play button (label "Save changes", accent fill). "Discard changes" button reverts all edits.
 
 ### 4. Search Bar (new — GameListView header, second row)
 
@@ -182,7 +184,7 @@ Follows existing ScanStatusBar visual language.
 - Progress row: ProgressBar (accent `#7C6FF7` fill), below it: "Scraping X / Y games" Caption 12px `#8888aa`.
 - Rate-limit pause state: "Rate limit reached — resuming in Xs" Caption 12px `#8888aa` with pause icon.
 - Unmatched count badge: "X games unmatched" Caption 12px `#E05A5A` — links to a filtered unmatched list.
-- Re-scrape library button: "Re-scrape library" — outline style, 36px height, BorderBrush `#555577`, text `#8888aa`, icon `Sync` 16×16. Triggers global re-scrape with confirmation: "Re-scrape will overwrite auto-detected metadata. Manual overrides are preserved. Continue? [Yes, re-scrape / Cancel]"
+- Re-scrape library button: "Re-scrape library" — outline style, 36px height, BorderBrush `#555577`, text `#8888aa`, icon `Sync` 16×16. Triggers global re-scrape with confirmation: "Re-scrape will overwrite auto-detected metadata. Manual overrides are preserved. Continue? [Yes, re-scrape / Keep existing metadata]"
 
 ---
 
@@ -200,8 +202,8 @@ Follows existing ScanStatusBar visual language.
 | Error state — scrape failed (rate limit) | "Rate limit reached — scraping will resume automatically in a few minutes." |
 | Error state — image load failed | No copy — show `#0f3460` placeholder silently (image errors are non-critical) |
 | "No art" badge | "No art" (12px Caption, low-prominence — not alarming) |
-| Destructive — re-scrape library | "Re-scrape will overwrite auto-detected metadata. Manual overrides are preserved. Continue?" / Confirm: "Yes, re-scrape" / Cancel: "Cancel" |
-| Destructive — remove metadata override | "This will revert your manual changes for [Game Title] to the scraped version. This cannot be undone." / Confirm: "Yes, revert" / Cancel: "Keep my changes" |
+| Destructive — re-scrape library | "Re-scrape will overwrite auto-detected metadata. Manual overrides are preserved. Continue?" / Confirm: "Yes, re-scrape" / Dismiss: "Keep existing metadata" |
+| Destructive — remove metadata override | "This will revert your manual changes for [Game Title] to the scraped version. This cannot be undone." / Confirm: "Yes, revert" / Dismiss: "Keep my changes" |
 | Play button tooltip (no emulator) | "Launch — emulator not configured yet" |
 | Search placeholder | "Search [Platform Name]..." (platform name injected from binding) |
 | Search result status | "[X] matches in [Platform Name] / [Y] total globally" |
@@ -209,7 +211,7 @@ Follows existing ScanStatusBar visual language.
 | "Load more" button | "Load 50 more results" |
 | Drawer "Also known as" collapsed | "Also known as ▶" (right-pointing triangle, toggles to ▼ expanded) |
 | Drawer region override label | "Preferred region for this game" |
-| Edit mode cancel | "Cancel" |
+| Edit mode cancel | "Discard changes" |
 | Interactive search dialog title | "Find correct match for: [filename]" |
 | Interactive search empty | "No results found. Try a different search term." |
 | Scraping progress | "Scraping [X] / [Y] games" |
@@ -250,7 +252,7 @@ Follows existing ScanStatusBar visual language.
 | Closed | Not rendered / zero-width |
 | Opening | Translate-x slide from +320 to 0, 200ms ease-out |
 | Open — view mode | Read-only content, Play + Edit buttons |
-| Open — edit mode | Editable TextBoxes, Save + Cancel buttons, Pick image overlay |
+| Open — edit mode | Editable TextBoxes, Save + "Discard changes" buttons, Pick image overlay |
 | Saving | Save button shows loading indicator (MaterialIcon `Loading` spinning, or disabled state) |
 
 ### Filter Chips
