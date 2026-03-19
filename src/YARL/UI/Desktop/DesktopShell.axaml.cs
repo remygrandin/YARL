@@ -1,5 +1,4 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -14,9 +13,10 @@ public partial class DesktopShell : Window
     private LibraryViewModel? _libraryVm;
     private LibraryView? _libraryView;
     private GameListView? _gameListView;
+    private SettingsView? _settingsView;
     private IDisposable? _selectedPlatformSub;
 
-    private enum NavSection { Library, AllGames, Favorites, RecentlyPlayed }
+    private enum NavSection { Library, AllGames, Favorites, RecentlyPlayed, Settings }
     private NavSection _currentNav = NavSection.Library;
 
     public DesktopShell()
@@ -32,16 +32,25 @@ public partial class DesktopShell : Window
         _libraryVm = mainVm.LibraryViewModel;
         _libraryView = new LibraryView { DataContext = _libraryVm };
         _gameListView = new GameListView { DataContext = _libraryVm };
+        _settingsView = new SettingsView { DataContext = mainVm.SettingsViewModel };
 
         // Watch SelectedPlatform to switch between LibraryView and GameListView
         _selectedPlatformSub?.Dispose();
         _selectedPlatformSub = _libraryVm
-            .WhenAnyValue(x => x.SelectedPlatform)
-            .Subscribe(platform =>
+            .WhenAnyValue(x => x.SelectedPlatform, x => x.ShowFavoritesOnly, x => x.ShowAllGames)
+            .Subscribe(t =>
             {
-                if (platform is not null && _currentNav == NavSection.Library)
+                var (platform, favs, all) = (t.Item1, t.Item2, t.Item3);
+                // Back button in GameListView resets all flags — return to Systems view
+                if (platform is null && !favs && !all && _currentNav != NavSection.Library)
+                {
+                    _currentNav = NavSection.Library;
+                    SetActiveNav(NavLibrary);
+                    ContentArea.Content = _libraryView;
+                }
+                else if (platform is not null && _currentNav == NavSection.Library)
                     ContentArea.Content = _gameListView;
-                else if (platform is null && _currentNav == NavSection.Library)
+                else if (platform is null && _currentNav == NavSection.Library && !favs && !all)
                     ContentArea.Content = _libraryView;
             });
 
@@ -53,21 +62,22 @@ public partial class DesktopShell : Window
     {
         _currentNav = NavSection.Library;
         SetActiveNav(NavLibrary);
+        ResetFilters();
 
-        if (_libraryVm?.SelectedPlatform is not null)
-            ContentArea.Content = _gameListView;
-        else
-            ContentArea.Content = _libraryView;
+        ContentArea.Content = _libraryVm?.SelectedPlatform is not null ? _gameListView : _libraryView;
     }
 
     private void OnNavAllGamesClicked(object? sender, RoutedEventArgs e)
     {
         _currentNav = NavSection.AllGames;
         SetActiveNav(NavAllGames);
-
-        // Show game list with no platform filter (all games)
         if (_libraryVm is not null)
+        {
+            // Set ShowAllGames = true FIRST so no intermediate (null, false, false) fires
+            _libraryVm.ShowAllGames = true;
+            _libraryVm.ShowFavoritesOnly = false;
             _libraryVm.SelectedPlatform = null;
+        }
         ContentArea.Content = _gameListView;
     }
 
@@ -75,12 +85,12 @@ public partial class DesktopShell : Window
     {
         _currentNav = NavSection.Favorites;
         SetActiveNav(NavFavorites);
-
-        // Show game list with favorites filter
         if (_libraryVm is not null)
         {
-            _libraryVm.SelectedPlatform = null;
+            // Set ShowFavoritesOnly = true FIRST so no intermediate (null, false, false) fires
             _libraryVm.ShowFavoritesOnly = true;
+            _libraryVm.ShowAllGames = false;
+            _libraryVm.SelectedPlatform = null;
         }
         ContentArea.Content = _gameListView;
     }
@@ -89,12 +99,28 @@ public partial class DesktopShell : Window
     {
         _currentNav = NavSection.RecentlyPlayed;
         SetActiveNav(NavRecentlyPlayed);
+        ResetFilters();
         ContentArea.Content = _libraryView;
+    }
+
+    private void OnNavSettingsClicked(object? sender, RoutedEventArgs e)
+    {
+        _currentNav = NavSection.Settings;
+        SetActiveNav(NavSettings);
+        ResetFilters();
+        ContentArea.Content = _settingsView;
+    }
+
+    private void ResetFilters()
+    {
+        if (_libraryVm is null) return;
+        _libraryVm.ShowFavoritesOnly = false;
+        _libraryVm.ShowAllGames = false;
     }
 
     private void SetActiveNav(Button activeButton)
     {
-        var navButtons = new[] { NavLibrary, NavAllGames, NavFavorites, NavRecentlyPlayed };
+        var navButtons = new[] { NavLibrary, NavAllGames, NavFavorites, NavRecentlyPlayed, NavSettings };
         foreach (var btn in navButtons)
         {
             if (btn is null) continue;
@@ -106,12 +132,12 @@ public partial class DesktopShell : Window
                 ? new SolidColorBrush(Color.Parse("#7C6FF7"))
                 : new SolidColorBrush(Colors.Transparent);
 
-            // Update icon and label colors inside the button
-            if (btn.Content is Avalonia.Controls.StackPanel sp)
+            // Update icon and label colors inside the button.
+            if (btn.Content is StackPanel sp)
             {
+                var color = isActive ? "#FFFFFF" : "#8888aa";
                 foreach (var child in sp.Children)
                 {
-                    var color = isActive ? "#FFFFFF" : "#8888aa";
                     if (child is Material.Icons.Avalonia.MaterialIcon icon)
                         icon.Foreground = new SolidColorBrush(Color.Parse(color));
                     else if (child is TextBlock tb)
