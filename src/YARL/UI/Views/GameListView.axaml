@@ -123,7 +123,24 @@
                                                    Margin="6,0,6,4" />
                                     </StackPanel>
 
-                                    <!-- Missing warning icon -->
+                                    <!-- Favorite heart button (top-left overlay) -->
+                                    <Button Width="28" Height="28"
+                                            Padding="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Top"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
+                                            Margin="2,2,0,0"
+                                            Tag="{Binding}"
+                                            Click="OnFavoriteClicked">
+                                        <mi:MaterialIcon Kind="Heart"
+                                                         Width="16" Height="16"
+                                                         Foreground="{Binding IsFavorite, Converter={StaticResource HeartColor}}" />
+                                    </Button>
+
+                                    <!-- Missing warning icon (top-right overlay) -->
                                     <mi:MaterialIcon Kind="Warning"
                                                      Width="16" Height="16"
                                                      Foreground="#E05A5A"
