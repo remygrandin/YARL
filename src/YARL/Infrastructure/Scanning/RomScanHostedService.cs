@@ -46,7 +46,7 @@ public class RomScanHostedService : BackgroundService
 
             _libraryVm.IsScanning = false;
             var total = _libraryVm.AllGames.Count;
-            _libraryVm.ScanProgressText = $"{report.GamesAdded} new games found  |  {report.GamesRemoved} disabled  |  {total} total";
+            _libraryVm.ScanProgressText = $"{report.GamesAdded} new games found  |  {report.GamesRemoved} games disabled  |  {report.GamesScanned} total scanned";
             _libraryVm.StatusMessage = $"Library ready — {total} games across {report.PlatformsFound} platforms.";
         }
         catch (OperationCanceledException)

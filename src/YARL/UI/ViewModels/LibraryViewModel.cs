@@ -275,7 +275,7 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
             Log.Information("[RescanAsync] LoadGamesFromDbAsync complete — {Count} games in SourceCache", _gamesSource.Count);
 
             var total = _gamesSource.Count;
-            ScanProgressText = $"{report.GamesAdded} new games found  |  {report.GamesRemoved} disabled  |  {total} total";
+            ScanProgressText = $"{report.GamesAdded} new games found  |  {report.GamesRemoved} games disabled  |  {report.GamesScanned} total scanned";
             StatusMessage = $"Library ready — {total} games across {report.PlatformsFound} platforms.";
         }
         catch (OperationCanceledException)

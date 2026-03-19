@@ -41,6 +41,7 @@ public class RomScannerService
 
         int totalGamesAdded = 0;
         int totalGamesRemoved = 0;
+        int totalFilesScanned = 0;
         int platformsFound = 0;
         var unmatchedFolders = new List<string>();
 
@@ -177,6 +178,7 @@ public class RomScannerService
                     sourceGamesAdded++;
                 }
 
+                totalFilesScanned += allowedFiles.Count;
                 progress?.Report(new ScanUpdate(platform.Name, sourceGamesAdded, allowedFiles.Count));
             }
 
@@ -243,6 +245,7 @@ public class RomScannerService
             PlatformsFound = platformsFound,
             GamesAdded = totalGamesAdded,
             GamesRemoved = totalGamesRemoved,
+            GamesScanned = totalFilesScanned,
             UnmatchedFolders = unmatchedFolders,
             CompletedAt = DateTime.UtcNow
         };
