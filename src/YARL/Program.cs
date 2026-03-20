@@ -126,16 +126,19 @@ internal static class Program
                         sp.GetRequiredService<ArtCacheService>()
                     ));
 
-                // ScraperHostedService (singleton — registered before ScrapingStatusViewModel)
-                services.AddSingleton<ScraperHostedService>();
-                services.AddHostedService(sp => sp.GetRequiredService<ScraperHostedService>());
-
-                // Scraping ViewModels (singleton — depend on ScraperHostedService)
+                // ScrapingStatusViewModel first — deferred lambda avoids circular dep with ScraperHostedService
                 services.AddSingleton<ScrapingStatusViewModel>(sp =>
-                {
-                    var hostedService = sp.GetRequiredService<ScraperHostedService>();
-                    return new ScrapingStatusViewModel(() => _ = hostedService.QueueAllForRescrapeAsync());
-                });
+                    new ScrapingStatusViewModel(
+                        () => _ = sp.GetRequiredService<ScraperHostedService>().QueueAllForRescrapeAsync()));
+
+                // ScraperHostedService — deferred lambda for progress reporting avoids circular dep
+                services.AddSingleton<ScraperHostedService>(sp =>
+                    new ScraperHostedService(
+                        sp.GetRequiredService<IServiceScopeFactory>(),
+                        sp.GetRequiredService<LibraryViewModel>(),
+                        sp.GetRequiredService<PlatformRegistry>(),
+                        progress => sp.GetRequiredService<ScrapingStatusViewModel>().UpdateProgress(progress)));
+                services.AddHostedService(sp => sp.GetRequiredService<ScraperHostedService>());
                 services.AddSingleton<GameDetailViewModel>(sp =>
                     new GameDetailViewModel(sp.GetRequiredService<IServiceScopeFactory>()));
             });

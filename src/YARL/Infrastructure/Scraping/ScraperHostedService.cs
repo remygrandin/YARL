@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using YARL.Domain.Enums;
+using YARL.Infrastructure.Images;
 using YARL.Infrastructure.Persistence;
 using YARL.Infrastructure.Scanning;
 using YARL.UI.ViewModels;
@@ -19,7 +20,7 @@ public class ScraperHostedService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly LibraryViewModel _libraryVm;
-    private readonly ScrapingStatusViewModel _scrapingStatusVm;
+    private readonly Action<ScrapingProgress>? _reportProgress;
     private readonly PlatformRegistry _platformRegistry;
     private readonly Channel<int> _scrapeQueue = Channel.CreateUnbounded<int>();
     private readonly ILogger _logger = Log.ForContext<ScraperHostedService>();
@@ -27,13 +28,13 @@ public class ScraperHostedService : BackgroundService
     public ScraperHostedService(
         IServiceScopeFactory scopeFactory,
         LibraryViewModel libraryVm,
-        ScrapingStatusViewModel scrapingStatusVm,
-        PlatformRegistry platformRegistry)
+        PlatformRegistry platformRegistry,
+        Action<ScrapingProgress>? reportProgress = null)
     {
         _scopeFactory = scopeFactory;
         _libraryVm = libraryVm;
-        _scrapingStatusVm = scrapingStatusVm;
         _platformRegistry = platformRegistry;
+        _reportProgress = reportProgress;
     }
 
     /// <summary>
@@ -117,7 +118,7 @@ public class ScraperHostedService : BackgroundService
                 _libraryVm.AddOrUpdateGame(gvm);
 
                 // Report progress
-                _scrapingStatusVm.UpdateProgress(new ScrapingProgress
+                _reportProgress?.Invoke(new ScrapingProgress
                 {
                     TotalGames = totalGames,
                     ScrapedCount = scrapedCount,
@@ -136,7 +137,7 @@ public class ScraperHostedService : BackgroundService
             }
         }
 
-        _scrapingStatusVm.UpdateProgress(new ScrapingProgress
+        _reportProgress?.Invoke(new ScrapingProgress
         {
             TotalGames = totalGames,
             ScrapedCount = scrapedCount,
