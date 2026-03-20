@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Serilog;
 using Splat;
 using YARL.Domain.Enums;
@@ -25,40 +26,28 @@ public partial class App : Application
             var mainVm = Locator.Current.GetService<MainViewModel>()!;
             var libraryVm = mainVm.LibraryViewModel;
 
-            // Run database migration via LibraryViewModel (IServiceScopeFactory not resolvable from Splat)
-            RunMigrations(libraryVm);
-
             // Determine startup mode
             var uiMode = DetermineStartupMode();
             Log.Information("Starting in {UIMode} mode", uiMode);
 
-            // Create the appropriate shell first so UI is ready before scan fires
+            // Show window immediately — migration and scan run after first render
             desktop.MainWindow = uiMode == UIMode.Fullscreen
                 ? new FullscreenShell { DataContext = mainVm }
                 : new DesktopShell { DataContext = mainVm };
 
-            // Kick off initial scan (RomScanHostedService won't auto-start without IHost)
-            Log.Information("[App] Firing startup RescanCommand");
-            _ = libraryVm.RescanCommand.Execute()
-                .Subscribe(
-                    _ => Log.Information("[App] Startup scan completed"),
-                    ex => Log.Error(ex, "[App] Startup scan threw"));
+            // Run migration on a thread-pool thread, then kick off scan on UI thread
+            _ = Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                await Task.Run(libraryVm.RunMigration);
+                Log.Information("[App] Database migration complete, firing startup scan");
+                libraryVm.RescanCommand.Execute()
+                    .Subscribe(
+                        _ => Log.Information("[App] Startup scan completed"),
+                        ex => Log.Error(ex, "[App] Startup scan threw"));
+            }, DispatcherPriority.Background);
         }
 
         base.OnFrameworkInitializationCompleted();
-    }
-
-    private static void RunMigrations(LibraryViewModel libraryVm)
-    {
-        try
-        {
-            libraryVm.RunMigration();
-            Log.Information("[App] Database migration complete");
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "[App] Database migration failed");
-        }
     }
 
     private static UIMode DetermineStartupMode()
