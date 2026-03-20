@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project scaffolding, architecture decisions, dual view shells, CI, database migration framework (completed 2026-03-18)
 - [x] **Phase 2: ROM Scanning and Library** - Background ROM scanner, library browsing by platform, favorites and recently played (completed 2026-03-19)
-- [ ] **Phase 3: Metadata and Cover Art** - Rate-limited metadata scraping, cover art, search and filters
+- [x] **Phase 3: Metadata and Cover Art** - Rate-limited metadata scraping, cover art, search and filters (completed 2026-03-20)
 - [ ] **Phase 4: Emulator Integration and Launch** - Emulator configuration, ROM launch with Flatpak abstraction
 - [ ] **Phase 5: Desktop UI Completion** - Full desktop mode, custom collections, controller-navigable settings
 - [ ] **Phase 6: Fullscreen and Gamepad Mode** - Full fullscreen view tree, D-pad navigation, Gamescope verification
@@ -67,7 +67,7 @@ Plans:
   3. User can search games by name and see results filter in real time
   4. User can filter the game list by genre, year, and developer
   5. Cover art grid loads at 60fps with 500+ items (no stutter from image decoding)
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [ ] 03-01-PLAN.md — Data foundation: Game metadata fields, GameVersion entity, ScrapeStatus enum, EF Core migration, platforms.json enrichment, Wave 0 test stubs
@@ -132,7 +132,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. ROM Scanning and Library | 4/4 | Complete   | 2026-03-19 |
-| 3. Metadata and Cover Art | 5/6 | In Progress|  |
+| 3. Metadata and Cover Art | 6/6 | Complete   | 2026-03-20 |
 | 4. Emulator Integration and Launch | 0/TBD | Not started | - |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
 | 6. Fullscreen and Gamepad Mode | 0/TBD | Not started | - |
