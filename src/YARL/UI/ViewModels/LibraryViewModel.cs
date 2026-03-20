@@ -76,6 +76,10 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     [Reactive] private int _searchMatchCount;
     [Reactive] private int _searchGlobalMatchCount;
 
+    // Display limit for 50-result cap with Load More (LIB-04)
+    [Reactive] private int _displayLimit = 50;
+    [Reactive] private bool _hasMoreResults;
+
     // Filters (LIB-05)
     [Reactive] private string? _activeGenreFilter;
     [Reactive] private string? _activeDeveloperFilter;
@@ -101,6 +105,7 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<GameViewModel, Unit> ToggleFavoriteCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelScanCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearFiltersCommand { get; }
+    public ReactiveCommand<Unit, Unit> LoadMoreCommand { get; }
     public ReactiveCommand<GameViewModel, Unit> SelectGameCommand { get; }
 
     // Dependencies for rescan
@@ -327,6 +332,17 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
             SelectedGame = game;
             IsDrawerOpen = game != null;
         });
+
+        // Load more: increment display limit by 50 (used by GameListView "Load more" button)
+        LoadMoreCommand = ReactiveCommand.Create(() => { DisplayLimit += 50; });
+
+        // Wire HasMoreResults: true when filtered games count meets or exceeds display limit
+        ((System.Collections.Specialized.INotifyCollectionChanged)_filteredGames).CollectionChanged += (_, _) =>
+            HasMoreResults = _filteredGames.Count >= DisplayLimit;
+        _disposables.Add(
+            this.WhenAnyValue(x => x.DisplayLimit)
+                .ObserveOn(_mainThreadScheduler)
+                .Subscribe(_ => HasMoreResults = _filteredGames.Count >= DisplayLimit));
 
         // Wire visibility computed properties from collection count changes + scanning state
         _disposables.Add(

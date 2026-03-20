@@ -29,4 +29,13 @@ public partial class GameListView : UserControl
             vm.SelectedPlatform = null;
         }
     }
+
+    private void OnSearchGloballyClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is LibraryViewModel vm)
+        {
+            vm.ShowAllGames = true;
+            vm.SelectedPlatform = null;
+        }
+    }
 }
