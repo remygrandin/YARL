@@ -7,7 +7,7 @@ public class PlatformDefinition
     public List<string> Extensions { get; set; } = [];
     public List<string> Aliases { get; set; } = [];
     public string? RetroarchCoreId { get; set; }
-    public int ScreenscraperSystemId { get; set; }
+    public int? ScreenscraperSystemId { get; set; }
     public string ThemeColor { get; set; } = "#0f3460";
 }
 
