@@ -6,6 +6,7 @@ using Serilog;
 using Splat;
 using YARL.Domain.Enums;
 using YARL.Infrastructure.Config;
+using YARL.Infrastructure.Scraping;
 using YARL.UI.Desktop;
 using YARL.UI.Fullscreen;
 using YARL.UI.ViewModels;
@@ -35,15 +36,28 @@ public partial class App : Application
                 ? new FullscreenShell { DataContext = mainVm }
                 : new DesktopShell { DataContext = mainVm };
 
-            // Run migration on a thread-pool thread, then kick off scan on UI thread
+            // Run migration on a thread-pool thread, then kick off scan + scrape
+            var scraperSvc = Locator.Current.GetService<ScraperHostedService>();
             _ = Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 await Task.Run(libraryVm.RunMigration);
-                Log.Information("[App] Database migration complete, firing startup scan");
+                Log.Information("[App] Migration complete");
+
+                // Start the scraper channel reader (normally started by IHost which we don't use)
+                if (scraperSvc is not null)
+                    _ = scraperSvc.StartAsync(CancellationToken.None);
+
+                // Scan, then queue pending games for scraping once scan finishes
                 libraryVm.RescanCommand.Execute()
                     .Subscribe(
-                        _ => Log.Information("[App] Startup scan completed"),
-                        ex => Log.Error(ex, "[App] Startup scan threw"));
+                        _ => { },
+                        ex => Log.Error(ex, "[App] Startup scan threw"),
+                        () =>
+                        {
+                            Log.Information("[App] Scan complete, queuing pending games for scraping");
+                            if (scraperSvc is not null)
+                                _ = scraperSvc.QueuePendingGamesAsync();
+                        });
             }, DispatcherPriority.Background);
         }
 
