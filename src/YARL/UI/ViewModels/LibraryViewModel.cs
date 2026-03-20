@@ -242,9 +242,8 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
                 .AutoRefresh(g => g.Genre)
                 .Filter(g => !string.IsNullOrEmpty(g.Genre))
                 .DistinctValues(g => g.Genre!)
-                .Sort(Comparer<string>.Default)
                 .ObserveOn(_mainThreadScheduler)
-                .Bind(out _availableGenres)
+                .SortAndBind(out _availableGenres, Comparer<string>.Default)
                 .Subscribe());
 
         // Available developers derived collection
@@ -253,9 +252,8 @@ public partial class LibraryViewModel : ReactiveObject, IDisposable
                 .AutoRefresh(g => g.Developer)
                 .Filter(g => !string.IsNullOrEmpty(g.Developer))
                 .DistinctValues(g => g.Developer!)
-                .Sort(Comparer<string>.Default)
                 .ObserveOn(_mainThreadScheduler)
-                .Bind(out _availableDevelopers)
+                .SortAndBind(out _availableDevelopers, Comparer<string>.Default)
                 .Subscribe());
 
         // Search match count
