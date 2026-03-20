@@ -68,7 +68,8 @@ internal static class Program
                 ));
                 services.AddSingleton<SettingsViewModel>(sp => new SettingsViewModel(
                     sp.GetRequiredService<IServiceScopeFactory>(),
-                    sp.GetRequiredService<LibraryViewModel>()
+                    sp.GetRequiredService<LibraryViewModel>(),
+                    sp.GetRequiredService<ScrapingStatusViewModel>()
                 ));
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<IScreen>(sp => sp.GetRequiredService<MainViewModel>());

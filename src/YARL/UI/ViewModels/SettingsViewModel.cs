@@ -18,6 +18,8 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
     private readonly IServiceScopeFactory? _scopeFactory;
     private readonly LibraryViewModel? _libraryVm;
 
+    public ScrapingStatusViewModel? ScrapingStatus { get; }
+
     public ObservableCollection<RomSourceViewModel> RomSources { get; } = new();
 
     [Reactive] private bool _hasSources;
@@ -30,10 +32,14 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> CancelPurgeCommand { get; }
     public ReactiveCommand<Unit, Unit> PurgeMissingCommand { get; }
 
-    public SettingsViewModel(IServiceScopeFactory? scopeFactory = null, LibraryViewModel? libraryVm = null)
+    public SettingsViewModel(
+        IServiceScopeFactory? scopeFactory = null,
+        LibraryViewModel? libraryVm = null,
+        ScrapingStatusViewModel? scrapingStatusVm = null)
     {
         _scopeFactory = scopeFactory;
         _libraryVm = libraryVm;
+        ScrapingStatus = scrapingStatusVm;
 
         RomSources.CollectionChanged += (_, _) => HasSources = RomSources.Count > 0;
 

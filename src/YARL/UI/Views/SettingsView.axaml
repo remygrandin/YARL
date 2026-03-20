@@ -151,6 +151,74 @@
             </ItemsControl>
         </Border>
 
+        <!-- Metadata scraping section heading -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="METADATA SCRAPING"
+                   FontSize="12"
+                   FontWeight="SemiBold"
+                   Foreground="#555577"
+                   Margin="0,24,0,8" />
+
+        <!-- Metadata scraping panel -->
+        <Border DockPanel.Dock="Top"
+                Background="#16213e"
+                CornerRadius="6"
+                Padding="16"
+                Margin="0,0,0,0">
+            <StackPanel DataContext="{Binding ScrapingStatus}" Spacing="10">
+
+                <!-- Progress bar (visible while scraping) -->
+                <ProgressBar Value="{Binding ProgressPercent}"
+                             Maximum="100"
+                             Height="4"
+                             Foreground="#7C6FF7"
+                             Background="#0f3460"
+                             IsVisible="{Binding IsScraping}" />
+
+                <!-- Status text -->
+                <TextBlock Text="{Binding StatusText}"
+                           FontSize="12"
+                           Foreground="#8888aa"
+                           TextWrapping="Wrap" />
+
+                <!-- Unmatched count (visible when unmatched > 0) -->
+                <TextBlock FontSize="12"
+                           Foreground="#E05A5A">
+                    <TextBlock.IsVisible>
+                        <Binding Path="UnmatchedCount"
+                                 Converter="{x:Static ObjectConverters.IsNotNull}" />
+                    </TextBlock.IsVisible>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} games unmatched">
+                            <Binding Path="UnmatchedCount" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <!-- Re-scrape library button -->
+                <Button Height="36"
+                        Padding="12,0"
+                        Background="Transparent"
+                        BorderBrush="#555577"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        HorizontalAlignment="Left"
+                        Command="{Binding RescrapeLibraryCommand}"
+                        ToolTip.Tip="Re-scrape all games, overwriting auto-detected metadata (manual overrides are preserved)">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <mi:MaterialIcon Kind="Sync"
+                                         Width="16" Height="16"
+                                         Foreground="#8888aa" />
+                        <TextBlock Text="Re-scrape library"
+                                   FontSize="14"
+                                   Foreground="#8888aa"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </Border>
+
         <!-- Danger zone -->
         <TextBlock DockPanel.Dock="Top"
                    Text="DANGER ZONE"
