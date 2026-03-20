@@ -137,6 +137,22 @@ None - no external service configuration required.
 - Cover art tiles will automatically populate as ScraperHostedService processes games and updates CoverArtPath
 - Plan 03-06 (detail drawer / game detail view) can use the SelectGameCommand wiring already in place
 
+## Self-Check: PASSED
+
+All files found:
+- FOUND: src/YARL/App.axaml
+- FOUND: src/YARL/UI/Converters/NullToPlaceholderConverter.cs
+- FOUND: src/YARL/UI/Converters/ScrapeStatusToVisibilityConverter.cs
+- FOUND: src/YARL/UI/Converters/PathToImageConverter.cs
+- FOUND: src/YARL/UI/Views/GameListView.axaml
+- FOUND: src/YARL/UI/Views/GameListView.axaml.cs
+- FOUND: src/YARL/UI/ViewModels/LibraryViewModel.cs
+
+All commits found:
+- FOUND: 2ec2348 (feat: converters and App.axaml)
+- FOUND: 2ba1349 (feat: GameListView enhanced)
+- FOUND: 226eab0 (docs: plan metadata)
+
 ---
 *Phase: 03-metadata-and-cover-art*
 *Completed: 2026-03-20*
