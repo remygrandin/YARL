@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-19T20:31:14.031Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-03-20T00:10:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 03 (metadata-and-cover-art) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Plan: 4 of 6
 | Phase 03-metadata-and-cover-art P01 | 4 | 2 tasks | 10 files |
 | Phase 03-metadata-and-cover-art P02 | 9 | 2 tasks | 10 files |
 | Phase 03-metadata-and-cover-art P03 | 10 | 2 tasks | 5 files |
+| Phase 03-metadata-and-cover-art P04 | 15 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,10 @@ Recent decisions affecting current work:
 - [Phase 03-03]: TestScheduler debounce flush margin: advance beyond 250ms to drain ObserveOn queue after Throttle fires
 - [Phase 03-03]: IServiceScopeFactory in GameDetailViewModel for scoped DB lifetime — matches existing LibraryViewModel pattern
 - [Phase 03-03]: CombineLatest 5-predicate filter: platform + search + genre + developer + year with AND logic via Func<GameViewModel,bool> composition
+- [Phase 03-04]: ScraperHostedService registered as AddSingleton + AddHostedService(sp => sp.GetRequired<ScraperHostedService>()) — allows same singleton instance to be resolved directly and as IHostedService
+- [Phase 03-04]: RescrapeLibraryCommand uses () => _ = hostedService.QueueAllForRescrapeAsync() fire-and-forget lambda — avoids async void in ReactiveCommand.Create Action callback
+- [Phase 03-04]: IConfiguration registered via ConfigurationBuilder.AddEnvironmentVariables() so ScreenScraperClient can read YARL_SS_* credentials without appsettings.json
+- [Phase 03-04]: Polly using directive required explicitly for DelayBackoffType/HttpRetryStrategyOptions — not included in Microsoft.Extensions.Http.Resilience implicit usings
 
 ### Pending Todos
 
@@ -112,6 +117,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T20:31:14.027Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-20T00:10:00.000Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
