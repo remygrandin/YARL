@@ -1,0 +1,125 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:local="clr-namespace:YARL.UI.Views"
+        x:Class="YARL.UI.Views.InteractiveSearchDialog"
+        x:DataType="local:InteractiveSearchDialogModel"
+        Title="Find correct match"
+        Width="640"
+        Height="480"
+        Background="#1a1a2e"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <DockPanel Margin="24">
+
+        <!-- Header -->
+        <StackPanel DockPanel.Dock="Top" Spacing="12" Margin="0,0,0,16">
+            <TextBlock x:Name="DialogTitle"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="#FFFFFF"
+                       TextWrapping="Wrap" />
+
+            <!-- Search box row -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox x:Name="SearchBox"
+                         Grid.Column="0"
+                         FontSize="14"
+                         Background="#16213e"
+                         BorderBrush="#0f3460"
+                         BorderThickness="1"
+                         CornerRadius="4"
+                         Padding="8,6"
+                         Watermark="Search for game title..."
+                         AutomationProperties.Name="Search games" />
+                <Button x:Name="SearchButton"
+                        Grid.Column="1"
+                        Height="36"
+                        Padding="16,0"
+                        Background="#7C6FF7"
+                        BorderThickness="0"
+                        CornerRadius="4"
+                        Click="OnSearchClicked"
+                        ToolTip.Tip="Search for matching games">
+                    <TextBlock Text="Search"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#FFFFFF" />
+                </Button>
+            </Grid>
+        </StackPanel>
+
+        <!-- Results area -->
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Results list -->
+                <ItemsControl x:Name="ResultsList"
+                              IsVisible="{Binding HasResults}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="local:SearchResultItem">
+                            <Border Background="#16213e"
+                                    CornerRadius="4"
+                                    Padding="12"
+                                    Margin="0,0,0,8">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                                    <!-- Thumbnail placeholder -->
+                                    <Border Grid.Column="0"
+                                            Width="48"
+                                            Height="48"
+                                            Background="#0f3460"
+                                            CornerRadius="4" />
+
+                                    <!-- Title and year -->
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="4"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}"
+                                                   FontSize="14"
+                                                   Foreground="#FFFFFF"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Year}"
+                                                   FontSize="12"
+                                                   Foreground="#8888aa" />
+                                    </StackPanel>
+
+                                    <!-- Select button -->
+                                    <Button Grid.Column="2"
+                                            Height="32"
+                                            Padding="12,0"
+                                            Background="#7C6FF7"
+                                            BorderThickness="0"
+                                            CornerRadius="4"
+                                            Tag="{Binding}"
+                                            Click="OnSelectResultClicked"
+                                            ToolTip.Tip="Select this match">
+                                        <TextBlock Text="Select"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#FFFFFF"
+                                                   VerticalAlignment="Center" />
+                                    </Button>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Empty state -->
+                <TextBlock x:Name="EmptyStateText"
+                           Text="No results found. Try a different search term."
+                           FontSize="12"
+                           Foreground="#8888aa"
+                           HorizontalAlignment="Center"
+                           Margin="0,32,0,0"
+                           IsVisible="{Binding !HasResults}" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
+
+</Window>

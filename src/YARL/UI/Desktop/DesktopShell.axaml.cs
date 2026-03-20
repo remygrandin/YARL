@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ReactiveUI;
+using Splat;
 using YARL.UI.ViewModels;
 using YARL.UI.Views;
 
@@ -15,6 +16,7 @@ public partial class DesktopShell : Window
     private GameListView? _gameListView;
     private SettingsView? _settingsView;
     private IDisposable? _selectedPlatformSub;
+    private IDisposable? _selectedGameSub;
 
     private enum NavSection { Library, AllGames, Favorites, RecentlyPlayed, Settings }
     private NavSection _currentNav = NavSection.Library;
@@ -56,6 +58,30 @@ public partial class DesktopShell : Window
 
         // Initial view
         ContentArea.Content = _libraryView;
+
+        // Wire GameDetailDrawer: load game and toggle drawerOpen class on SelectedGame changes
+        var detailVm = Locator.Current.GetService<GameDetailViewModel>();
+        if (detailVm is not null && DetailDrawer is not null)
+        {
+            DetailDrawer.DataContext = detailVm;
+
+            _selectedGameSub?.Dispose();
+            _selectedGameSub = _libraryVm
+                .WhenAnyValue(x => x.SelectedGame)
+                .Subscribe(game =>
+                {
+                    detailVm.LoadGame(game);
+
+                    // Apply/remove drawerOpen class on the inner Border to trigger slide animation
+                    if (DetailDrawer.FindControl<Avalonia.Controls.Border>("DrawerBorder") is { } border)
+                    {
+                        if (game != null)
+                            border.Classes.Add("drawerOpen");
+                        else
+                            border.Classes.Remove("drawerOpen");
+                    }
+                });
+        }
     }
 
     private void OnNavLibraryClicked(object? sender, RoutedEventArgs e)
@@ -150,6 +176,7 @@ public partial class DesktopShell : Window
     protected override void OnClosed(EventArgs e)
     {
         _selectedPlatformSub?.Dispose();
+        _selectedGameSub?.Dispose();
         base.OnClosed(e);
     }
 }

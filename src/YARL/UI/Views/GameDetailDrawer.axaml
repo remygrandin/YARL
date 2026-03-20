@@ -1,0 +1,321 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:asyncLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             x:Class="YARL.UI.Views.GameDetailDrawer"
+             x:DataType="vm:GameDetailViewModel"
+             Width="320"
+             IsVisible="{Binding Game, Converter={x:Static ObjectConverters.IsNotNull}}">
+
+    <UserControl.Styles>
+        <Style Selector="Border.drawerPanel">
+            <Setter Property="RenderTransform" Value="translateX(320px)" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform"
+                                                   Duration="0:0:0.2"
+                                                   Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.drawerPanel.drawerOpen">
+            <Setter Property="RenderTransform" Value="translateX(0px)" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border x:Name="DrawerBorder"
+            Classes="drawerPanel"
+            Background="#1a1a2e"
+            BorderBrush="#0f3460"
+            BorderThickness="1,0,0,0"
+            Padding="24">
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="12">
+
+                <!-- Large boxart -->
+                <Border Width="272"
+                        Height="272"
+                        CornerRadius="4"
+                        Background="#0f3460"
+                        ClipToBounds="True">
+                    <asyncLoader:AdvancedImage Source="{Binding Game.CoverArtPath}"
+                                               Width="272"
+                                               Height="272"
+                                               Stretch="UniformToFill" />
+                </Border>
+
+                <!-- Title -->
+                <TextBlock Text="{Binding Game.Title}"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF"
+                           TextWrapping="Wrap"
+                           Margin="0,4,0,0" />
+
+                <!-- Aliases expander -->
+                <Expander Header="Also known as"
+                          IsExpanded="{Binding IsAliasesExpanded}"
+                          IsVisible="{Binding Game.Aliases.Count, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <Expander.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"
+                                       FontSize="12"
+                                       Foreground="#8888aa" />
+                        </DataTemplate>
+                    </Expander.HeaderTemplate>
+                    <ItemsControl ItemsSource="{Binding Game.Aliases}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                           FontSize="12"
+                                           Foreground="#FFFFFF"
+                                           Margin="0,2,0,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Expander>
+
+                <!-- Metadata grid (view mode) -->
+                <Grid IsVisible="{Binding !IsEditMode}"
+                      ColumnDefinitions="Auto,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto"
+                      RowSpacing="6"
+                      ColumnSpacing="12">
+
+                    <!-- Genre -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Genre"
+                               FontSize="12"
+                               Foreground="#555577"
+                               VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding Game.Genre}"
+                               FontSize="14"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+
+                    <!-- Year -->
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="Year"
+                               FontSize="12"
+                               Foreground="#555577"
+                               VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="{Binding Game.ReleaseYear}"
+                               FontSize="14"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center" />
+
+                    <!-- Developer -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="Developer"
+                               FontSize="12"
+                               Foreground="#555577"
+                               VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               Text="{Binding Game.Developer}"
+                               FontSize="14"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+
+                    <!-- Publisher -->
+                    <TextBlock Grid.Row="3" Grid.Column="0"
+                               Text="Publisher"
+                               FontSize="12"
+                               Foreground="#555577"
+                               VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="3" Grid.Column="1"
+                               Text="{Binding Game.Publisher}"
+                               FontSize="14"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+
+                </Grid>
+
+                <!-- Metadata edit (edit mode) -->
+                <StackPanel IsVisible="{Binding IsEditMode}" Spacing="8">
+
+                    <TextBlock Text="Genre"
+                               FontSize="12"
+                               Foreground="#555577" />
+                    <TextBox Text="{Binding EditGenre}"
+                             FontSize="14"
+                             Background="#16213e"
+                             BorderBrush="#0f3460"
+                             BorderThickness="1"
+                             CornerRadius="4"
+                             Padding="8,6" />
+
+                    <TextBlock Text="Release Year"
+                               FontSize="12"
+                               Foreground="#555577" />
+                    <TextBox Text="{Binding EditReleaseYear}"
+                             FontSize="14"
+                             Background="#16213e"
+                             BorderBrush="#0f3460"
+                             BorderThickness="1"
+                             CornerRadius="4"
+                             Padding="8,6" />
+
+                    <TextBlock Text="Developer"
+                               FontSize="12"
+                               Foreground="#555577" />
+                    <TextBox Text="{Binding EditDeveloper}"
+                             FontSize="14"
+                             Background="#16213e"
+                             BorderBrush="#0f3460"
+                             BorderThickness="1"
+                             CornerRadius="4"
+                             Padding="8,6" />
+
+                    <TextBlock Text="Publisher"
+                               FontSize="12"
+                               Foreground="#555577" />
+                    <TextBox Text="{Binding EditPublisher}"
+                             FontSize="14"
+                             Background="#16213e"
+                             BorderBrush="#0f3460"
+                             BorderThickness="1"
+                             CornerRadius="4"
+                             Padding="8,6" />
+
+                    <TextBlock Text="Description"
+                               FontSize="12"
+                               Foreground="#555577" />
+                    <TextBox Text="{Binding EditDescription}"
+                             FontSize="14"
+                             Background="#16213e"
+                             BorderBrush="#0f3460"
+                             BorderThickness="1"
+                             CornerRadius="4"
+                             Padding="8,6"
+                             AcceptsReturn="True"
+                             MaxHeight="120"
+                             TextWrapping="Wrap" />
+
+                </StackPanel>
+
+                <!-- Description (view mode) -->
+                <TextBlock IsVisible="{Binding !IsEditMode}"
+                           Text="{Binding Game.Description}"
+                           FontSize="14"
+                           Foreground="#FFFFFF"
+                           TextWrapping="Wrap"
+                           MaxLines="6"
+                           TextTrimming="CharacterEllipsis" />
+
+                <!-- Action buttons (view mode) -->
+                <Grid IsVisible="{Binding !IsEditMode}"
+                      ColumnDefinitions="*,Auto"
+                      ColumnSpacing="8"
+                      Margin="0,4,0,0">
+
+                    <!-- Play button -->
+                    <Button Grid.Column="0"
+                            Height="44"
+                            Background="#7C6FF7"
+                            BorderThickness="0"
+                            CornerRadius="6"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            ToolTip.Tip="Launch -- emulator not configured yet">
+                        <Grid Height="44">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="6">
+                                <mi:MaterialIcon Kind="Play"
+                                                 Width="16" Height="16"
+                                                 Foreground="#FFFFFF" />
+                                <TextBlock Text="Play"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="#FFFFFF" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <!-- Edit button -->
+                    <Button Grid.Column="1"
+                            Height="44"
+                            Width="80"
+                            Background="Transparent"
+                            BorderBrush="#555577"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Command="{Binding EnterEditModeCommand}"
+                            ToolTip.Tip="Edit metadata">
+                        <Grid Height="44" Width="80">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="6">
+                                <mi:MaterialIcon Kind="Pencil"
+                                                 Width="16" Height="16"
+                                                 Foreground="#8888aa" />
+                                <TextBlock Text="Edit"
+                                           FontSize="14"
+                                           Foreground="#8888aa" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                </Grid>
+
+                <!-- Action buttons (edit mode) -->
+                <Grid IsVisible="{Binding IsEditMode}"
+                      ColumnDefinitions="*,Auto"
+                      ColumnSpacing="8"
+                      Margin="0,4,0,0">
+
+                    <!-- Save changes button -->
+                    <Button Grid.Column="0"
+                            Height="44"
+                            Background="#7C6FF7"
+                            BorderThickness="0"
+                            CornerRadius="6"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Command="{Binding SaveCommand}"
+                            ToolTip.Tip="Save metadata changes">
+                        <Grid Height="44">
+                            <TextBlock Text="Save changes"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#FFFFFF" />
+                        </Grid>
+                    </Button>
+
+                    <!-- Discard changes button -->
+                    <Button Grid.Column="1"
+                            Height="44"
+                            Background="Transparent"
+                            BorderBrush="#555577"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="12,0"
+                            Command="{Binding DiscardCommand}"
+                            ToolTip.Tip="Discard changes">
+                        <TextBlock Text="Discard changes"
+                                   FontSize="12"
+                                   Foreground="#8888aa"
+                                   VerticalAlignment="Center" />
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Border>
+
+</UserControl>
