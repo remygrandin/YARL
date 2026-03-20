@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http;
-using Microsoft.Extensions.Configuration;
 using NSubstitute;
+using YARL.Infrastructure.Config;
 using YARL.Infrastructure.Scraping;
 
 namespace YARL.Tests.Phase3;
@@ -102,7 +102,7 @@ public class ScreenScraperClientTests
     private static ScreenScraperClient CreateClient(string responseJson)
     {
         var httpClient = new HttpClient(new FakeMessageHandler(responseJson));
-        var config = new ConfigurationBuilder().Build();
+        var config = new AppConfig();
         return new ScreenScraperClient(httpClient, config);
     }
 
