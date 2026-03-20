@@ -241,14 +241,14 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Username"
                                Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
                     <TextBox Grid.Row="0" Grid.Column="1"
-                             Text="{Binding SettingsViewModel.ScreenScraperUser, Mode=TwoWay}"
+                             Text="{Binding ScreenScraperUser, Mode=TwoWay}"
                              Watermark="ScreenScraper username"
                              Background="#0f3460" Foreground="#FFFFFF"
                              BorderBrush="#2a2a4a" Margin="0,0,0,6" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Password"
                                Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="1"
-                             Text="{Binding SettingsViewModel.ScreenScraperPass, Mode=TwoWay}"
+                             Text="{Binding ScreenScraperPass, Mode=TwoWay}"
                              Watermark="ScreenScraper password"
                              PasswordChar="●"
                              Background="#0f3460" Foreground="#FFFFFF"
@@ -264,14 +264,14 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Client ID"
                                Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
                     <TextBox Grid.Row="0" Grid.Column="1"
-                             Text="{Binding SettingsViewModel.IgdbClientId, Mode=TwoWay}"
+                             Text="{Binding IgdbClientId, Mode=TwoWay}"
                              Watermark="Twitch app client ID"
                              Background="#0f3460" Foreground="#FFFFFF"
                              BorderBrush="#2a2a4a" Margin="0,0,0,6" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Client Secret"
                                Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="1"
-                             Text="{Binding SettingsViewModel.IgdbClientSecret, Mode=TwoWay}"
+                             Text="{Binding IgdbClientSecret, Mode=TwoWay}"
                              Watermark="Twitch app client secret"
                              PasswordChar="●"
                              Background="#0f3460" Foreground="#FFFFFF"
@@ -279,7 +279,7 @@
                 </Grid>
 
                 <Button Content="Save credentials"
-                        Command="{Binding SettingsViewModel.SaveScraperCredentialsCommand}"
+                        Command="{Binding SaveScraperCredentialsCommand}"
                         Background="#7C6FF7"
                         Foreground="#FFFFFF"
                         Padding="16,8"
