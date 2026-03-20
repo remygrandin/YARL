@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using YARL.Infrastructure.Persistence;
+using YARL.Infrastructure.Scraping;
 using YARL.UI.ViewModels;
 
 namespace YARL.Infrastructure.Scanning;
@@ -10,11 +11,16 @@ public class RomScanHostedService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly LibraryViewModel _libraryVm;
+    private readonly ScraperHostedService _scraperService;
 
-    public RomScanHostedService(IServiceScopeFactory scopeFactory, LibraryViewModel libraryVm)
+    public RomScanHostedService(
+        IServiceScopeFactory scopeFactory,
+        LibraryViewModel libraryVm,
+        ScraperHostedService scraperService)
     {
         _scopeFactory = scopeFactory;
         _libraryVm = libraryVm;
+        _scraperService = scraperService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,6 +49,16 @@ public class RomScanHostedService : BackgroundService
 
             // Populate SourceCache from DB after scan completes
             await _libraryVm.LoadGamesFromDbAsync(db);
+
+            // Trigger auto-scrape for new/unscraped games
+            try
+            {
+                await _scraperService.QueuePendingGamesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "[RomScanHostedService] Failed to queue games for scraping");
+            }
 
             _libraryVm.IsScanning = false;
             var total = _libraryVm.AllGames.Count;
