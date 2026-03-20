@@ -1,6 +1,7 @@
 using IGDB;
 using IGDB.Models;
 using Serilog;
+using YARL.Infrastructure.Config;
 
 namespace YARL.Infrastructure.Scraping;
 
@@ -11,16 +12,21 @@ namespace YARL.Infrastructure.Scraping;
 /// </summary>
 public class IgdbClient : IMetadataScraper
 {
-    private readonly IGDBClient _igdbClient;
+    private readonly AppConfig _config;
     private readonly ILogger _logger;
 
     public string SourceName => "igdb";
 
-    public IgdbClient(IGDBClient igdbClient)
+    public IgdbClient(AppConfig config)
     {
-        _igdbClient = igdbClient;
+        _config = config;
         _logger = Log.ForContext<IgdbClient>();
     }
+
+    private IGDBClient CreateClient() =>
+        IGDBClient.CreateWithDefaults(
+            _config.IgdbClientId ?? "",
+            _config.IgdbClientSecret ?? "");
 
     /// <summary>
     /// IGDB does not support CRC32/hash-based lookup — always returns null.
@@ -42,7 +48,7 @@ public class IgdbClient : IMetadataScraper
                         $"involved_companies.company.name,involved_companies.developer,involved_companies.publisher," +
                         $"summary; search \"{EscapeIgdbString(title)}\"; limit 5;";
 
-            var games = await _igdbClient.QueryAsync<Game>(IGDBClient.Endpoints.Games, query);
+            var games = await CreateClient().QueryAsync<Game>(IGDBClient.Endpoints.Games, query);
 
             var game = games?.FirstOrDefault();
             if (game == null)

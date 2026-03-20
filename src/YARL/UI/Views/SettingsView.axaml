@@ -219,6 +219,75 @@
             </StackPanel>
         </Border>
 
+        <!-- Scraping credentials -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="SCRAPING CREDENTIALS"
+                   FontSize="11"
+                   FontWeight="SemiBold"
+                   Foreground="#8888aa"
+                   Margin="0,16,0,8" />
+
+        <Border DockPanel.Dock="Top"
+                Background="#16213e"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,8">
+            <StackPanel Spacing="12">
+                <TextBlock Text="ScreenScraper"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF" />
+                <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Username"
+                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Text="{Binding SettingsViewModel.ScreenScraperUser, Mode=TwoWay}"
+                             Watermark="ScreenScraper username"
+                             Background="#0f3460" Foreground="#FFFFFF"
+                             BorderBrush="#2a2a4a" Margin="0,0,0,6" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Password"
+                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Text="{Binding SettingsViewModel.ScreenScraperPass, Mode=TwoWay}"
+                             Watermark="ScreenScraper password"
+                             PasswordChar="●"
+                             Background="#0f3460" Foreground="#FFFFFF"
+                             BorderBrush="#2a2a4a" />
+                </Grid>
+
+                <TextBlock Text="IGDB (optional fallback)"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF"
+                           Margin="0,8,0,0" />
+                <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Client ID"
+                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Text="{Binding SettingsViewModel.IgdbClientId, Mode=TwoWay}"
+                             Watermark="Twitch app client ID"
+                             Background="#0f3460" Foreground="#FFFFFF"
+                             BorderBrush="#2a2a4a" Margin="0,0,0,6" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Client Secret"
+                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Text="{Binding SettingsViewModel.IgdbClientSecret, Mode=TwoWay}"
+                             Watermark="Twitch app client secret"
+                             PasswordChar="●"
+                             Background="#0f3460" Foreground="#FFFFFF"
+                             BorderBrush="#2a2a4a" />
+                </Grid>
+
+                <Button Content="Save credentials"
+                        Command="{Binding SettingsViewModel.SaveScraperCredentialsCommand}"
+                        Background="#7C6FF7"
+                        Foreground="#FFFFFF"
+                        Padding="16,8"
+                        HorizontalAlignment="Right"
+                        CornerRadius="6" />
+            </StackPanel>
+        </Border>
+
         <!-- Danger zone -->
         <TextBlock DockPanel.Dock="Top"
                    Text="DANGER ZONE"

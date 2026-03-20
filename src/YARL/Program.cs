@@ -1,6 +1,5 @@
 using Avalonia;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Polly;
@@ -69,7 +68,9 @@ internal static class Program
                 services.AddSingleton<SettingsViewModel>(sp => new SettingsViewModel(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<LibraryViewModel>(),
-                    sp.GetRequiredService<ScrapingStatusViewModel>()
+                    sp.GetRequiredService<ScrapingStatusViewModel>(),
+                    sp.GetRequiredService<AppConfig>(),
+                    sp.GetRequiredService<AppConfigService>()
                 ));
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<IScreen>(sp => sp.GetRequiredService<MainViewModel>());
@@ -87,12 +88,6 @@ internal static class Program
                 services.AddScoped<RomScannerService>();
                 services.AddHostedService<RomScanHostedService>();
 
-                // IConfiguration (for ScreenScraperClient credential lookup)
-                services.AddSingleton<IConfiguration>(_ =>
-                    new ConfigurationBuilder()
-                        .AddEnvironmentVariables()
-                        .Build());
-
                 // Phase 3: Scraping — HTTP clients with resilience
                 services.AddHttpClient<ScreenScraperClient>()
                     .AddResilienceHandler("screenscraper", builder =>
@@ -108,14 +103,6 @@ internal static class Program
                         });
                     });
                 services.AddHttpClient<ArtCacheService>();
-
-                // IGDB client (uses kamranayub/igdb-dotnet SDK)
-                services.AddSingleton(_ =>
-                {
-                    var clientId = Environment.GetEnvironmentVariable("YARL_IGDB_CLIENT_ID") ?? "";
-                    var clientSecret = Environment.GetEnvironmentVariable("YARL_IGDB_CLIENT_SECRET") ?? "";
-                    return IGDB.IGDBClient.CreateWithDefaults(clientId, clientSecret);
-                });
                 services.AddScoped<IgdbClient>();
 
                 // Scraper pipeline (scoped — uses scoped DbContext)

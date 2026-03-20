@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using Serilog;
+using YARL.Infrastructure.Config;
 
 namespace YARL.Infrastructure.Scraping;
 
@@ -12,21 +12,15 @@ namespace YARL.Infrastructure.Scraping;
 public class ScreenScraperClient : IMetadataScraper
 {
     private readonly HttpClient _httpClient;
-    private readonly string _devId;
-    private readonly string _devPassword;
-    private readonly string? _userId;
-    private readonly string? _userPassword;
+    private readonly AppConfig _config;
     private readonly ILogger _logger;
 
     public string SourceName => "screenscraper";
 
-    public ScreenScraperClient(HttpClient httpClient, IConfiguration configuration)
+    public ScreenScraperClient(HttpClient httpClient, AppConfig config)
     {
         _httpClient = httpClient;
-        _devId = configuration["ScreenScraper:DevId"] ?? Environment.GetEnvironmentVariable("YARL_SS_DEVID") ?? "";
-        _devPassword = configuration["ScreenScraper:DevPassword"] ?? Environment.GetEnvironmentVariable("YARL_SS_DEVPASSWORD") ?? "";
-        _userId = configuration["ScreenScraper:UserId"] ?? Environment.GetEnvironmentVariable("YARL_SS_USERID");
-        _userPassword = configuration["ScreenScraper:UserPassword"] ?? Environment.GetEnvironmentVariable("YARL_SS_USERPASSWORD");
+        _config = config;
         _logger = Log.ForContext<ScreenScraperClient>();
     }
 
@@ -53,13 +47,12 @@ public class ScreenScraperClient : IMetadataScraper
     private string BuildUrl(int systemId, string searchParam)
     {
         var sb = new StringBuilder("https://www.screenscraper.fr/api2/jeuInfos.php?");
-        sb.Append($"devid={Uri.EscapeDataString(_devId)}&");
-        sb.Append($"devpassword={Uri.EscapeDataString(_devPassword)}&");
+        sb.Append($"devid=&devpassword=&");
         sb.Append($"softname=yarl&output=json&");
         sb.Append($"systemeid={systemId}&");
         sb.Append(searchParam);
-        if (!string.IsNullOrEmpty(_userId))
-            sb.Append($"&ssid={Uri.EscapeDataString(_userId)}&sspassword={Uri.EscapeDataString(_userPassword ?? "")}");
+        if (!string.IsNullOrEmpty(_config.ScreenScraperUser))
+            sb.Append($"&ssid={Uri.EscapeDataString(_config.ScreenScraperUser)}&sspassword={Uri.EscapeDataString(_config.ScreenScraperPass ?? "")}");
         return sb.ToString();
     }
 

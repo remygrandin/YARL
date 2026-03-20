@@ -8,6 +8,7 @@ using ReactiveUI.SourceGenerators;
 using Serilog;
 using YARL.Domain.Enums;
 using YARL.Domain.Models;
+using YARL.Infrastructure.Config;
 using YARL.Infrastructure.Persistence;
 
 namespace YARL.UI.ViewModels;
@@ -17,6 +18,8 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
     private readonly CompositeDisposable _disposables = new();
     private readonly IServiceScopeFactory? _scopeFactory;
     private readonly LibraryViewModel? _libraryVm;
+    private readonly AppConfig? _appConfig;
+    private readonly AppConfigService? _appConfigService;
 
     public ScrapingStatusViewModel? ScrapingStatus { get; }
 
@@ -26,20 +29,37 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
     [Reactive] private bool _isPurgeConfirmVisible;
     [Reactive] private int _missingGamesCount;
 
+    // Scraper credentials
+    [Reactive] private string _screenScraperUser = "";
+    [Reactive] private string _screenScraperPass = "";
+    [Reactive] private string _igdbClientId = "";
+    [Reactive] private string _igdbClientSecret = "";
+
     public ReactiveCommand<RomSourceViewModel, Unit> RemoveSourceCommand { get; }
     public ReactiveCommand<RomSourceViewModel, Unit> ToggleSourceCommand { get; }
     public ReactiveCommand<Unit, Unit> ShowPurgeConfirmCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelPurgeCommand { get; }
     public ReactiveCommand<Unit, Unit> PurgeMissingCommand { get; }
+    public ReactiveCommand<Unit, Unit> SaveScraperCredentialsCommand { get; }
 
     public SettingsViewModel(
         IServiceScopeFactory? scopeFactory = null,
         LibraryViewModel? libraryVm = null,
-        ScrapingStatusViewModel? scrapingStatusVm = null)
+        ScrapingStatusViewModel? scrapingStatusVm = null,
+        AppConfig? appConfig = null,
+        AppConfigService? appConfigService = null)
     {
         _scopeFactory = scopeFactory;
         _libraryVm = libraryVm;
         ScrapingStatus = scrapingStatusVm;
+        _appConfig = appConfig;
+        _appConfigService = appConfigService;
+
+        // Load current credentials from config
+        ScreenScraperUser = appConfig?.ScreenScraperUser ?? "";
+        ScreenScraperPass = appConfig?.ScreenScraperPass ?? "";
+        IgdbClientId = appConfig?.IgdbClientId ?? "";
+        IgdbClientSecret = appConfig?.IgdbClientSecret ?? "";
 
         RomSources.CollectionChanged += (_, _) => HasSources = RomSources.Count > 0;
 
@@ -60,6 +80,8 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
         PurgeMissingCommand = ReactiveCommand.CreateFromTask(PurgeMissingGamesAsync);
         _disposables.Add(PurgeMissingCommand.ThrownExceptions
             .Subscribe(ex => Log.Error(ex, "[SettingsViewModel] PurgeMissingCommand threw")));
+
+        SaveScraperCredentialsCommand = ReactiveCommand.Create(SaveScraperCredentials);
     }
 
     public async Task LoadSourcesAsync()
@@ -174,6 +196,17 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
                 _libraryVm.RemoveGame(g.Id);
 
         IsPurgeConfirmVisible = false;
+    }
+
+    private void SaveScraperCredentials()
+    {
+        if (_appConfig is null || _appConfigService is null) return;
+        _appConfig.ScreenScraperUser = string.IsNullOrWhiteSpace(ScreenScraperUser) ? null : ScreenScraperUser;
+        _appConfig.ScreenScraperPass = string.IsNullOrWhiteSpace(ScreenScraperPass) ? null : ScreenScraperPass;
+        _appConfig.IgdbClientId = string.IsNullOrWhiteSpace(IgdbClientId) ? null : IgdbClientId;
+        _appConfig.IgdbClientSecret = string.IsNullOrWhiteSpace(IgdbClientSecret) ? null : IgdbClientSecret;
+        _appConfigService.Save(_appConfig);
+        Log.Information("[SettingsViewModel] Scraper credentials saved");
     }
 
     public void Dispose() => _disposables.Dispose();
