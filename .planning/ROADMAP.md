@@ -86,7 +86,14 @@ Plans:
   2. Clicking "Launch" on a game opens it in the configured emulator with the correct ROM path passed as an argument
   3. Launching a Flatpak emulator on Linux works without path permission errors
   4. The app records the launch time and updates the recently played list after a game is launched
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Wave 0 test stubs for Phase 4 (EmulatorConfig, GameLaunchService, LaunchOverlay)
+- [ ] 04-02-PLAN.md — Data model + config (EmulatorConfig record, TotalPlayTime migration) + GameLaunchService
+- [ ] 04-03-PLAN.md — Launch overlay VM + UserControl, Play button wiring, DesktopShell integration
+- [ ] 04-04-PLAN.md — Settings EMULATORS section (EmulatorRowViewModel, per-row config, file picker, Flatpak)
+- [ ] 04-05-PLAN.md — Full test suite regression check + human verification of end-to-end flow
 
 ### Phase 5: Desktop UI Completion
 **Goal**: The desktop experience is complete — grid/list views, sidebar navigation, filters, custom collections, and settings all work end-to-end
@@ -133,11 +140,11 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. ROM Scanning and Library | 4/4 | Complete   | 2026-03-19 |
 | 3. Metadata and Cover Art | 6/6 | Complete   | 2026-03-20 |
-| 4. Emulator Integration and Launch | 0/TBD | Not started | - |
+| 4. Emulator Integration and Launch | 0/5 | Planning complete | - |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
 | 6. Fullscreen and Gamepad Mode | 0/TBD | Not started | - |
 | 7. Emulator Management and ROM Cache | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-03-18*
-*Last updated: 2026-03-19 after Phase 3 planning complete*
+*Last updated: 2026-03-30 after Phase 4 planning complete*
