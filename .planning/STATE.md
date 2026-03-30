@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-30T20:27:33.262Z"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-03-30T20:35:05.252Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 18
-  completed_plans: 15
+  completed_plans: 16
 ---
 
 ---
@@ -75,6 +75,7 @@ Plan: 1 of 5
 | Phase 03-metadata-and-cover-art P06 | 3 | 2 tasks | 9 files |
 | Phase 04-emulator-integration-and-launch P01 | 3 | 2 tasks | 4 files |
 | Phase 04-emulator-integration-and-launch P02 | 4 | 2 tasks | 9 files |
+| Phase 04-emulator-integration-and-launch P04 | 25 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -130,6 +131,8 @@ Recent decisions affecting current work:
 - [Phase 04-02]: HasDefaultValue(TimeSpan.Zero) required instead of 0L — EF Core design-time rejects non-matching types; migration correctly emits defaultValue: 0L
 - [Phase 04-02]: BuildStartInfo and UpdatePlayTimeAsync made public for direct unit testability without process spawning
 - [Phase 04-02]: BringToFront P/Invoke guarded by RuntimeInformation.IsOSPlatform(OSPlatform.Windows) for Linux/SteamOS compatibility
+- [Phase 04-emulator-integration-and-launch]: EmulatorRowViewModel uses WhenAnyValue reactive subscription for IsPathValid — Flatpak IDs always valid, file paths use File.Exists
+- [Phase 04-emulator-integration-and-launch]: AllPlatforms property added to PlatformRegistry as IReadOnlyList<PlatformDefinition> for GetAvailablePlatformsForAdd dropdown
 
 ### Pending Todos
 
@@ -145,6 +148,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T20:27:33.258Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-03-30T20:35:05.248Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
