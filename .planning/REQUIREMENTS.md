@@ -28,8 +28,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Emulator
 
-- [ ] **EMU-01**: User can configure emulator path and launch args per platform
-- [ ] **EMU-02**: App launches ROM in the correct emulator for its platform
+- [x] **EMU-01**: User can configure emulator path and launch args per platform
+- [x] **EMU-02**: App launches ROM in the correct emulator for its platform
 - [ ] **EMU-03**: App provides one-click emulator install (Windows + Linux/Flatpak)
 - [ ] **EMU-04**: App suggests a recommended emulator per platform
 - [ ] **EMU-05**: App auto-configures emulator settings for ROM launch
@@ -103,8 +103,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | META-02 | Phase 3 | Removed by design |
 | META-03 | Phase 3 | Complete |
 | META-04 | Phase 3 | Complete |
-| EMU-01 | Phase 4 | Pending |
-| EMU-02 | Phase 4 | Pending |
+| EMU-01 | Phase 4 | Complete |
+| EMU-02 | Phase 4 | Complete |
 | EMU-03 | Phase 7 | Pending |
 | EMU-04 | Phase 7 | Pending |
 | EMU-05 | Phase 7 | Pending |

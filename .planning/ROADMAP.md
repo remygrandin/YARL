@@ -86,7 +86,7 @@ Plans:
   2. Clicking "Launch" on a game opens it in the configured emulator with the correct ROM path passed as an argument
   3. Launching a Flatpak emulator on Linux works without path permission errors
   4. The app records the launch time and updates the recently played list after a game is launched
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
 - [ ] 04-01-PLAN.md — Wave 0 test stubs for Phase 4 (EmulatorConfig, GameLaunchService, LaunchOverlay)
@@ -140,7 +140,7 @@ Note: Phase 7 depends on Phase 4, not Phase 6 — it can begin as soon as Phase 
 | 1. Foundation | 3/3 | Complete   | 2026-03-18 |
 | 2. ROM Scanning and Library | 4/4 | Complete   | 2026-03-19 |
 | 3. Metadata and Cover Art | 6/6 | Complete   | 2026-03-20 |
-| 4. Emulator Integration and Launch | 0/5 | Planning complete | - |
+| 4. Emulator Integration and Launch | 1/5 | In Progress|  |
 | 5. Desktop UI Completion | 0/TBD | Not started | - |
 | 6. Fullscreen and Gamepad Mode | 0/TBD | Not started | - |
 | 7. Emulator Management and ROM Cache | 0/TBD | Not started | - |
