@@ -71,9 +71,13 @@ internal static class Program
                     sp.GetRequiredService<LibraryViewModel>(),
                     sp.GetRequiredService<ScrapingStatusViewModel>(),
                     sp.GetRequiredService<AppConfig>(),
-                    sp.GetRequiredService<AppConfigService>()
+                    sp.GetRequiredService<AppConfigService>(),
+                    sp.GetRequiredService<PlatformRegistry>()
                 ));
-                services.AddSingleton<MainViewModel>();
+                services.AddSingleton<MainViewModel>(sp => new MainViewModel(
+                    sp.GetRequiredService<LibraryViewModel>(),
+                    sp.GetRequiredService<SettingsViewModel>(),
+                    sp.GetRequiredService<LaunchOverlayViewModel>()));
                 services.AddSingleton<IScreen>(sp => sp.GetRequiredService<MainViewModel>());
 
                 // ROM Source Providers (LIB-08)
@@ -128,6 +132,8 @@ internal static class Program
                 services.AddSingleton<GameLaunchService>(sp => new GameLaunchService(
                     sp.GetRequiredService<AppConfig>(),
                     sp.GetRequiredService<IServiceScopeFactory>()));
+                services.AddSingleton<LaunchOverlayViewModel>(sp => new LaunchOverlayViewModel(
+                    sp.GetRequiredService<GameLaunchService>()));
 
                 services.AddSingleton<GameDetailViewModel>(sp =>
                     new GameDetailViewModel(

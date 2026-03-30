@@ -7,12 +7,16 @@ public class PlatformRegistry
     private readonly Dictionary<string, PlatformDefinition> _byName;
     private readonly Dictionary<string, PlatformDefinition> _byAlias;
 
+    public IReadOnlyList<PlatformDefinition> AllPlatforms { get; }
+
     public PlatformRegistry(IEnumerable<PlatformDefinition> platforms)
     {
+        var list = platforms.ToList();
+        AllPlatforms = list.AsReadOnly();
         _byName = new Dictionary<string, PlatformDefinition>(StringComparer.OrdinalIgnoreCase);
         _byAlias = new Dictionary<string, PlatformDefinition>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var platform in platforms)
+        foreach (var platform in list)
         {
             _byName[platform.Name] = platform;
             foreach (var alias in platform.Aliases)

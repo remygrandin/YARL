@@ -10,6 +10,7 @@ using YARL.Domain.Enums;
 using YARL.Domain.Models;
 using YARL.Infrastructure.Config;
 using YARL.Infrastructure.Persistence;
+using YARL.Infrastructure.Scanning;
 
 namespace YARL.UI.ViewModels;
 
@@ -20,10 +21,12 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
     private readonly LibraryViewModel? _libraryVm;
     private readonly AppConfig? _appConfig;
     private readonly AppConfigService? _appConfigService;
+    private readonly PlatformRegistry? _platformRegistry;
 
     public ScrapingStatusViewModel? ScrapingStatus { get; }
 
     public ObservableCollection<RomSourceViewModel> RomSources { get; } = new();
+    public ObservableCollection<EmulatorRowViewModel> EmulatorRows { get; } = new();
 
     [Reactive] private bool _hasSources;
     [Reactive] private bool _isPurgeConfirmVisible;
@@ -32,8 +35,6 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
     // Scraper credentials
     [Reactive] private string _screenScraperUser = "";
     [Reactive] private string _screenScraperPass = "";
-    [Reactive] private string _igdbClientId = "";
-    [Reactive] private string _igdbClientSecret = "";
 
     public ReactiveCommand<RomSourceViewModel, Unit> RemoveSourceCommand { get; }
     public ReactiveCommand<RomSourceViewModel, Unit> ToggleSourceCommand { get; }
@@ -47,19 +48,19 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
         LibraryViewModel? libraryVm = null,
         ScrapingStatusViewModel? scrapingStatusVm = null,
         AppConfig? appConfig = null,
-        AppConfigService? appConfigService = null)
+        AppConfigService? appConfigService = null,
+        PlatformRegistry? platformRegistry = null)
     {
         _scopeFactory = scopeFactory;
         _libraryVm = libraryVm;
         ScrapingStatus = scrapingStatusVm;
         _appConfig = appConfig;
         _appConfigService = appConfigService;
+        _platformRegistry = platformRegistry;
 
         // Load current credentials from config
         ScreenScraperUser = appConfig?.ScreenScraperUser ?? "";
         ScreenScraperPass = appConfig?.ScreenScraperPass ?? "";
-        IgdbClientId = appConfig?.IgdbClientId ?? "";
-        IgdbClientSecret = appConfig?.IgdbClientSecret ?? "";
 
         RomSources.CollectionChanged += (_, _) => HasSources = RomSources.Count > 0;
 
@@ -101,6 +102,55 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
         RomSources.Clear();
         foreach (var s in sources)
             RomSources.Add(new RomSourceViewModel(s));
+
+        LoadEmulatorRows();
+    }
+
+    public void LoadEmulatorRows()
+    {
+        EmulatorRows.Clear();
+        if (_platformRegistry is null || _scopeFactory is null) return;
+
+        // Get platforms that have games in the library
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+        var platformsWithGames = db.Games
+            .Select(g => g.PlatformId)
+            .Distinct()
+            .ToList();
+
+        // Also include platforms that have existing emulator config (persist even if games removed)
+        var configuredPlatforms = _appConfig?.EmulatorConfigs.Keys ?? Enumerable.Empty<string>();
+        var allPlatforms = platformsWithGames.Union(configuredPlatforms).Distinct();
+
+        foreach (var platformId in allPlatforms)
+        {
+            var platform = _platformRegistry.AllPlatforms.FirstOrDefault(p => p.Id == platformId);
+            var name = platform?.Name ?? platformId;
+            EmulatorConfig? existing = null;
+            _appConfig?.EmulatorConfigs.TryGetValue(platformId, out existing);
+            EmulatorRows.Add(new EmulatorRowViewModel(platformId, name, _appConfig, _appConfigService, existing));
+        }
+
+        Log.Debug("[SettingsViewModel] Loaded {Count} emulator rows", EmulatorRows.Count);
+    }
+
+    public void AddEmulatorRow(string platformId, string platformName)
+    {
+        if (EmulatorRows.Any(r => r.PlatformId == platformId)) return;
+        EmulatorRows.Add(new EmulatorRowViewModel(platformId, platformName, _appConfig, _appConfigService));
+        Log.Information("[SettingsViewModel] Added emulator row for platform={PlatformId}", platformId);
+    }
+
+    public List<(string Id, string Name)> GetAvailablePlatformsForAdd()
+    {
+        if (_platformRegistry is null) return [];
+        var existing = EmulatorRows.Select(r => r.PlatformId).ToHashSet();
+        return _platformRegistry.AllPlatforms
+            .Where(p => !existing.Contains(p.Id))
+            .Select(p => (p.Id, p.Name))
+            .OrderBy(p => p.Name)
+            .ToList();
     }
 
     /// <summary>
@@ -203,8 +253,6 @@ public partial class SettingsViewModel : ReactiveObject, IDisposable
         if (_appConfig is null || _appConfigService is null) return;
         _appConfig.ScreenScraperUser = string.IsNullOrWhiteSpace(ScreenScraperUser) ? null : ScreenScraperUser;
         _appConfig.ScreenScraperPass = string.IsNullOrWhiteSpace(ScreenScraperPass) ? null : ScreenScraperPass;
-        _appConfig.IgdbClientId = string.IsNullOrWhiteSpace(IgdbClientId) ? null : IgdbClientId;
-        _appConfig.IgdbClientSecret = string.IsNullOrWhiteSpace(IgdbClientSecret) ? null : IgdbClientSecret;
         _appConfigService.Save(_appConfig);
         Log.Information("[SettingsViewModel] Scraper credentials saved");
     }

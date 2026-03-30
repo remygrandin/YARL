@@ -1,14 +1,26 @@
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using YARL.Infrastructure.Config;
+using YARL.Infrastructure.Launch;
 using YARL.UI.ViewModels;
 
 namespace YARL.Tests.Foundation;
 
 public class ViewModelTests
 {
+    private static MainViewModel CreateMainVm(LibraryViewModel? libraryVm = null)
+    {
+        libraryVm ??= new LibraryViewModel();
+        var launchService = new GameLaunchService(new AppConfig(), Substitute.For<IServiceScopeFactory>());
+        var launchOverlay = new LaunchOverlayViewModel(launchService);
+        return new MainViewModel(libraryVm, new SettingsViewModel(), launchOverlay);
+    }
+
     [Fact]
     public void MainViewModel_ExposesLibraryViewModel()
     {
         var libraryVm = new LibraryViewModel();
-        var mainVm = new MainViewModel(libraryVm, new SettingsViewModel());
+        var mainVm = CreateMainVm(libraryVm);
 
         Assert.Same(libraryVm, mainVm.LibraryViewModel);
     }
@@ -16,7 +28,7 @@ public class ViewModelTests
     [Fact]
     public void MainViewModel_ImplementsIScreen()
     {
-        var mainVm = new MainViewModel(new LibraryViewModel(), new SettingsViewModel());
+        var mainVm = CreateMainVm();
 
         Assert.NotNull(mainVm.Router);
     }
@@ -48,7 +60,7 @@ public class ViewModelTests
     {
         // Simulates DI: both shells get the same MainViewModel which holds the shared LibraryViewModel
         var libraryVm = new LibraryViewModel();
-        var mainVm = new MainViewModel(libraryVm, new SettingsViewModel());
+        var mainVm = CreateMainVm(libraryVm);
 
         // Both shells would receive mainVm as DataContext
         // Their bindings access mainVm.LibraryViewModel — same instance
