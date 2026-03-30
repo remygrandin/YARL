@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Serilog;
 using YARL.UI.Dialogs;
 using YARL.UI.ViewModels;
@@ -54,5 +55,43 @@ public partial class SettingsView : UserControl
         if (DataContext is not SettingsViewModel settingsVm) return;
         Log.Debug("[SettingsView] Remove clicked for source id={Id}", vm.Id);
         settingsVm.RemoveSourceCommand.Execute(vm).Subscribe();
+    }
+
+    private async void OnBrowseEmulatorClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is EmulatorRowViewModel row)
+        {
+            var result = await TopLevel.GetTopLevel(this)!
+                .StorageProvider
+                .OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = $"Select Emulator for {row.PlatformDisplayName}",
+                    AllowMultiple = false
+                });
+            if (result.Count > 0)
+                row.ExePath = result[0].Path.LocalPath;
+        }
+    }
+
+    private void OnAddEmulatorPlatformClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not SettingsViewModel vm) return;
+        var available = vm.GetAvailablePlatformsForAdd();
+        if (available.Count == 0) return;
+
+        var menu = new ContextMenu();
+        foreach (var (id, name) in available)
+        {
+            var platformId = id;
+            var platformName = name;
+            var item = new MenuItem { Header = name };
+            item.Click += (_, _) => vm.AddEmulatorRow(platformId, platformName);
+            menu.Items.Add(item);
+        }
+        if (sender is Button button)
+        {
+            menu.PlacementTarget = button;
+            menu.Open(button);
+        }
     }
 }

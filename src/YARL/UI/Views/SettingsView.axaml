@@ -8,7 +8,7 @@
 
     <DockPanel Margin="24">
 
-        <!-- Header -->
+        <!-- Header (fixed, not scrollable) -->
         <Grid DockPanel.Dock="Top"
               ColumnDefinitions="*,Auto"
               Margin="0,0,0,24">
@@ -45,373 +45,491 @@
             </Button>
         </Grid>
 
-        <!-- Section heading -->
-        <TextBlock DockPanel.Dock="Top"
-                   Text="ROM LIBRARIES"
-                   FontSize="11"
-                   FontWeight="SemiBold"
-                   Foreground="#555577"
-                   Margin="0,0,0,8" />
+        <!-- Scrollable content -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="0">
 
-        <!-- Source list -->
-        <Border DockPanel.Dock="Top"
-                Background="#16213e"
-                CornerRadius="8"
-                BorderBrush="#0f3460"
-                BorderThickness="1"
-                IsVisible="{Binding HasSources}">
-            <ItemsControl ItemsSource="{Binding RomSources}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:RomSourceViewModel">
-                        <Border BorderBrush="#0f3460"
-                                BorderThickness="0,0,0,1"
-                                Padding="16,12">
-                            <Grid ColumnDefinitions="*,Auto,Auto">
+                <!-- Section heading: ROM Libraries -->
+                <TextBlock Text="ROM LIBRARIES"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="#555577"
+                           Margin="0,0,0,8" />
 
-                                <!-- Path and type badge -->
-                                <StackPanel Grid.Column="0"
-                                            Spacing="4"
-                                            VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Path}"
-                                               FontSize="14"
-                                               Foreground="#FFFFFF"
-                                               TextTrimming="CharacterEllipsis" />
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <Border Background="#0f3460"
-                                                CornerRadius="4"
-                                                Padding="6,2">
-                                            <TextBlock Text="{Binding SourceTypeLabel}"
-                                                       FontSize="11"
-                                                       Foreground="#8888aa" />
-                                        </Border>
-                                        <TextBlock Text="Disabled"
-                                                   FontSize="11"
-                                                   Foreground="#E05A5A"
-                                                   VerticalAlignment="Center"
-                                                   IsVisible="{Binding !IsEnabled}" />
-                                    </StackPanel>
-                                </StackPanel>
-
-                                <!-- Toggle enable/disable button -->
-                                <Button Grid.Column="1"
-                                        Height="32"
-                                        MinWidth="80"
-                                        Padding="0"
-                                        Background="Transparent"
-                                        BorderBrush="#0f3460"
-                                        BorderThickness="1"
-                                        CornerRadius="4"
-                                        Margin="0,0,8,0"
-                                        HorizontalContentAlignment="Stretch"
-                                        VerticalContentAlignment="Stretch"
-                                        Tag="{Binding}"
-                                        Click="OnToggleSourceClicked">
-                                    <Grid Height="32" MinWidth="80">
-                                        <TextBlock IsVisible="{Binding IsEnabled}"
-                                                   Text="Disable"
-                                                   FontSize="12"
-                                                   Foreground="#8888aa"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock IsVisible="{Binding !IsEnabled}"
-                                                   Text="Enable"
-                                                   FontSize="12"
-                                                   Foreground="#7C6FF7"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
-                                </Button>
-
-                                <!-- Remove button -->
-                                <Button Grid.Column="2"
-                                        Height="32"
-                                        Width="32"
-                                        Padding="0"
-                                        Background="Transparent"
-                                        BorderBrush="#0f3460"
-                                        BorderThickness="1"
-                                        CornerRadius="4"
-                                        HorizontalContentAlignment="Stretch"
-                                        VerticalContentAlignment="Stretch"
-                                        Tag="{Binding}"
-                                        Click="OnRemoveSourceClicked">
-                                    <Grid Height="32" Width="32">
-                                        <mi:MaterialIcon Kind="TrashCanOutline"
-                                                         Width="16" Height="16"
-                                                         Foreground="#E05A5A"
-                                                         HorizontalAlignment="Center"
-                                                         VerticalAlignment="Center" />
-                                    </Grid>
-                                </Button>
-
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Border>
-
-        <!-- Metadata scraping section heading -->
-        <TextBlock DockPanel.Dock="Top"
-                   Text="METADATA SCRAPING"
-                   FontSize="12"
-                   FontWeight="SemiBold"
-                   Foreground="#555577"
-                   Margin="0,24,0,8" />
-
-        <!-- Metadata scraping panel -->
-        <Border DockPanel.Dock="Top"
-                Background="#16213e"
-                CornerRadius="6"
-                Padding="16"
-                Margin="0,0,0,0">
-            <StackPanel DataContext="{Binding ScrapingStatus}" Spacing="10">
-
-                <!-- Progress bar (visible while scraping) -->
-                <ProgressBar Value="{Binding ProgressPercent}"
-                             Maximum="100"
-                             Height="4"
-                             Foreground="#7C6FF7"
-                             Background="#0f3460"
-                             IsVisible="{Binding IsScraping}" />
-
-                <!-- Status text -->
-                <TextBlock Text="{Binding StatusText}"
-                           FontSize="12"
-                           Foreground="#8888aa"
-                           TextWrapping="Wrap" />
-
-                <!-- Unmatched count (visible when unmatched > 0) -->
-                <TextBlock FontSize="12"
-                           Foreground="#E05A5A">
-                    <TextBlock.IsVisible>
-                        <Binding Path="UnmatchedCount"
-                                 Converter="{x:Static ObjectConverters.IsNotNull}" />
-                    </TextBlock.IsVisible>
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} games unmatched">
-                            <Binding Path="UnmatchedCount" />
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-
-                <!-- Re-scrape library button -->
-                <Button Height="36"
-                        Padding="12,0"
-                        Background="Transparent"
-                        BorderBrush="#555577"
+                <!-- Source list -->
+                <Border Background="#16213e"
+                        CornerRadius="8"
+                        BorderBrush="#0f3460"
                         BorderThickness="1"
-                        CornerRadius="4"
-                        HorizontalAlignment="Left"
-                        Command="{Binding RescrapeLibraryCommand}"
-                        ToolTip.Tip="Re-scrape all games, overwriting auto-detected metadata (manual overrides are preserved)">
-                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                        <mi:MaterialIcon Kind="Sync"
-                                         Width="16" Height="16"
-                                         Foreground="#8888aa" />
-                        <TextBlock Text="Re-scrape library"
-                                   FontSize="14"
-                                   Foreground="#8888aa"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
+                        IsVisible="{Binding HasSources}">
+                    <ItemsControl ItemsSource="{Binding RomSources}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:RomSourceViewModel">
+                                <Border BorderBrush="#0f3460"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="16,12">
+                                    <Grid ColumnDefinitions="*,Auto,Auto">
 
-            </StackPanel>
-        </Border>
+                                        <!-- Path and type badge -->
+                                        <StackPanel Grid.Column="0"
+                                                    Spacing="4"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Path}"
+                                                       FontSize="14"
+                                                       Foreground="#FFFFFF"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <Border Background="#0f3460"
+                                                        CornerRadius="4"
+                                                        Padding="6,2">
+                                                    <TextBlock Text="{Binding SourceTypeLabel}"
+                                                               FontSize="11"
+                                                               Foreground="#8888aa" />
+                                                </Border>
+                                                <TextBlock Text="Disabled"
+                                                           FontSize="11"
+                                                           Foreground="#E05A5A"
+                                                           VerticalAlignment="Center"
+                                                           IsVisible="{Binding !IsEnabled}" />
+                                            </StackPanel>
+                                        </StackPanel>
 
-        <!-- Scraping credentials -->
-        <TextBlock DockPanel.Dock="Top"
-                   Text="SCRAPING CREDENTIALS"
-                   FontSize="11"
-                   FontWeight="SemiBold"
-                   Foreground="#8888aa"
-                   Margin="0,16,0,8" />
+                                        <!-- Toggle enable/disable button -->
+                                        <Button Grid.Column="1"
+                                                Height="32"
+                                                MinWidth="80"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                BorderBrush="#0f3460"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Margin="0,0,8,0"
+                                                HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch"
+                                                Tag="{Binding}"
+                                                Click="OnToggleSourceClicked">
+                                            <Grid Height="32" MinWidth="80">
+                                                <TextBlock IsVisible="{Binding IsEnabled}"
+                                                           Text="Disable"
+                                                           FontSize="12"
+                                                           Foreground="#8888aa"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" />
+                                                <TextBlock IsVisible="{Binding !IsEnabled}"
+                                                           Text="Enable"
+                                                           FontSize="12"
+                                                           Foreground="#7C6FF7"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Button>
 
-        <Border DockPanel.Dock="Top"
-                Background="#16213e"
-                CornerRadius="8"
-                Padding="16"
-                Margin="0,0,0,8">
-            <StackPanel Spacing="12">
-                <TextBlock Text="ScreenScraper"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           Foreground="#FFFFFF" />
-                <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Username"
-                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="1"
-                             Text="{Binding ScreenScraperUser, Mode=TwoWay}"
-                             Watermark="ScreenScraper username"
-                             Background="#0f3460" Foreground="#FFFFFF"
-                             BorderBrush="#2a2a4a" Margin="0,0,0,6" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Password"
-                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1"
-                             Text="{Binding ScreenScraperPass, Mode=TwoWay}"
-                             Watermark="ScreenScraper password"
-                             PasswordChar="●"
-                             Background="#0f3460" Foreground="#FFFFFF"
-                             BorderBrush="#2a2a4a" />
-                </Grid>
+                                        <!-- Remove button -->
+                                        <Button Grid.Column="2"
+                                                Height="32"
+                                                Width="32"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                BorderBrush="#0f3460"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch"
+                                                Tag="{Binding}"
+                                                Click="OnRemoveSourceClicked">
+                                            <Grid Height="32" Width="32">
+                                                <mi:MaterialIcon Kind="TrashCanOutline"
+                                                                 Width="16" Height="16"
+                                                                 Foreground="#E05A5A"
+                                                                 HorizontalAlignment="Center"
+                                                                 VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Button>
 
-                <TextBlock Text="IGDB (optional fallback)"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           Foreground="#FFFFFF"
-                           Margin="0,8,0,0" />
-                <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Client ID"
-                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="1"
-                             Text="{Binding IgdbClientId, Mode=TwoWay}"
-                             Watermark="Twitch app client ID"
-                             Background="#0f3460" Foreground="#FFFFFF"
-                             BorderBrush="#2a2a4a" Margin="0,0,0,6" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Client Secret"
-                               Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1"
-                             Text="{Binding IgdbClientSecret, Mode=TwoWay}"
-                             Watermark="Twitch app client secret"
-                             PasswordChar="●"
-                             Background="#0f3460" Foreground="#FFFFFF"
-                             BorderBrush="#2a2a4a" />
-                </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
 
-                <Button Content="Save credentials"
-                        Command="{Binding SaveScraperCredentialsCommand}"
-                        Background="#7C6FF7"
-                        Foreground="#FFFFFF"
-                        Padding="16,8"
-                        HorizontalAlignment="Right"
-                        CornerRadius="6" />
-            </StackPanel>
-        </Border>
-
-        <!-- Danger zone -->
-        <TextBlock DockPanel.Dock="Top"
-                   Text="DANGER ZONE"
-                   FontSize="11"
-                   FontWeight="SemiBold"
-                   Foreground="#E05A5A"
-                   Margin="0,24,0,8" />
-
-        <Border DockPanel.Dock="Top"
-                Background="#16213e"
-                CornerRadius="8"
-                BorderBrush="#E05A5A"
-                BorderThickness="1"
-                Padding="16,14">
-            <Grid ColumnDefinitions="*,Auto">
-
-                <!-- Description -->
-                <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                    <TextBlock Text="Purge Missing Games"
-                               FontSize="14"
-                               FontWeight="SemiBold"
-                               Foreground="#FFFFFF" />
-                    <TextBlock Text="Permanently removes all games whose ROM files could not be found on disk. This cannot be undone."
-                               FontSize="12"
+                <!-- Empty state -->
+                <StackPanel HorizontalAlignment="Center"
+                            Spacing="12"
+                            Margin="0,32,0,0"
+                            IsVisible="{Binding !HasSources}">
+                    <mi:MaterialIcon Kind="FolderOpenOutline"
+                                     Width="48" Height="48"
+                                     Foreground="#8888aa"
+                                     HorizontalAlignment="Center" />
+                    <TextBlock Text="No ROM libraries configured"
+                               FontSize="16"
                                Foreground="#8888aa"
-                               TextWrapping="Wrap" />
-
-                    <!-- Confirmation panel (shown after first click) -->
-                    <Border IsVisible="{Binding IsPurgeConfirmVisible}"
-                            Background="#2a1a1a"
-                            CornerRadius="4"
-                            Padding="10,8"
-                            Margin="0,8,0,0">
-                        <StackPanel Spacing="10">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <mi:MaterialIcon Kind="AlertCircleOutline"
-                                                 Width="16" Height="16"
-                                                 Foreground="#E05A5A"
-                                                 VerticalAlignment="Center" />
-                                <TextBlock FontSize="13"
-                                           Foreground="#E05A5A"
-                                           VerticalAlignment="Center">
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="This will permanently delete {0} missing game(s). Are you sure?">
-                                            <Binding Path="MissingGamesCount" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button Height="30"
-                                        Padding="12,0"
-                                        Background="#E05A5A"
-                                        BorderThickness="0"
-                                        CornerRadius="4"
-                                        Command="{Binding PurgeMissingCommand}">
-                                    <TextBlock Text="Yes, purge"
-                                               FontSize="12"
-                                               FontWeight="SemiBold"
-                                               Foreground="#FFFFFF"
-                                               VerticalAlignment="Center" />
-                                </Button>
-                                <Button Height="30"
-                                        Padding="12,0"
-                                        Background="Transparent"
-                                        BorderBrush="#555577"
-                                        BorderThickness="1"
-                                        CornerRadius="4"
-                                        Command="{Binding CancelPurgeCommand}">
-                                    <TextBlock Text="Cancel"
-                                               FontSize="12"
-                                               Foreground="#8888aa"
-                                               VerticalAlignment="Center" />
-                                </Button>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="Click 'Add ROM Source' above to add a folder"
+                               FontSize="13"
+                               Foreground="#555577"
+                               HorizontalAlignment="Center" />
                 </StackPanel>
 
-                <!-- Purge trigger button -->
-                <Button Grid.Column="1"
-                        Height="36"
-                        Padding="12,0"
-                        Background="Transparent"
+                <!-- Section heading: Metadata Scraping -->
+                <TextBlock Text="METADATA SCRAPING"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="#555577"
+                           Margin="0,24,0,8" />
+
+                <!-- Metadata scraping panel -->
+                <Border Background="#16213e"
+                        CornerRadius="6"
+                        Padding="16">
+                    <StackPanel DataContext="{Binding ScrapingStatus}" Spacing="10">
+
+                        <!-- Progress bar (visible while scraping) -->
+                        <ProgressBar Value="{Binding ProgressPercent}"
+                                     Maximum="100"
+                                     Height="4"
+                                     Foreground="#7C6FF7"
+                                     Background="#0f3460"
+                                     IsVisible="{Binding IsScraping}" />
+
+                        <!-- Status text -->
+                        <TextBlock Text="{Binding StatusText}"
+                                   FontSize="12"
+                                   Foreground="#8888aa"
+                                   TextWrapping="Wrap" />
+
+                        <!-- Unmatched count (visible when unmatched > 0) -->
+                        <TextBlock FontSize="12"
+                                   Foreground="#E05A5A">
+                            <TextBlock.IsVisible>
+                                <Binding Path="UnmatchedCount"
+                                         Converter="{x:Static ObjectConverters.IsNotNull}" />
+                            </TextBlock.IsVisible>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} games unmatched">
+                                    <Binding Path="UnmatchedCount" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+
+                        <!-- Re-scrape library button -->
+                        <Button Height="36"
+                                Padding="12,0"
+                                Background="Transparent"
+                                BorderBrush="#555577"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                HorizontalAlignment="Left"
+                                Command="{Binding RescrapeLibraryCommand}"
+                                ToolTip.Tip="Re-scrape all games, overwriting auto-detected metadata (manual overrides are preserved)">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <mi:MaterialIcon Kind="Sync"
+                                                 Width="16" Height="16"
+                                                 Foreground="#8888aa" />
+                                <TextBlock Text="Re-scrape library"
+                                           FontSize="14"
+                                           Foreground="#8888aa"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- Section heading: Scraping Credentials -->
+                <TextBlock Text="SCRAPING CREDENTIALS"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="#8888aa"
+                           Margin="0,16,0,8" />
+
+                <Border Background="#16213e"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="0,0,0,8">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="ScreenScraper"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="#FFFFFF" />
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Username"
+                                       Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding ScreenScraperUser, Mode=TwoWay}"
+                                     Watermark="ScreenScraper username"
+                                     Background="#0f3460" Foreground="#FFFFFF"
+                                     BorderBrush="#2a2a4a" Margin="0,0,0,6" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Password"
+                                       Foreground="#8888aa" FontSize="12" VerticalAlignment="Center" />
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                                     Text="{Binding ScreenScraperPass, Mode=TwoWay}"
+                                     Watermark="ScreenScraper password"
+                                     PasswordChar="●"
+                                     Background="#0f3460" Foreground="#FFFFFF"
+                                     BorderBrush="#2a2a4a" />
+                        </Grid>
+
+                        <Button Content="Save credentials"
+                                Command="{Binding SaveScraperCredentialsCommand}"
+                                Background="#7C6FF7"
+                                Foreground="#FFFFFF"
+                                Padding="16,8"
+                                HorizontalAlignment="Right"
+                                CornerRadius="6" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ═══════════════════════════════════════ -->
+                <!-- EMULATORS SECTION                       -->
+                <!-- ═══════════════════════════════════════ -->
+                <TextBlock Text="EMULATORS"
+                           FontSize="14" FontWeight="SemiBold"
+                           Foreground="#8888aa"
+                           Margin="0,32,0,12" />
+
+                <Border Background="#16213e"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="0,0,0,16">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Configure one emulator per platform. Use {rompath} in args where the ROM file path should be inserted."
+                                   FontSize="12" Foreground="#666688" TextWrapping="Wrap" />
+
+                        <!-- Emulator rows -->
+                        <ItemsControl ItemsSource="{Binding EmulatorRows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:EmulatorRowViewModel">
+                                    <Border Background="#1a1a2e"
+                                            CornerRadius="6"
+                                            Padding="12"
+                                            Margin="0,4">
+                                        <StackPanel Spacing="8">
+                                            <!-- Row header: platform name -->
+                                            <TextBlock Text="{Binding PlatformDisplayName}"
+                                                       FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="#7C6FF7" />
+
+                                            <!-- Exe path row -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="Exe / App ID:"
+                                                           FontSize="12" Foreground="#8888aa"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,8,0" />
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding ExePath, Mode=TwoWay}"
+                                                         Watermark="Path to emulator executable"
+                                                         FontSize="12"
+                                                         Background="#0f3460"
+                                                         Foreground="#FFFFFF"
+                                                         BorderThickness="1"
+                                                         BorderBrush="#333355"
+                                                         CornerRadius="4"
+                                                         Padding="8,4"
+                                                         Margin="0,0,8,0" />
+                                                <!-- Browse button (hidden when Flatpak) -->
+                                                <Button Grid.Column="2"
+                                                        Content="Browse"
+                                                        FontSize="12"
+                                                        Background="#333355"
+                                                        Foreground="#AAAACC"
+                                                        BorderThickness="0"
+                                                        CornerRadius="4"
+                                                        Padding="8,4"
+                                                        IsVisible="{Binding !IsFlatpak}"
+                                                        Click="OnBrowseEmulatorClicked"
+                                                        Tag="{Binding}" />
+                                            </Grid>
+
+                                            <!-- Args row -->
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="Args:"
+                                                           FontSize="12" Foreground="#8888aa"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,8,0" />
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding Args, Mode=TwoWay}"
+                                                         Watermark="{}{rompath}"
+                                                         FontSize="12"
+                                                         Background="#0f3460"
+                                                         Foreground="#FFFFFF"
+                                                         BorderThickness="1"
+                                                         BorderBrush="#333355"
+                                                         CornerRadius="4"
+                                                         Padding="8,4" />
+                                            </Grid>
+
+                                            <!-- Flatpak row + Save button -->
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8"
+                                                            VerticalAlignment="Center">
+                                                    <CheckBox IsChecked="{Binding IsFlatpak, Mode=TwoWay}"
+                                                              IsEnabled="{Binding IsFlatpakAvailable}"
+                                                              Content="Flatpak app"
+                                                              FontSize="12"
+                                                              Foreground="#AAAACC" />
+                                                    <!-- Path validity icons -->
+                                                    <mi:MaterialIcon Kind="CheckCircle"
+                                                                     Width="16" Height="16"
+                                                                     Foreground="#44BB44"
+                                                                     IsVisible="{Binding IsPathValid}" />
+                                                    <mi:MaterialIcon Kind="AlertCircle"
+                                                                     Width="16" Height="16"
+                                                                     Foreground="#FF8844"
+                                                                     IsVisible="{Binding !IsPathValid}" />
+                                                </StackPanel>
+                                                <Button Grid.Column="1"
+                                                        Content="Save"
+                                                        Command="{Binding SaveCommand}"
+                                                        FontSize="12"
+                                                        Background="#7C6FF7"
+                                                        Foreground="#FFFFFF"
+                                                        BorderThickness="0"
+                                                        CornerRadius="4"
+                                                        Padding="12,4" />
+                                            </Grid>
+
+                                            <!-- Flatpak warning (shown when Flatpak is checked) -->
+                                            <Border IsVisible="{Binding IsFlatpak}"
+                                                    Background="#332B00"
+                                                    BorderBrush="#665500"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"
+                                                    Padding="8">
+                                                <TextBlock Text="Flatpak sandboxes may block access to ROM files. If launch fails, add --filesystem=host to your args."
+                                                           FontSize="11" Foreground="#CCAA44"
+                                                           TextWrapping="Wrap" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Add platform button -->
+                        <Button Content="+ Add platform"
+                                FontSize="12"
+                                Background="#333355"
+                                Foreground="#AAAACC"
+                                BorderThickness="1"
+                                BorderBrush="#555577"
+                                CornerRadius="4"
+                                Padding="12,6"
+                                HorizontalAlignment="Left"
+                                Click="OnAddEmulatorPlatformClicked" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Section heading: Danger Zone -->
+                <TextBlock Text="DANGER ZONE"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="#E05A5A"
+                           Margin="0,24,0,8" />
+
+                <Border Background="#16213e"
+                        CornerRadius="8"
                         BorderBrush="#E05A5A"
                         BorderThickness="1"
-                        CornerRadius="6"
-                        VerticalAlignment="Top"
-                        Margin="16,0,0,0"
-                        IsVisible="{Binding !IsPurgeConfirmVisible}"
-                        Command="{Binding ShowPurgeConfirmCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                        <mi:MaterialIcon Kind="DeleteSweepOutline"
-                                         Width="16" Height="16"
-                                         Foreground="#E05A5A" />
-                        <TextBlock Text="Purge Missing..."
-                                   FontSize="13"
-                                   Foreground="#E05A5A"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
+                        Padding="16,14"
+                        Margin="0,0,0,24">
+                    <Grid ColumnDefinitions="*,Auto">
 
-            </Grid>
-        </Border>
+                        <!-- Description -->
+                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                            <TextBlock Text="Purge Missing Games"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#FFFFFF" />
+                            <TextBlock Text="Permanently removes all games whose ROM files could not be found on disk. This cannot be undone."
+                                       FontSize="12"
+                                       Foreground="#8888aa"
+                                       TextWrapping="Wrap" />
 
-        <!-- Empty state -->
-        <StackPanel DockPanel.Dock="Top"
-                    HorizontalAlignment="Center"
-                    Spacing="12"
-                    Margin="0,64,0,0"
-                    IsVisible="{Binding !HasSources}">
-            <mi:MaterialIcon Kind="FolderOpenOutline"
-                             Width="48" Height="48"
-                             Foreground="#8888aa"
-                             HorizontalAlignment="Center" />
-            <TextBlock Text="No ROM libraries configured"
-                       FontSize="16"
-                       Foreground="#8888aa"
-                       HorizontalAlignment="Center" />
-            <TextBlock Text="Click 'Add ROM Source' above to add a folder"
-                       FontSize="13"
-                       Foreground="#555577"
-                       HorizontalAlignment="Center" />
-        </StackPanel>
+                            <!-- Confirmation panel (shown after first click) -->
+                            <Border IsVisible="{Binding IsPurgeConfirmVisible}"
+                                    Background="#2a1a1a"
+                                    CornerRadius="4"
+                                    Padding="10,8"
+                                    Margin="0,8,0,0">
+                                <StackPanel Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <mi:MaterialIcon Kind="AlertCircleOutline"
+                                                         Width="16" Height="16"
+                                                         Foreground="#E05A5A"
+                                                         VerticalAlignment="Center" />
+                                        <TextBlock FontSize="13"
+                                                   Foreground="#E05A5A"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="This will permanently delete {0} missing game(s). Are you sure?">
+                                                    <Binding Path="MissingGamesCount" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Height="30"
+                                                Padding="12,0"
+                                                Background="#E05A5A"
+                                                BorderThickness="0"
+                                                CornerRadius="4"
+                                                Command="{Binding PurgeMissingCommand}">
+                                            <TextBlock Text="Yes, purge"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#FFFFFF"
+                                                       VerticalAlignment="Center" />
+                                        </Button>
+                                        <Button Height="30"
+                                                Padding="12,0"
+                                                Background="Transparent"
+                                                BorderBrush="#555577"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Command="{Binding CancelPurgeCommand}">
+                                            <TextBlock Text="Cancel"
+                                                       FontSize="12"
+                                                       Foreground="#8888aa"
+                                                       VerticalAlignment="Center" />
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Purge trigger button -->
+                        <Button Grid.Column="1"
+                                Height="36"
+                                Padding="12,0"
+                                Background="Transparent"
+                                BorderBrush="#E05A5A"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                VerticalAlignment="Top"
+                                Margin="16,0,0,0"
+                                IsVisible="{Binding !IsPurgeConfirmVisible}"
+                                Command="{Binding ShowPurgeConfirmCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <mi:MaterialIcon Kind="DeleteSweepOutline"
+                                                 Width="16" Height="16"
+                                                 Foreground="#E05A5A" />
+                                <TextBlock Text="Purge Missing..."
+                                           FontSize="13"
+                                           Foreground="#E05A5A"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                    </Grid>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
 
     </DockPanel>
 </UserControl>
