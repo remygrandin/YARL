@@ -13,6 +13,11 @@ public partial class EmulatorRowViewModel : ReactiveObject
     private readonly AppConfig? _appConfig;
     private readonly AppConfigService? _appConfigService;
 
+    // Saved state for dirty tracking
+    private string _savedExePath = "";
+    private string _savedArgs = "{rompath}";
+    private bool _savedIsFlatpak;
+
     public string PlatformId { get; }
     public string PlatformDisplayName { get; }
 
@@ -20,6 +25,10 @@ public partial class EmulatorRowViewModel : ReactiveObject
     [Reactive] private string _args = "{rompath}";
     [Reactive] private bool _isFlatpak;
     [Reactive] private bool _isPathValid;
+    [Reactive] private bool _hasUnsavedChanges;
+    [Reactive] private string _exeLabel = "Path:";
+    [Reactive] private string _exeWatermark = "Path to emulator executable";
+    [Reactive] private string _pathStatusTooltip = "Path not set";
 
     public bool IsFlatpakAvailable { get; } = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
@@ -44,18 +53,55 @@ public partial class EmulatorRowViewModel : ReactiveObject
             _isFlatpak = existingConfig.IsFlatpak;
         }
 
-        // Compute path validity reactively
+        // Store saved baseline for dirty detection
+        _savedExePath = _exePath;
+        _savedArgs = _args;
+        _savedIsFlatpak = _isFlatpak;
+
+        // Path validity + tooltip — computed together from ExePath and IsFlatpak
         this.WhenAnyValue(x => x.ExePath, x => x.IsFlatpak)
-            .Select(tuple =>
+            .Subscribe(tuple =>
             {
                 var (path, isFlatpak) = tuple;
-                if (isFlatpak) return true; // Flatpak app IDs are not file paths
-                if (string.IsNullOrWhiteSpace(path)) return false;
-                return File.Exists(path);
-            })
-            .Subscribe(valid => IsPathValid = valid);
+                if (isFlatpak)
+                {
+                    var hasId = !string.IsNullOrWhiteSpace(path);
+                    IsPathValid = hasId;
+                    PathStatusTooltip = hasId ? "App ID configured" : "App ID not set";
+                }
+                else if (string.IsNullOrWhiteSpace(path))
+                {
+                    IsPathValid = false;
+                    PathStatusTooltip = "Path not set";
+                }
+                else if (File.Exists(path))
+                {
+                    IsPathValid = true;
+                    PathStatusTooltip = "Path OK";
+                }
+                else
+                {
+                    IsPathValid = false;
+                    PathStatusTooltip = "File not found";
+                }
+            });
 
-        SaveCommand = ReactiveCommand.Create(Save);
+        // Label and watermark switch on Flatpak toggle
+        this.WhenAnyValue(x => x.IsFlatpak)
+            .Subscribe(isFlatpak =>
+            {
+                ExeLabel = isFlatpak ? "App ID:" : "Path:";
+                ExeWatermark = isFlatpak ? "Flatpak app ID (e.g. org.DolphinEmu.dolphin-emu)" : "Path to emulator executable";
+            });
+
+        // Dirty tracking — has anything changed vs. last saved state?
+        this.WhenAnyValue(x => x.ExePath, x => x.Args, x => x.IsFlatpak)
+            .Select(_ => ExePath != _savedExePath || Args != _savedArgs || IsFlatpak != _savedIsFlatpak)
+            .Subscribe(dirty => HasUnsavedChanges = dirty);
+
+        // Save is only enabled when there are unsaved changes
+        var canSave = this.WhenAnyValue(x => x.HasUnsavedChanges);
+        SaveCommand = ReactiveCommand.Create(Save, canSave);
     }
 
     private void Save()
@@ -69,5 +115,11 @@ public partial class EmulatorRowViewModel : ReactiveObject
         };
         _appConfigService?.Save(_appConfig);
         Log.Information("[EmulatorRowViewModel] Saved emulator config for platform={PlatformId}", PlatformId);
+
+        // Reset dirty state
+        _savedExePath = ExePath;
+        _savedArgs = Args;
+        _savedIsFlatpak = IsFlatpak;
+        HasUnsavedChanges = false;
     }
 }

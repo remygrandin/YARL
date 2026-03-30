@@ -307,21 +307,36 @@
                                             Padding="12"
                                             Margin="0,4">
                                         <StackPanel Spacing="8">
-                                            <!-- Row header: platform name -->
-                                            <TextBlock Text="{Binding PlatformDisplayName}"
-                                                       FontSize="14" FontWeight="SemiBold"
-                                                       Foreground="#7C6FF7" />
+                                            <!-- Row header: platform name + path status icon -->
+                                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding PlatformDisplayName}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           Foreground="#7C6FF7"
+                                                           VerticalAlignment="Center" />
+                                                <mi:MaterialIcon Kind="CheckCircle"
+                                                                 Width="15" Height="15"
+                                                                 Foreground="#44BB44"
+                                                                 VerticalAlignment="Center"
+                                                                 IsVisible="{Binding IsPathValid}"
+                                                                 ToolTip.Tip="{Binding PathStatusTooltip}" />
+                                                <mi:MaterialIcon Kind="AlertCircle"
+                                                                 Width="15" Height="15"
+                                                                 Foreground="#FF8844"
+                                                                 VerticalAlignment="Center"
+                                                                 IsVisible="{Binding !IsPathValid}"
+                                                                 ToolTip.Tip="{Binding PathStatusTooltip}" />
+                                            </StackPanel>
 
-                                            <!-- Exe path row -->
+                                            <!-- Exe path row (label switches Path: / App ID: with Flatpak toggle) -->
                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                 <TextBlock Grid.Column="0"
-                                                           Text="Exe / App ID:"
+                                                           Text="{Binding ExeLabel}"
                                                            FontSize="12" Foreground="#8888aa"
                                                            VerticalAlignment="Center"
                                                            Margin="0,0,8,0" />
                                                 <TextBox Grid.Column="1"
                                                          Text="{Binding ExePath, Mode=TwoWay}"
-                                                         Watermark="Path to emulator executable"
+                                                         Watermark="{Binding ExeWatermark}"
                                                          FontSize="12"
                                                          Background="#0f3460"
                                                          Foreground="#FFFFFF"
@@ -363,25 +378,15 @@
                                                          Padding="8,4" />
                                             </Grid>
 
-                                            <!-- Flatpak row + Save button -->
+                                            <!-- Flatpak checkbox + Save button row -->
                                             <Grid ColumnDefinitions="*,Auto">
-                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8"
-                                                            VerticalAlignment="Center">
-                                                    <CheckBox IsChecked="{Binding IsFlatpak, Mode=TwoWay}"
-                                                              IsEnabled="{Binding IsFlatpakAvailable}"
-                                                              Content="Flatpak app"
-                                                              FontSize="12"
-                                                              Foreground="#AAAACC" />
-                                                    <!-- Path validity icons -->
-                                                    <mi:MaterialIcon Kind="CheckCircle"
-                                                                     Width="16" Height="16"
-                                                                     Foreground="#44BB44"
-                                                                     IsVisible="{Binding IsPathValid}" />
-                                                    <mi:MaterialIcon Kind="AlertCircle"
-                                                                     Width="16" Height="16"
-                                                                     Foreground="#FF8844"
-                                                                     IsVisible="{Binding !IsPathValid}" />
-                                                </StackPanel>
+                                                <CheckBox Grid.Column="0"
+                                                          IsChecked="{Binding IsFlatpak, Mode=TwoWay}"
+                                                          IsEnabled="{Binding IsFlatpakAvailable}"
+                                                          Content="Flatpak app"
+                                                          FontSize="12"
+                                                          Foreground="#AAAACC"
+                                                          VerticalAlignment="Center" />
                                                 <Button Grid.Column="1"
                                                         Content="Save"
                                                         Command="{Binding SaveCommand}"
