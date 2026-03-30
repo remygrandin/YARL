@@ -5,6 +5,8 @@ using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Serilog;
 using YARL.Domain.Enums;
+using YARL.Infrastructure.Config;
+using YARL.Infrastructure.Launch;
 using YARL.Infrastructure.Persistence;
 
 namespace YARL.UI.ViewModels;
@@ -12,11 +14,18 @@ namespace YARL.UI.ViewModels;
 public partial class GameDetailViewModel : ReactiveObject
 {
     private readonly IServiceScopeFactory? _scopeFactory;
+    private readonly Func<int, Task>? _queueScrapeAsync;
+    private readonly Action? _closeDrawer;
+    private readonly GameLaunchService? _launchService;
+    private readonly LaunchOverlayViewModel? _overlayVm;
+    private readonly AppConfig? _appConfig;
 
     // View-mode read-only data (from selected GameViewModel)
     [Reactive] private GameViewModel? _game;
     [Reactive] private bool _isEditMode;
     [Reactive] private bool _isSaving;
+    [Reactive] private bool _isScrapingGame;
+    [Reactive] private bool _isLaunchConfigured;
 
     // Editable fields (bound to TextBoxes in edit mode)
     [Reactive] private string? _editTitle;
@@ -39,10 +48,30 @@ public partial class GameDetailViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> DiscardCommand { get; }
     public ReactiveCommand<Unit, Unit> RevertOverrideCommand { get; }
     public ReactiveCommand<string, Unit> PickCoverArtCommand { get; }
+    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public ReactiveCommand<Unit, Unit> ScrapeCommand { get; }
+    public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
 
-    public GameDetailViewModel(IServiceScopeFactory? scopeFactory = null)
+    public GameDetailViewModel(
+        IServiceScopeFactory? scopeFactory = null,
+        Func<int, Task>? queueScrapeAsync = null,
+        Action? closeDrawer = null,
+        GameLaunchService? launchService = null,
+        LaunchOverlayViewModel? overlayVm = null,
+        AppConfig? appConfig = null)
     {
         _scopeFactory = scopeFactory;
+        _queueScrapeAsync = queueScrapeAsync;
+        _closeDrawer = closeDrawer;
+        _launchService = launchService;
+        _overlayVm = overlayVm;
+        _appConfig = appConfig;
+
+        CloseCommand = ReactiveCommand.Create(() => _closeDrawer?.Invoke());
+
+        var canScrape = this.WhenAnyValue(x => x.Game, x => x.IsScrapingGame,
+            (g, scraping) => g != null && !scraping);
+        ScrapeCommand = ReactiveCommand.CreateFromTask(ScrapeGameAsync, canScrape);
 
         EnterEditModeCommand = ReactiveCommand.Create(() =>
         {
@@ -69,12 +98,38 @@ public partial class GameDetailViewModel : ReactiveObject
         {
             EditCoverArtPath = path;
         });
+
+        var canLaunch = this.WhenAnyValue(x => x.IsLaunchConfigured);
+        LaunchCommand = ReactiveCommand.CreateFromTask(LaunchGameAsync, canLaunch);
     }
 
     public void LoadGame(GameViewModel? game)
     {
         Game = game;
         IsEditMode = false;
+        IsLaunchConfigured = game != null && _appConfig?.EmulatorConfigs.ContainsKey(game.PlatformId) == true;
+    }
+
+    private async Task LaunchGameAsync()
+    {
+        if (_game == null || _launchService == null || _scopeFactory == null) return;
+
+        // Get the primary ROM file path
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<YarlDbContext>();
+        var romFile = await db.RomFiles
+            .Where(r => r.GameId == _game.Id && !r.IsM3uPlaylist)
+            .Select(r => r.FilePath)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrEmpty(romFile))
+        {
+            Log.Warning("[GameDetailViewModel] No ROM file found for game id={Id}", _game.Id);
+            return;
+        }
+
+        _overlayVm?.StartLaunch(_game.Title, _game.CoverArtPath);
+        await _launchService.LaunchGameAsync(_game.Id, _game.PlatformId, romFile, _game.Title);
     }
 
     private async Task SaveOverrideAsync()
@@ -116,6 +171,20 @@ public partial class GameDetailViewModel : ReactiveObject
         finally
         {
             IsSaving = false;
+        }
+    }
+
+    private async Task ScrapeGameAsync()
+    {
+        if (_game == null || _queueScrapeAsync == null) return;
+        IsScrapingGame = true;
+        try
+        {
+            await _queueScrapeAsync(_game.Id);
+        }
+        finally
+        {
+            IsScrapingGame = false;
         }
     }
 

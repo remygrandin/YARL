@@ -137,6 +137,14 @@ public partial class DesktopShell : Window
         ContentArea.Content = _settingsView;
     }
 
+    public void NavigateToSettings()
+    {
+        _currentNav = NavSection.Settings;
+        SetActiveNav(NavSettings);
+        ResetFilters();
+        ContentArea.Content = _settingsView;
+    }
+
     private void ResetFilters()
     {
         if (_libraryVm is null) return;

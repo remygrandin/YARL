@@ -34,6 +34,38 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="12">
 
+                <!-- Drawer header: close + options -->
+                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,4">
+                    <!-- spacer left -->
+                    <Button Grid.Column="1"
+                            Width="32" Height="32"
+                            Padding="0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ToolTip.Tip="More options">
+                        <Button.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                <MenuItem Header="Scrape metadata"
+                                          Command="{Binding ScrapeCommand}" />
+                            </MenuFlyout>
+                        </Button.Flyout>
+                        <mi:MaterialIcon Kind="DotsHorizontal"
+                                         Width="18" Height="18"
+                                         Foreground="#8888aa" />
+                    </Button>
+                    <Button Grid.Column="2"
+                            Width="32" Height="32"
+                            Padding="0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding CloseCommand}"
+                            ToolTip.Tip="Close">
+                        <mi:MaterialIcon Kind="Close"
+                                         Width="18" Height="18"
+                                         Foreground="#8888aa" />
+                    </Button>
+                </Grid>
+
                 <!-- Large boxart -->
                 <Border Width="272"
                         Height="272"
@@ -210,38 +242,41 @@
                            TextTrimming="CharacterEllipsis" />
 
                 <!-- Action buttons (view mode) -->
-                <Grid IsVisible="{Binding !IsEditMode}"
-                      ColumnDefinitions="*,Auto"
-                      ColumnSpacing="8"
-                      Margin="0,4,0,0">
+                <StackPanel IsVisible="{Binding !IsEditMode}" Spacing="0">
 
-                    <!-- Play button -->
-                    <Button Grid.Column="0"
-                            Height="44"
-                            Background="#7C6FF7"
-                            BorderThickness="0"
-                            CornerRadius="6"
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch"
-                            ToolTip.Tip="Launch -- emulator not configured yet">
-                        <Grid Height="44">
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Spacing="6">
-                                <mi:MaterialIcon Kind="Play"
-                                                 Width="16" Height="16"
-                                                 Foreground="#FFFFFF" />
-                                <TextBlock Text="Play"
-                                           FontSize="14"
-                                           FontWeight="SemiBold"
-                                           Foreground="#FFFFFF" />
-                            </StackPanel>
-                        </Grid>
-                    </Button>
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="8"
+                          Margin="0,4,0,0">
 
-                    <!-- Edit button -->
-                    <Button Grid.Column="1"
+                        <!-- Play button (only shown when emulator is configured) -->
+                        <Button Grid.Column="0"
+                                Height="44"
+                                Background="#7C6FF7"
+                                BorderThickness="0"
+                                CornerRadius="6"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                IsVisible="{Binding IsLaunchConfigured}"
+                                Command="{Binding LaunchCommand}"
+                                ToolTip.Tip="Launch game">
+                            <Grid Height="44">
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Spacing="6">
+                                    <mi:MaterialIcon Kind="Play"
+                                                     Width="16" Height="16"
+                                                     Foreground="#FFFFFF" />
+                                    <TextBlock Text="Play"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="#FFFFFF" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+
+                        <!-- Edit button -->
+                        <Button Grid.Column="1"
                             Height="44"
                             Width="80"
                             Background="Transparent"
@@ -268,6 +303,32 @@
                     </Button>
 
                 </Grid>
+
+                <!-- No emulator configured prompt -->
+                <Border IsVisible="{Binding !IsLaunchConfigured}"
+                        Background="#2a1a1a"
+                        BorderBrush="#553333"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="12"
+                        Margin="0,8,0,0">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="{Binding Game.PlatformId, StringFormat='No emulator configured for {0}.'}"
+                                   Foreground="#FF8888"
+                                   FontSize="12"
+                                   TextWrapping="Wrap" />
+                        <Button Content="Configure in Settings"
+                                FontSize="12"
+                                Background="#333355"
+                                Foreground="#AAAACC"
+                                BorderThickness="0"
+                                CornerRadius="4"
+                                Padding="8,4"
+                                Click="OnConfigureEmulatorClicked" />
+                    </StackPanel>
+                </Border>
+
+                </StackPanel>
 
                 <!-- Action buttons (edit mode) -->
                 <Grid IsVisible="{Binding IsEditMode}"

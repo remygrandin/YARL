@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:YARL.UI.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="YARL.UI.Controls.LaunchOverlay"
+             x:DataType="vm:LaunchOverlayViewModel">
+
+    <!-- Full-page overlay: stacked layers in a Grid -->
+    <Grid>
+        <!-- Layer 1: Blurred cover art background -->
+        <Image Source="{Binding CoverArtPath}"
+               Stretch="UniformToFill"
+               Opacity="0.5">
+            <Image.Effect>
+                <BlurEffect Radius="16" />
+            </Image.Effect>
+        </Image>
+
+        <!-- Layer 2: Dark semi-transparent overlay -->
+        <Border Background="#CC000000" />
+
+        <!-- Layer 3: Launching panel (shown when State == Launching) -->
+        <StackPanel x:Name="LaunchingPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16"
+                    IsVisible="False">
+            <ProgressBar IsIndeterminate="True"
+                         Width="48" Height="6"
+                         Foreground="#7C6FF7" />
+            <TextBlock Text="{Binding GameTitle, StringFormat='Launching {0}...'}"
+                       FontSize="24" FontWeight="SemiBold"
+                       Foreground="#FFFFFF"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Layer 3: Running panel (shown when State == Running) -->
+        <StackPanel x:Name="RunningPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16"
+                    IsVisible="False">
+            <TextBlock Text="{Binding GameTitle}"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="#FFFFFF"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding ElapsedPlayTime, StringFormat='Playing -- {0:h\\:mm\\:ss}'}"
+                       FontSize="20"
+                       Foreground="#AAAACC"
+                       HorizontalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        HorizontalAlignment="Center" Margin="0,16,0,0">
+                <Button Content="Switch to Game"
+                        Command="{Binding SwitchToGameCommand}"
+                        Background="#7C6FF7" Foreground="#FFFFFF"
+                        BorderThickness="0" CornerRadius="6"
+                        Padding="16,8" FontSize="14" />
+                <Button Content="Dismiss"
+                        Command="{Binding DismissCommand}"
+                        Background="#333355" Foreground="#AAAACC"
+                        BorderThickness="1" BorderBrush="#555577"
+                        CornerRadius="6" Padding="16,8" FontSize="14" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Layer 3: Failed panel (shown when State == Failed) -->
+        <StackPanel x:Name="FailedPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16"
+                    IsVisible="False">
+            <mi:MaterialIcon Kind="AlertCircle" Width="48" Height="48"
+                             Foreground="#FF4444" HorizontalAlignment="Center" />
+            <TextBlock Text="Launch Failed"
+                       FontSize="24" FontWeight="SemiBold"
+                       Foreground="#FF4444"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding ErrorMessage}"
+                       FontSize="14" Foreground="#AAAAAA"
+                       TextWrapping="Wrap" MaxWidth="400"
+                       HorizontalAlignment="Center" />
+            <Button Content="Close"
+                    Command="{Binding DismissCommand}"
+                    Background="#333355" Foreground="#AAAACC"
+                    BorderThickness="1" BorderBrush="#555577"
+                    CornerRadius="6" Padding="16,8" FontSize="14"
+                    HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>

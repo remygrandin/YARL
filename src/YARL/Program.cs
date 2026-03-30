@@ -139,6 +139,9 @@ internal static class Program
                     new GameDetailViewModel(
                         sp.GetRequiredService<IServiceScopeFactory>(),
                         gameId => sp.GetRequiredService<ScraperHostedService>().QueueGameAsync(gameId),
-                        () => sp.GetRequiredService<LibraryViewModel>().SelectedGame = null));
+                        () => sp.GetRequiredService<LibraryViewModel>().SelectedGame = null,
+                        sp.GetRequiredService<GameLaunchService>(),
+                        sp.GetRequiredService<LaunchOverlayViewModel>(),
+                        sp.GetRequiredService<AppConfig>()));
             });
 }

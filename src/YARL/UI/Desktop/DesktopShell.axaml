@@ -3,6 +3,7 @@
         xmlns:vm="clr-namespace:YARL.UI.ViewModels"
         xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:views="clr-namespace:YARL.UI.Views"
+        xmlns:controls="clr-namespace:YARL.UI.Controls"
         x:Class="YARL.UI.Desktop.DesktopShell"
         x:DataType="vm:MainViewModel"
         Title="YARL - Yet Another Retro Launcher"
@@ -166,6 +167,9 @@
             <views:GameDetailDrawer x:Name="DetailDrawer"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Stretch" />
+            <controls:LaunchOverlay
+                DataContext="{Binding LaunchOverlay}"
+                IsVisible="{Binding IsVisible}" />
         </Grid>
     </DockPanel>
 </Window>
