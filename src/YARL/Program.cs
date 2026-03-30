@@ -9,6 +9,7 @@ using Serilog;
 using YARL.Domain.Interfaces;
 using YARL.Infrastructure.Config;
 using YARL.Infrastructure.Images;
+using YARL.Infrastructure.Launch;
 using YARL.Infrastructure.Persistence;
 using YARL.Infrastructure.Providers;
 using YARL.Infrastructure.Scanning;
@@ -103,13 +104,11 @@ internal static class Program
                         });
                     });
                 services.AddHttpClient<ArtCacheService>();
-                services.AddScoped<IgdbClient>();
 
                 // Scraper pipeline (scoped — uses scoped DbContext)
                 services.AddScoped<ScraperPipeline>(sp =>
                     new ScraperPipeline(
                         sp.GetRequiredService<ScreenScraperClient>(),
-                        sp.GetRequiredService<IgdbClient>(),
                         sp.GetRequiredService<ArtCacheService>()
                     ));
 
@@ -126,7 +125,14 @@ internal static class Program
                         sp.GetRequiredService<PlatformRegistry>(),
                         progress => sp.GetRequiredService<ScrapingStatusViewModel>().UpdateProgress(progress)));
                 services.AddHostedService(sp => sp.GetRequiredService<ScraperHostedService>());
+                services.AddSingleton<GameLaunchService>(sp => new GameLaunchService(
+                    sp.GetRequiredService<AppConfig>(),
+                    sp.GetRequiredService<IServiceScopeFactory>()));
+
                 services.AddSingleton<GameDetailViewModel>(sp =>
-                    new GameDetailViewModel(sp.GetRequiredService<IServiceScopeFactory>()));
+                    new GameDetailViewModel(
+                        sp.GetRequiredService<IServiceScopeFactory>(),
+                        gameId => sp.GetRequiredService<ScraperHostedService>().QueueGameAsync(gameId),
+                        () => sp.GetRequiredService<LibraryViewModel>().SelectedGame = null));
             });
 }
