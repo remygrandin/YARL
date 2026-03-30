@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-04-PLAN.md
-last_updated: "2026-03-30T20:35:05.252Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-30T20:39:10.402Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 18
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 ---
@@ -76,6 +76,7 @@ Plan: 1 of 5
 | Phase 04-emulator-integration-and-launch P01 | 3 | 2 tasks | 4 files |
 | Phase 04-emulator-integration-and-launch P02 | 4 | 2 tasks | 9 files |
 | Phase 04-emulator-integration-and-launch P04 | 25 | 2 tasks | 8 files |
+| Phase 04-emulator-integration-and-launch P03 | 8 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,9 @@ Recent decisions affecting current work:
 - [Phase 04-02]: BringToFront P/Invoke guarded by RuntimeInformation.IsOSPlatform(OSPlatform.Windows) for Linux/SteamOS compatibility
 - [Phase 04-emulator-integration-and-launch]: EmulatorRowViewModel uses WhenAnyValue reactive subscription for IsPathValid — Flatpak IDs always valid, file paths use File.Exists
 - [Phase 04-emulator-integration-and-launch]: AllPlatforms property added to PlatformRegistry as IReadOnlyList<PlatformDefinition> for GetAvailablePlatformsForAdd dropdown
+- [Phase 04-emulator-integration-and-launch]: IsVisible='{Binding IsVisible}' on LaunchOverlay in DesktopShell — compiled bindings resolve against sub-VM's DataType when DataContext is re-bound, not parent MainViewModel
+- [Phase 04-emulator-integration-and-launch]: DispatcherTimer excluded from unit tests (requires Avalonia headless); only state transitions tested via HandleStateChanged
+- [Phase 04-emulator-integration-and-launch]: FindAncestorOfType<DesktopShell>() requires Avalonia.VisualTree namespace; NavigateToSettings() public method added to DesktopShell for cross-component nav
 
 ### Pending Todos
 
@@ -148,6 +152,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-30T20:35:05.248Z
-Stopped at: Completed 04-04-PLAN.md
+Last session: 2026-03-30T20:39:10.399Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
