@@ -42,6 +42,7 @@ public class YarlDbContext : DbContext
             e.Property(x => x.CoverArtPath).HasMaxLength(1024);
             e.Property(x => x.ScraperMatchId).HasMaxLength(100);
             e.Property(x => x.ScraperSource).HasMaxLength(20);
+            e.Property(x => x.TotalPlayTime).HasConversion<long>().HasDefaultValue(TimeSpan.Zero);
         });
 
         builder.Entity<GameVersion>(e =>

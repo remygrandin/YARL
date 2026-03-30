@@ -3,6 +3,18 @@ using YARL.Domain.Enums;
 
 namespace YARL.Infrastructure.Config;
 
+public record EmulatorConfig
+{
+    [JsonPropertyName("exePath")]
+    public string ExePath { get; init; } = "";
+
+    [JsonPropertyName("args")]
+    public string Args { get; init; } = "{rompath}";
+
+    [JsonPropertyName("isFlatpak")]
+    public bool IsFlatpak { get; init; }
+}
+
 public class AppConfig
 {
     [JsonPropertyName("uiModeOverride")]
@@ -18,10 +30,6 @@ public class AppConfig
     [JsonPropertyName("screenScraperPass")]
     public string? ScreenScraperPass { get; set; }
 
-    // IGDB credentials (optional fallback scraper)
-    [JsonPropertyName("igdbClientId")]
-    public string? IgdbClientId { get; set; }
-
-    [JsonPropertyName("igdbClientSecret")]
-    public string? IgdbClientSecret { get; set; }
+    [JsonPropertyName("emulatorConfigs")]
+    public Dictionary<string, EmulatorConfig> EmulatorConfigs { get; set; } = new();
 }
