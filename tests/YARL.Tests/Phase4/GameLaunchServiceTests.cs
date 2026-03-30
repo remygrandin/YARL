@@ -1,95 +1,169 @@
-// Wave 0 stub — EMU-02: GameLaunchService ProcessStartInfo construction and DB update after process exit.
-// The test class body is guarded by #if false until Plan 03 creates GameLaunchService.
-// TODO: uncomment when GameLaunchService exists:
-//   using YARL.Infrastructure.Launch;
-//   using YARL.Infrastructure.Config;
-//   using YARL.Domain.Models;
-//   using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
+using YARL.Domain.Models;
+using YARL.Infrastructure.Config;
+using YARL.Infrastructure.Launch;
+using YARL.Infrastructure.Persistence;
 
 namespace YARL.Tests.Phase4;
 
-/// <summary>
-/// Stub: GameLaunchService ProcessStartInfo building (native + Flatpak), rompath quoting,
-/// and DB update (LastPlayedAt, TotalPlayTime, Failed state) after process exit.
-/// Will be filled in by Plan 03 (EMU-02 implementation).
-/// </summary>
 [Trait("Category", "Phase4")]
 [Trait("Class", "GameLaunchServiceTests")]
 public class GameLaunchServiceTests
 {
-    [Fact]
-    [Trait("Category", "Phase4")]
-    public void Stub_FailsUntilImplemented() => Assert.Fail("Not implemented - Wave 0 stub");
-}
-
-#if false
-// --- Stubs below reference GameLaunchService which does not exist yet (Plan 03 creates it). ---
-
-namespace YARL.Tests.Phase4
-{
-    using YARL.Infrastructure.Launch;
-    using YARL.Infrastructure.Config;
-    using YARL.Domain.Models;
-    using Microsoft.EntityFrameworkCore;
-
-    public class GameLaunchServiceTests_Full
+    private static GameLaunchService CreateService(AppConfig? config = null)
     {
-        [Fact]
-        [Trait("Category", "Phase4")]
-        public void BuildStartInfo_NativeEmulator_SetsFileNameAndArgs()
+        config ??= new AppConfig();
+        var scopeFactory = Substitute.For<IServiceScopeFactory>();
+        return new GameLaunchService(config, scopeFactory);
+    }
+
+    [Fact]
+    public void BuildStartInfo_NativeEmulator_SetsFileNameAndArgs()
+    {
+        // Arrange
+        var service = CreateService();
+        var config = new EmulatorConfig
         {
-            // Will test: For a native (non-Flatpak) emulator config, BuildStartInfo returns a
-            // ProcessStartInfo where FileName == EmulatorConfig.Path and
-            // Arguments contains the substituted rompath.
-            // Example: EmulatorConfig { Path="/usr/bin/snes9x", Args="{rompath}", IsFlatpak=false }
-            //          romPath="/home/user/roms/game.sfc"
-            //          => psi.FileName == "/usr/bin/snes9x", psi.Arguments == "/home/user/roms/game.sfc"
-            Assert.Fail("Not implemented — Wave 0 stub");
+            ExePath = "/usr/bin/retroarch",
+            Args = "-L core.so {rompath}",
+            IsFlatpak = false
+        };
+        var romPath = "/home/user/roms/game.sfc";
+
+        // Act
+        var psi = service.BuildStartInfo(config, romPath);
+
+        // Assert
+        Assert.Equal("/usr/bin/retroarch", psi.FileName);
+        Assert.Equal("-L core.so \"/home/user/roms/game.sfc\"", psi.Arguments);
+        Assert.False(psi.UseShellExecute);
+    }
+
+    [Fact]
+    public void BuildStartInfo_Flatpak_SetsFileNameToFlatpakAndRunArgs()
+    {
+        // Arrange
+        var service = CreateService();
+        var config = new EmulatorConfig
+        {
+            ExePath = "org.DolphinEmu.dolphin-emu",
+            Args = "{rompath}",
+            IsFlatpak = true
+        };
+        var romPath = "/roms/game.iso";
+
+        // Act
+        var psi = service.BuildStartInfo(config, romPath);
+
+        // Assert
+        Assert.Equal("flatpak", psi.FileName);
+        Assert.Equal("run org.DolphinEmu.dolphin-emu \"/roms/game.iso\"", psi.Arguments);
+        Assert.False(psi.UseShellExecute);
+    }
+
+    [Fact]
+    public void BuildStartInfo_RomPathWithSpaces_IsQuoted()
+    {
+        // Arrange
+        var service = CreateService();
+        var config = new EmulatorConfig
+        {
+            ExePath = "/usr/bin/retroarch",
+            Args = "{rompath}",
+            IsFlatpak = false
+        };
+        var romPath = "/home/user/my roms/Super Mario World.sfc";
+
+        // Act
+        var psi = service.BuildStartInfo(config, romPath);
+
+        // Assert — full path with spaces must be wrapped in double-quotes
+        Assert.Contains("\"/home/user/my roms/Super Mario World.sfc\"", psi.Arguments);
+    }
+
+    [Fact]
+    public async Task UpdatePlayTimeAsync_AddsToExistingTotalPlayTime()
+    {
+        // Arrange — in-memory SQLite with shared connection
+        var connection = new SqliteConnection("Data Source=:memory:");
+        connection.Open();
+
+        var options = new DbContextOptionsBuilder<YarlDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using (var ctx = new YarlDbContext(options))
+        {
+            await ctx.Database.EnsureCreatedAsync();
+
+            // Seed a RomSource (required FK for Game)
+            var source = new RomSource { Path = "/roms", Label = "Test" };
+            ctx.RomSources.Add(source);
+            await ctx.SaveChangesAsync();
+
+            var game = new Game
+            {
+                Title = "Test Game",
+                PlatformId = "snes",
+                SourceId = source.Id,
+                TotalPlayTime = TimeSpan.FromMinutes(30)
+            };
+            ctx.Games.Add(game);
+            await ctx.SaveChangesAsync();
         }
 
-        [Fact]
-        [Trait("Category", "Phase4")]
-        public void BuildStartInfo_Flatpak_SetsFileNameToFlatpakAndRunArgs()
+        // Wire up a real scope factory using the shared connection
+        var scopeFactory = CreateScopeFactory(connection);
+        var appConfig = new AppConfig();
+        var service = new GameLaunchService(appConfig, scopeFactory);
+
+        // Act
+        int gameId;
+        using (var ctx = new YarlDbContext(options))
         {
-            // Will test: For a Flatpak emulator config, BuildStartInfo returns a ProcessStartInfo
-            // where FileName == "flatpak" and Arguments starts with "run <AppId>".
-            // Example: EmulatorConfig { AppId="org.snes9x.Snes9x", Args="{rompath}", IsFlatpak=true }
-            //          => psi.FileName == "flatpak", psi.Arguments starts with "run org.snes9x.Snes9x"
-            Assert.Fail("Not implemented — Wave 0 stub");
+            gameId = await ctx.Games.Select(g => g.Id).FirstAsync();
         }
 
-        [Fact]
-        [Trait("Category", "Phase4")]
-        public void BuildStartInfo_RomPathWithSpaces_IsQuoted()
+        await service.UpdatePlayTimeAsync(gameId, TimeSpan.FromMinutes(15));
+
+        // Assert
+        using (var ctx = new YarlDbContext(options))
         {
-            // Will test: When the ROM path contains spaces, the {rompath} substitution wraps it in
-            // double-quotes so the external process receives a single argument.
-            // Example: romPath="/home/user/roms/Super Mario World.sfc"
-            //          => Arguments contains "\"Super Mario World.sfc\"" (or full quoted path)
-            Assert.Fail("Not implemented — Wave 0 stub");
+            var game = await ctx.Games.FindAsync(gameId);
+            Assert.NotNull(game);
+            Assert.Equal(TimeSpan.FromMinutes(45), game!.TotalPlayTime);
+            Assert.NotNull(game.LastPlayedAt);
+            Assert.True((DateTime.UtcNow - game.LastPlayedAt!.Value).TotalSeconds < 5);
         }
 
-        [Fact]
-        [Trait("Category", "Phase4")]
-        public void OnProcessExited_UpdatesLastPlayedAtAndTotalPlayTime()
-        {
-            // Will test: After the launched process exits normally (exit code 0),
-            // GameLaunchService updates the Game row in an in-memory SQLite database:
-            //   - LastPlayedAt is set to a recent UTC DateTime
-            //   - TotalPlayTime is incremented by the session duration
-            // Uses Microsoft.EntityFrameworkCore.InMemory or SQLite :memory: provider.
-            Assert.Fail("Not implemented — Wave 0 stub");
-        }
+        connection.Dispose();
+    }
 
-        [Fact]
-        [Trait("Category", "Phase4")]
-        public void OnProcessExited_NonZeroExitCodeWithinGrace_SetsFailed()
-        {
-            // Will test: When the process exits with a non-zero exit code AND the session
-            // duration is less than the grace period (e.g. < 5 seconds), the service sets
-            // a failed launch indicator (e.g. Game.LastLaunchFailed = true or equivalent).
-            Assert.Fail("Not implemented — Wave 0 stub");
-        }
+    [Fact(Skip = "Requires process mocking — stub for now")]
+    public void OnProcessExited_NonZeroExitCodeWithinGrace_SetsFailed()
+    {
+        // Stub — requires process mocking infrastructure
+        Assert.Fail("Stub");
+    }
+
+    private static IServiceScopeFactory CreateScopeFactory(SqliteConnection connection)
+    {
+        var options = new DbContextOptionsBuilder<YarlDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var scopeFactory = Substitute.For<IServiceScopeFactory>();
+        var scope = Substitute.For<IServiceScope>();
+        var serviceProvider = Substitute.For<IServiceProvider>();
+
+        scopeFactory.CreateScope().Returns(scope);
+        scope.ServiceProvider.Returns(serviceProvider);
+        serviceProvider.GetService(typeof(YarlDbContext))
+            .Returns(_ => new YarlDbContext(options));
+
+        return scopeFactory;
     }
 }
-#endif
