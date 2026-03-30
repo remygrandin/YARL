@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Metadata
 
 - [x] **META-01**: App scrapes metadata from ScreenScraper using ROM hash matching
-- [x] **META-02**: App falls back to IGDB for games not found on ScreenScraper
+- ~~**META-02**: App falls back to IGDB for games not found on ScreenScraper~~ *(removed by design — IGDB requires OAuth client credentials that are too complex for end users to obtain; ScreenScraper title-fallback is sufficient)*
 - [x] **META-03**: Scraping fetches cover art, description, genre, year, developer, publisher
 - [x] **META-04**: User can manually override any metadata field per game
 
@@ -100,7 +100,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIB-08 | Phase 1 | Complete |
 | LIB-09 | Phase 5 | Pending |
 | META-01 | Phase 3 | Complete |
-| META-02 | Phase 3 | Complete |
+| META-02 | Phase 3 | Removed by design |
 | META-03 | Phase 3 | Complete |
 | META-04 | Phase 3 | Complete |
 | EMU-01 | Phase 4 | Pending |
